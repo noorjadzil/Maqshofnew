@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Cyber Canteen POS</title>
+
+<style>
+body{
+    margin:0;
+    background:black;
+    color:#00ff88;
+    font-family:monospace;
+}
+header{
+    text-align:center;
+    padding:15px;
+    font-size:20px;
+    border-bottom:1px solid #00ff88;
+}
+.cursor{
+    display:inline-block;
+    width:10px;
+    background:#00ff88;
+    animation:blink 1s infinite;
+}
+@keyframes blink{
+    0%,50%,100%{opacity:1;}
+    25%,75%{opacity:0;}
+}
+nav{
+    display:flex;
+    justify-content:space-around;
+    border-bottom:1px solid #00ff88;
+}
+nav button{
+    flex:1;
+    padding:10px;
+    background:black;
+    color:#00ff88;
+    border:none;
+}
+nav button:hover{
+    background:#003322;
+}
+section{
+    display:none;
+    padding:10px;
+}
+.active{
+    display:block;
+}
+.card{
+    border:1px solid #00ff88;
+    padding:10px;
+    margin:5px 0;
+}
+input,select{
+    width:100%;
+    padding:8px;
+    margin:5px 0;
+    background:black;
+    color:#00ff88;
+    border:1px solid #00ff88;
+}
+button.action{
+    background:#00ff88;
+    color:black;
+    padding:8px;
+    border:none;
+    width:100%;
+    margin-top:5px;
+}
+.product-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:5px;
+}
+.product{
+    border:1px solid #00ff88;
+    padding:10px;
+    text-align:center;
+}
+.small{
+    font-size:12px;
+}
+.total-box{
+    border-top:1px solid #00ff88;
+    padding-top:10px;
+    margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<header>
+CYBER CANTEEN POS <span class="cursor"></span>
+</header>
+
+<nav>
+<button onclick="show('dashboard')">Dashboard</button>
+<button onclick="show('kasir')">Kasir</button>
+<button onclick="show('produk')">Produk</button>
+<button onclick="show('laporan')">Laporan</button>
+</nav>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="active">
+<h3>Status Sistem</h3>
+<div id="dashData"></div>
+</section>
+
+<!-- KASIR -->
+<section id="kasir">
+<h3>Kasir</h3>
+<div class="product-grid" id="produkList"></div>
+
+<h4>Keranjang</h4>
+<div id="cart"></div>
+
+<div class="total-box">
+Total: Rp <span id="total">0</span>
+<input type="number" id="bayar" placeholder="Uang Bayar">
+<div>Kembalian: Rp <span id="kembali">0</span></div>
+<button class="action" onclick="simpanTransaksi()">Simpan Transaksi</button>
+</div>
+</section>
+
+<!-- PRODUK -->
+<section id="produk">
+<h3>Manajemen Produk (PIN 1234)</h3>
+<input type="password" id="pin" placeholder="Masukkan PIN">
+<button class="action" onclick="cekPin()">Masuk</button>
+
+<div id="adminArea" style="display:none;">
+<input type="text" id="namaProduk" placeholder="Nama Produk">
+<input type="number" id="hargaProduk" placeholder="Harga">
+<input type="number" id="stokProduk" placeholder="Stok">
+<select id="kategoriProduk">
+<option>Makanan</option>
+<option>Minuman</option>
+<option>Snack</option>
+</select>
+<button class="action" onclick="tambahProduk()">Tambah Produk</button>
+<div id="listAdmin"></div>
+</div>
+</section>
+
+<!-- LAPORAN -->
+<section id="laporan">
+<h3>Laporan Hari Ini</h3>
+<div id="laporanData"></div>
+</section>
+
+<script>
+let produk = JSON.parse(localStorage.getItem("produk")) || [];
+let transaksi = JSON.parse(localStorage.getItem("transaksi")) || [];
+let cart = [];
+
+function simpanData(){
+    localStorage.setItem("produk", JSON.stringify(produk));
+    localStorage.setItem("transaksi", JSON.stringify(transaksi));
+}
+
+function show(id){
+    document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    render();
+}
+
+function tambahProduk(){
+    let p={
+        nama:namaProduk.value,
+        harga:Number(hargaProduk.value),
+        stok:Number(stokProduk.value),
+        kategori:kategoriProduk.value
+    };
+    produk.push(p);
+    simpanData();
+    render();
+}
+
+function renderProduk(){
+    produkList.innerHTML="";
+    produk.forEach((p,i)=>{
+        produkList.innerHTML+=`
+        <div class="product" onclick="addCart(${i})">
+        ${p.nama}<br>
+        Rp ${p.harga}<br>
+        <span class="small">Stok: ${p.stok}</span>
+        </div>`;
+    });
+}
+
+function addCart(i){
+    if(produk[i].stok<=0){alert("Stok habis");return;}
+    cart.push(produk[i]);
+    produk[i].stok--;
+    simpanData();
+    renderCart();
+    renderProduk();
+}
+
+function renderCart(){
+    cartDiv=document.getElementById("cart");
+    cartDiv.innerHTML="";
+    let total=0;
+    cart.forEach(c=>{
+        cartDiv.innerHTML+=`${c.nama} - Rp ${c.harga}<br>`;
+        total+=c.harga;
+    });
+    document.getElementById("total").innerText=total;
+}
+
+bayar.oninput=function(){
+    let total=Number(document.getElementById("total").innerText);
+    let uang=Number(this.value);
+    kembali.innerText=uang-total;
+}
+
+function simpanTransaksi(){
+    if(cart.length==0)return;
+    transaksi.push({
+        tanggal:new Date().toLocaleDateString(),
+        total:Number(total.innerText)
+    });
+    cart=[];
+    bayar.value="";
+    kembali.innerText="0";
+    simpanData();
+    render();
+    alert("Transaksi disimpan");
+}
+
+function cekPin(){
+    if(pin.value=="1234"){
+        adminArea.style.display="block";
+        renderAdmin();
+    }else{
+        alert("PIN salah");
+    }
+}
+
+function renderAdmin(){
+    listAdmin.innerHTML="";
+    produk.forEach((p,i)=>{
+        listAdmin.innerHTML+=`
+        <div class="card">
+        ${p.nama} - Rp ${p.harga} - Stok ${p.stok}
+        <button onclick="hapusProduk(${i})">Hapus</button>
+        </div>`;
+    });
+}
+
+function hapusProduk(i){
+    produk.splice(i,1);
+    simpanData();
+    renderAdmin();
+    renderProduk();
+}
+
+function renderDashboard(){
+    let hariIni=new Date().toLocaleDateString();
+    let total=0;
+    let jumlah=0;
+    transaksi.forEach(t=>{
+        if(t.tanggal==hariIni){
+            total+=t.total;
+            jumlah++;
+        }
+    });
+    dashData.innerHTML=`
+    Total Hari Ini: Rp ${total}<br>
+    Jumlah Transaksi: ${jumlah}
+    `;
+}
+
+function renderLaporan(){
+    let hariIni=new Date().toLocaleDateString();
+    let total=0;
+    transaksi.forEach(t=>{
+        if(t.tanggal==hariIni) total+=t.total;
+    });
+    laporanData.innerHTML=`Omzet Hari Ini: Rp ${total}`;
+}
+
+function render(){
+    renderProduk();
+    renderCart();
+    renderDashboard();
+    renderLaporan();
+}
+
+render();
+</script>
+
+</body>
+</html>
