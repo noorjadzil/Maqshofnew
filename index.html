@@ -1,297 +1,242 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Cyber Canteen POS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minesweeper Web</title>
 
 <style>
 body{
-    margin:0;
-    background:black;
-    color:#00ff88;
-    font-family:monospace;
-}
-header{
+    font-family: Arial;
     text-align:center;
-    padding:15px;
-    font-size:20px;
-    border-bottom:1px solid #00ff88;
+    background:#1e1e1e;
+    color:white;
 }
-.cursor{
-    display:inline-block;
-    width:10px;
-    background:#00ff88;
-    animation:blink 1s infinite;
-}
-@keyframes blink{
-    0%,50%,100%{opacity:1;}
-    25%,75%{opacity:0;}
-}
-nav{
-    display:flex;
-    justify-content:space-around;
-    border-bottom:1px solid #00ff88;
-}
-nav button{
-    flex:1;
-    padding:10px;
-    background:black;
-    color:#00ff88;
-    border:none;
-}
-nav button:hover{
-    background:#003322;
-}
-section{
-    display:none;
-    padding:10px;
-}
-.active{
-    display:block;
-}
-.card{
-    border:1px solid #00ff88;
-    padding:10px;
-    margin:5px 0;
-}
-input,select{
-    width:100%;
-    padding:8px;
-    margin:5px 0;
-    background:black;
-    color:#00ff88;
-    border:1px solid #00ff88;
-}
-button.action{
-    background:#00ff88;
-    color:black;
-    padding:8px;
-    border:none;
-    width:100%;
-    margin-top:5px;
-}
-.product-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:5px;
-}
-.product{
-    border:1px solid #00ff88;
-    padding:10px;
-    text-align:center;
-}
-.small{
-    font-size:12px;
-}
-.total-box{
-    border-top:1px solid #00ff88;
-    padding-top:10px;
+
+h1{
     margin-top:10px;
+}
+
+#board{
+    margin:auto;
+    display:grid;
+    grid-template-columns: repeat(10,40px);
+    grid-template-rows: repeat(10,40px);
+    gap:2px;
+    width:max-content;
+}
+
+.cell{
+    width:40px;
+    height:40px;
+    background:#444;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:18px;
+}
+
+.open{
+    background:#ddd;
+    color:black;
+}
+
+.bomb{
+    background:red;
+}
+
+button{
+    margin:10px;
+    padding:8px 20px;
+    font-size:16px;
 }
 </style>
 </head>
+
 <body>
 
-<header>
-CYBER CANTEEN POS <span class="cursor"></span>
-</header>
-
-<nav>
-<button onclick="show('dashboard')">Dashboard</button>
-<button onclick="show('kasir')">Kasir</button>
-<button onclick="show('produk')">Produk</button>
-<button onclick="show('laporan')">Laporan</button>
-</nav>
-
-<!-- DASHBOARD -->
-<section id="dashboard" class="active">
-<h3>Status Sistem</h3>
-<div id="dashData"></div>
-</section>
-
-<!-- KASIR -->
-<section id="kasir">
-<h3>Kasir</h3>
-<div class="product-grid" id="produkList"></div>
-
-<h4>Keranjang</h4>
-<div id="cart"></div>
-
-<div class="total-box">
-Total: Rp <span id="total">0</span>
-<input type="number" id="bayar" placeholder="Uang Bayar">
-<div>Kembalian: Rp <span id="kembali">0</span></div>
-<button class="action" onclick="simpanTransaksi()">Simpan Transaksi</button>
-</div>
-</section>
-
-<!-- PRODUK -->
-<section id="produk">
-<h3>Manajemen Produk (PIN 1234)</h3>
-<input type="password" id="pin" placeholder="Masukkan PIN">
-<button class="action" onclick="cekPin()">Masuk</button>
-
-<div id="adminArea" style="display:none;">
-<input type="text" id="namaProduk" placeholder="Nama Produk">
-<input type="number" id="hargaProduk" placeholder="Harga">
-<input type="number" id="stokProduk" placeholder="Stok">
-<select id="kategoriProduk">
-<option>Makanan</option>
-<option>Minuman</option>
-<option>Snack</option>
-</select>
-<button class="action" onclick="tambahProduk()">Tambah Produk</button>
-<div id="listAdmin"></div>
-</div>
-</section>
-
-<!-- LAPORAN -->
-<section id="laporan">
-<h3>Laporan Hari Ini</h3>
-<div id="laporanData"></div>
-</section>
+<h1>Minesweeper</h1>
+<button onclick="startGame()">Restart</button>
+<div id="board"></div>
 
 <script>
-let produk = JSON.parse(localStorage.getItem("produk")) || [];
-let transaksi = JSON.parse(localStorage.getItem("transaksi")) || [];
-let cart = [];
 
-function simpanData(){
-    localStorage.setItem("produk", JSON.stringify(produk));
-    localStorage.setItem("transaksi", JSON.stringify(transaksi));
+const size = 10
+const bombsCount = 15
+
+let board=[]
+let bombs=[]
+let gameOver=false
+
+function startGame(){
+
+    const boardDiv=document.getElementById("board")
+    boardDiv.innerHTML=""
+    board=[]
+    bombs=[]
+    gameOver=false
+
+    for(let i=0;i<size;i++){
+        board[i]=[]
+        for(let j=0;j<size;j++){
+
+            let cell=document.createElement("div")
+            cell.className="cell"
+            cell.dataset.x=i
+            cell.dataset.y=j
+
+            cell.onclick=openCell
+            cell.oncontextmenu=flagCell
+
+            boardDiv.appendChild(cell)
+
+            board[i][j]={
+                bomb:false,
+                open:false,
+                flag:false,
+                element:cell
+            }
+        }
+    }
+
+    placeBombs()
 }
 
-function show(id){
-    document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    render();
-}
+function placeBombs(){
 
-function tambahProduk(){
-    let p={
-        nama:namaProduk.value,
-        harga:Number(hargaProduk.value),
-        stok:Number(stokProduk.value),
-        kategori:kategoriProduk.value
-    };
-    produk.push(p);
-    simpanData();
-    render();
-}
+    while(bombs.length<bombsCount){
 
-function renderProduk(){
-    produkList.innerHTML="";
-    produk.forEach((p,i)=>{
-        produkList.innerHTML+=`
-        <div class="product" onclick="addCart(${i})">
-        ${p.nama}<br>
-        Rp ${p.harga}<br>
-        <span class="small">Stok: ${p.stok}</span>
-        </div>`;
-    });
-}
+        let x=Math.floor(Math.random()*size)
+        let y=Math.floor(Math.random()*size)
 
-function addCart(i){
-    if(produk[i].stok<=0){alert("Stok habis");return;}
-    cart.push(produk[i]);
-    produk[i].stok--;
-    simpanData();
-    renderCart();
-    renderProduk();
-}
-
-function renderCart(){
-    cartDiv=document.getElementById("cart");
-    cartDiv.innerHTML="";
-    let total=0;
-    cart.forEach(c=>{
-        cartDiv.innerHTML+=`${c.nama} - Rp ${c.harga}<br>`;
-        total+=c.harga;
-    });
-    document.getElementById("total").innerText=total;
-}
-
-bayar.oninput=function(){
-    let total=Number(document.getElementById("total").innerText);
-    let uang=Number(this.value);
-    kembali.innerText=uang-total;
-}
-
-function simpanTransaksi(){
-    if(cart.length==0)return;
-    transaksi.push({
-        tanggal:new Date().toLocaleDateString(),
-        total:Number(total.innerText)
-    });
-    cart=[];
-    bayar.value="";
-    kembali.innerText="0";
-    simpanData();
-    render();
-    alert("Transaksi disimpan");
-}
-
-function cekPin(){
-    if(pin.value=="1234"){
-        adminArea.style.display="block";
-        renderAdmin();
-    }else{
-        alert("PIN salah");
+        if(!board[x][y].bomb){
+            board[x][y].bomb=true
+            bombs.push([x,y])
+        }
     }
 }
 
-function renderAdmin(){
-    listAdmin.innerHTML="";
-    produk.forEach((p,i)=>{
-        listAdmin.innerHTML+=`
-        <div class="card">
-        ${p.nama} - Rp ${p.harga} - Stok ${p.stok}
-        <button onclick="hapusProduk(${i})">Hapus</button>
-        </div>`;
-    });
+function openCell(e){
+
+    if(gameOver) return
+
+    let x=parseInt(this.dataset.x)
+    let y=parseInt(this.dataset.y)
+
+    let cell=board[x][y]
+
+    if(cell.open || cell.flag) return
+
+    cell.open=true
+    this.classList.add("open")
+
+    if(cell.bomb){
+
+        this.innerHTML="💣"
+        this.classList.add("bomb")
+        endGame(false)
+        return
+    }
+
+    let count=countBombs(x,y)
+
+    if(count>0){
+        this.innerText=count
+    }else{
+        openAround(x,y)
+    }
+
+    checkWin()
 }
 
-function hapusProduk(i){
-    produk.splice(i,1);
-    simpanData();
-    renderAdmin();
-    renderProduk();
-}
+function countBombs(x,y){
 
-function renderDashboard(){
-    let hariIni=new Date().toLocaleDateString();
-    let total=0;
-    let jumlah=0;
-    transaksi.forEach(t=>{
-        if(t.tanggal==hariIni){
-            total+=t.total;
-            jumlah++;
+    let total=0
+
+    for(let i=-1;i<=1;i++){
+        for(let j=-1;j<=1;j++){
+
+            let nx=x+i
+            let ny=y+j
+
+            if(nx>=0 && ny>=0 && nx<size && ny<size){
+                if(board[nx][ny].bomb) total++
+            }
         }
-    });
-    dashData.innerHTML=`
-    Total Hari Ini: Rp ${total}<br>
-    Jumlah Transaksi: ${jumlah}
-    `;
+    }
+
+    return total
 }
 
-function renderLaporan(){
-    let hariIni=new Date().toLocaleDateString();
-    let total=0;
-    transaksi.forEach(t=>{
-        if(t.tanggal==hariIni) total+=t.total;
-    });
-    laporanData.innerHTML=`Omzet Hari Ini: Rp ${total}`;
+function openAround(x,y){
+
+    for(let i=-1;i<=1;i++){
+        for(let j=-1;j<=1;j++){
+
+            let nx=x+i
+            let ny=y+j
+
+            if(nx>=0 && ny>=0 && nx<size && ny<size){
+
+                if(!board[nx][ny].open){
+                    board[nx][ny].element.click()
+                }
+
+            }
+        }
+    }
 }
 
-function render(){
-    renderProduk();
-    renderCart();
-    renderDashboard();
-    renderLaporan();
+function flagCell(e){
+
+    e.preventDefault()
+
+    if(gameOver) return
+
+    let x=parseInt(this.dataset.x)
+    let y=parseInt(this.dataset.y)
+
+    let cell=board[x][y]
+
+    if(cell.open) return
+
+    cell.flag=!cell.flag
+    this.innerHTML=cell.flag ? "🚩" : ""
 }
 
-render();
+function endGame(win){
+
+    gameOver=true
+
+    bombs.forEach(b=>{
+        let cell=board[b[0]][b[1]]
+        cell.element.innerHTML="💣"
+        cell.element.classList.add("bomb")
+    })
+
+    setTimeout(()=>{
+        alert(win ? "Kamu Menang!" : "Game Over")
+    },200)
+}
+
+function checkWin(){
+
+    let opened=0
+
+    for(let i=0;i<size;i++){
+        for(let j=0;j<size;j++){
+            if(board[i][j].open) opened++
+        }
+    }
+
+    if(opened === size*size - bombsCount){
+        endGame(true)
+    }
+}
+
+startGame()
+
 </script>
 
 </body>
