@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1e3a8a">
+
 <style>
 body{
 font-family:'Segoe UI',Arial;
@@ -28,6 +29,23 @@ box-shadow:0 8px 20px rgba(0,0,0,0.2);
 h2{
 text-align:center;
 color:#1e3a8a;
+}
+
+/* TAB */
+.tab-btn{
+flex:1;
+padding:10px;
+border:none;
+color:white;
+cursor:pointer;
+}
+
+.active{
+background:#1e3a8a;
+}
+
+.nonactive{
+background:#94a3b8;
 }
 
 .laporan-card{
@@ -77,7 +95,18 @@ margin-top:8px;
 
 <h2>Laporan Jajan</h2>
 
-<div id="listLaporan">Loading...</div>
+<div style="display:flex;margin-bottom:10px;">
+  <button id="btnLaporan" class="tab-btn active" onclick="showTab('laporan')">Laporan</button>
+  <button id="btnRekap" class="tab-btn nonactive" onclick="showTab('rekap')">Rekap</button>
+</div>
+
+<div id="tabLaporan">
+  <div id="listLaporan">Loading...</div>
+</div>
+
+<div id="tabRekap" style="display:none;">
+  <div id="rekapHarian">Loading...</div>
+</div>
 
 </div>
 </div>
@@ -86,6 +115,30 @@ margin-top:8px;
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <script>
+// TAB
+function showTab(tab){
+  const laporan = document.getElementById("tabLaporan");
+  const rekap = document.getElementById("tabRekap");
+
+  const btnLaporan = document.getElementById("btnLaporan");
+  const btnRekap = document.getElementById("btnRekap");
+
+  if(tab==="laporan"){
+    laporan.style.display="block";
+    rekap.style.display="none";
+
+    btnLaporan.className="tab-btn active";
+    btnRekap.className="tab-btn nonactive";
+  }else{
+    laporan.style.display="none";
+    rekap.style.display="block";
+
+    btnLaporan.className="tab-btn nonactive";
+    btnRekap.className="tab-btn active";
+  }
+}
+
+// FIREBASE
 const firebaseConfig={
 apiKey:"AIzaSyAIEhd42LiAEu7CzsnTXubQdxH1dzu1nyQ",
 authDomain:"cilok-86ced.firebaseapp.com",
@@ -155,10 +208,90 @@ list.appendChild(div);
 });
 
 });
-
 }
 
+// REKAP
+function loadRekap(){
+
+let container=document.getElementById("rekapHarian");
+container.innerHTML="Loading...";
+
+db.ref("jajan").once("value",snap=>{
+
+if(!snap.val()){
+container.innerHTML="Belum ada data";
+return;
+}
+
+let data=Object.values(snap.val());
+let grup={};
+
+data.forEach(d=>{
+
+if(!d.waktu) return;
+
+let tgl = new Date(d.waktu).toLocaleDateString("id-ID");
+
+if(!grup[tgl]){
+grup[tgl]={
+masukIkhwan:0,
+masukAkhwat:0,
+sisaIkhwan:0,
+sisaAkhwat:0
+};
+}
+
+if(d.jenis==="Masuk Ikhwan") grup[tgl].masukIkhwan += totalItem(d);
+if(d.jenis==="Masuk Akhwat") grup[tgl].masukAkhwat += totalItem(d);
+if(d.jenis==="Sisa Ikhwan") grup[tgl].sisaIkhwan += totalItem(d);
+if(d.jenis==="Sisa Akhwat") grup[tgl].sisaAkhwat += totalItem(d);
+
+});
+
+container.innerHTML="";
+
+Object.keys(grup).reverse().forEach(tgl=>{
+
+let g = grup[tgl];
+
+let terjual = (g.masukIkhwan + g.masukAkhwat) - (g.sisaIkhwan + g.sisaAkhwat);
+if(terjual < 0) terjual = 0;
+
+let uang = terjual * 4500;
+
+let div=document.createElement("div");
+div.className="laporan-card";
+
+div.innerHTML=`
+<div class="laporan-header">${tgl}</div>
+
+<div class="laporan-items">
+Masuk Ikhwan: ${g.masukIkhwan}<br>
+Masuk Akhwat: ${g.masukAkhwat}<br>
+Sisa Ikhwan: ${g.sisaIkhwan}<br>
+Sisa Akhwat: ${g.sisaAkhwat}<br><br>
+
+<b>Terjual: ${terjual}</b><br>
+<b>Total: Rp ${uang.toLocaleString("id-ID")}</b>
+</div>
+`;
+
+container.appendChild(div);
+
+});
+
+});
+}
+
+// HITUNG ITEM
+function totalItem(d){
+return (d.items || []).reduce((sum,i)=> sum + Number(i.jumlah || 0),0);
+}
+
+// LOAD AWAL
 loadLaporan();
+loadRekap();
+
 </script>
 
 </body>
