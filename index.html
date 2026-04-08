@@ -241,10 +241,26 @@ sisaAkhwat:0
 };
 }
 
-if(d.jenis==="Masuk Ikhwan") grup[tgl].masukIkhwan += totalItem(d);
-if(d.jenis==="Masuk Akhwat") grup[tgl].masukAkhwat += totalItem(d);
-if(d.jenis==="Sisa Ikhwan") grup[tgl].sisaIkhwan += totalItem(d);
-if(d.jenis==="Sisa Akhwat") grup[tgl].sisaAkhwat += totalItem(d);
+let jenis = (d.jenis || "").toLowerCase();
+let tempat = (d.tempat || "").toLowerCase();
+
+// MASUK
+if(jenis.includes("masuk") && tempat.includes("ikhwan")){
+  grup[tgl].masukIkhwan += totalItem(d);
+}
+
+if(jenis.includes("masuk") && tempat.includes("akhwat")){
+  grup[tgl].masukAkhwat += totalItem(d);
+}
+
+// SISA
+if(jenis.includes("sisa") && tempat.includes("ikhwan")){
+  grup[tgl].sisaIkhwan += totalItem(d);
+}
+
+if(jenis.includes("sisa") && tempat.includes("akhwat")){
+  grup[tgl].sisaAkhwat += totalItem(d);
+}
 
 });
 
