@@ -145,7 +145,7 @@ appId:"1:1038629771281:web:45d56ba73acaf6613a79b0"
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 
-// FORMAT DETAIL (laporan)
+// FORMAT DETAIL
 function formatTanggal(waktu){
 let date = new Date(waktu);
 
@@ -156,7 +156,7 @@ let jam = date.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
 return `${hari}, ${tanggal} - ${jam}`;
 }
 
-// FORMAT HARI (rekap)
+// FORMAT HARI
 function formatTanggalHari(waktu){
 let date = new Date(waktu);
 
@@ -213,7 +213,12 @@ list.appendChild(div);
 });
 }
 
-// REKAP HARIAN (FIX SESUAI DATA KAMU)
+// HITUNG ITEM
+function totalItem(d){
+return (d.items || []).reduce((sum,i)=> sum + Number(i.jumlah || 0),0);
+}
+
+// LOAD REKAP (SUDAH FIX WIB)
 function loadRekap(){
 
 let container=document.getElementById("rekapHarian");
@@ -233,8 +238,17 @@ data.forEach(d=>{
 
 if(!d.waktu) return;
 
-let key = new Date(d.waktu).toISOString().split("T")[0];
-let label = formatTanggalHari(d.waktu);
+let dateObj = new Date(d.waktu);
+if(isNaN(dateObj)) return;
+
+// ✅ FIX WIB (INI KUNCI UTAMA)
+let key = dateObj.toLocaleDateString("id-ID", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit"
+});
+
+let label = formatTanggalHari(dateObj);
 
 if(!grup[key]){
 grup[key]={
@@ -270,8 +284,8 @@ if(jenis.includes("sisa") && tempat.includes("akhwat")){
 
 container.innerHTML="";
 
-// TAMPILKAN
-Object.keys(grup).sort().reverse().forEach(key=>{
+// SORT TERBARU
+Object.keys(grup).sort((a,b)=> new Date(b) - new Date(a)).forEach(key=>{
 
 let g = grup[key];
 
@@ -302,11 +316,6 @@ container.appendChild(div);
 });
 
 });
-}
-
-// HITUNG ITEM
-function totalItem(d){
-return (d.items || []).reduce((sum,i)=> sum + Number(i.jumlah || 0),0);
 }
 
 // LOAD
