@@ -40,13 +40,8 @@ color:white;
 cursor:pointer;
 }
 
-.active{
-background:#1e3a8a;
-}
-
-.nonactive{
-background:#94a3b8;
-}
+.active{ background:#1e3a8a; }
+.nonactive{ background:#94a3b8; }
 
 .laporan-card{
 background:white;
@@ -126,13 +121,11 @@ function showTab(tab){
   if(tab==="laporan"){
     laporan.style.display="block";
     rekap.style.display="none";
-
     btnLaporan.className="tab-btn active";
     btnRekap.className="tab-btn nonactive";
   }else{
     laporan.style.display="none";
     rekap.style.display="block";
-
     btnLaporan.className="tab-btn nonactive";
     btnRekap.className="tab-btn active";
   }
@@ -152,7 +145,7 @@ appId:"1:1038629771281:web:45d56ba73acaf6613a79b0"
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 
-// FORMAT TANGGAL
+// FORMAT DETAIL (laporan)
 function formatTanggal(waktu){
 let date = new Date(waktu);
 
@@ -161,6 +154,16 @@ let tanggal = date.toLocaleDateString("id-ID",{day:"numeric", month:"long", year
 let jam = date.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
 
 return `${hari}, ${tanggal} - ${jam}`;
+}
+
+// FORMAT HARI (rekap)
+function formatTanggalHari(waktu){
+let date = new Date(waktu);
+
+let hari = date.toLocaleDateString("id-ID",{weekday:"long"});
+let tanggal = date.toLocaleDateString("id-ID",{day:"numeric", month:"long", year:"numeric"});
+
+return `${hari}, ${tanggal}`;
 }
 
 // LOAD LAPORAN
@@ -210,7 +213,7 @@ list.appendChild(div);
 });
 }
 
-// REKAP
+// REKAP HARIAN (FIX SESUAI DATA KAMU)
 function loadRekap(){
 
 let container=document.getElementById("rekapHarian");
@@ -230,10 +233,12 @@ data.forEach(d=>{
 
 if(!d.waktu) return;
 
-let tgl = new Date(d.waktu).toLocaleDateString("id-ID");
+let key = new Date(d.waktu).toISOString().split("T")[0];
+let label = formatTanggalHari(d.waktu);
 
-if(!grup[tgl]){
-grup[tgl]={
+if(!grup[key]){
+grup[key]={
+label: label,
 masukIkhwan:0,
 masukAkhwat:0,
 sisaIkhwan:0,
@@ -243,32 +248,32 @@ sisaAkhwat:0
 
 let jenis = (d.jenis || "").toLowerCase();
 let tempat = (d.tempat || "").toLowerCase();
+let total = totalItem(d);
 
 // MASUK
 if(jenis.includes("masuk") && tempat.includes("ikhwan")){
-  grup[tgl].masukIkhwan += totalItem(d);
+  grup[key].masukIkhwan += total;
 }
-
 if(jenis.includes("masuk") && tempat.includes("akhwat")){
-  grup[tgl].masukAkhwat += totalItem(d);
+  grup[key].masukAkhwat += total;
 }
 
 // SISA
 if(jenis.includes("sisa") && tempat.includes("ikhwan")){
-  grup[tgl].sisaIkhwan += totalItem(d);
+  grup[key].sisaIkhwan += total;
 }
-
 if(jenis.includes("sisa") && tempat.includes("akhwat")){
-  grup[tgl].sisaAkhwat += totalItem(d);
+  grup[key].sisaAkhwat += total;
 }
 
 });
 
 container.innerHTML="";
 
-Object.keys(grup).reverse().forEach(tgl=>{
+// TAMPILKAN
+Object.keys(grup).sort().reverse().forEach(key=>{
 
-let g = grup[tgl];
+let g = grup[key];
 
 let terjual = (g.masukIkhwan + g.masukAkhwat) - (g.sisaIkhwan + g.sisaAkhwat);
 if(terjual < 0) terjual = 0;
@@ -279,7 +284,7 @@ let div=document.createElement("div");
 div.className="laporan-card";
 
 div.innerHTML=`
-<div class="laporan-header">${tgl}</div>
+<div class="laporan-header">${g.label}</div>
 
 <div class="laporan-items">
 Masuk Ikhwan: ${g.masukIkhwan}<br>
@@ -304,7 +309,7 @@ function totalItem(d){
 return (d.items || []).reduce((sum,i)=> sum + Number(i.jumlah || 0),0);
 }
 
-// LOAD AWAL
+// LOAD
 loadLaporan();
 loadRekap();
 
