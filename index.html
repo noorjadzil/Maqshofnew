@@ -10,75 +10,137 @@
 body{
 font-family:'Segoe UI',Arial;
 margin:0;
-background:linear-gradient(135deg,#0f172a,#1e3a8a);
+background:linear-gradient(135deg,#0f172a,#1e40af,#3b82f6);
+min-height:100vh;
 }
 
+/* CONTAINER */
 .container{
 max-width:420px;
 margin:auto;
-padding:10px;
+padding:12px;
 }
 
+/* CARD UTAMA */
 .card{
-background:white;
-border-radius:16px;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(15px);
+border-radius:20px;
 padding:15px;
-box-shadow:0 8px 20px rgba(0,0,0,0.2);
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+border:1px solid rgba(255,255,255,0.2);
 }
 
+/* JUDUL */
 h2{
 text-align:center;
-color:#1e3a8a;
+color:white;
+margin-bottom:12px;
 }
 
-/* TAB */
+/* TAB MODERN */
+.tab-wrap{
+display:flex;
+background:rgba(255,255,255,0.2);
+border-radius:12px;
+padding:4px;
+margin-bottom:10px;
+}
+
 .tab-btn{
 flex:1;
 padding:10px;
 border:none;
+border-radius:10px;
 color:white;
 cursor:pointer;
+transition:0.3s;
 }
 
-.active{ background:#1e3a8a; }
-.nonactive{ background:#94a3b8; }
+.active{
+background:white;
+color:#1e3a8a;
+font-weight:700;
+}
 
+.nonactive{
+background:transparent;
+}
+
+/* CARD DATA */
 .laporan-card{
 background:white;
 margin-top:12px;
-padding:12px;
-border-radius:12px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
+padding:14px;
+border-radius:16px;
+box-shadow:0 6px 16px rgba(0,0,0,0.15);
+animation:fadeUp 0.4s ease;
 }
 
+@keyframes fadeUp{
+from{opacity:0; transform:translateY(15px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+/* HEADER */
 .laporan-header{
-font-size:18px;
+font-size:16px;
 font-weight:700;
 color:#1e3a8a;
 margin-bottom:6px;
 }
 
+/* TANGGAL */
 .laporan-tanggal{
 display:inline-block;
-background:#e0edff;
+background:#dbeafe;
 color:#1e3a8a;
 padding:4px 10px;
 border-radius:8px;
-font-size:14px;
-font-weight:700;
+font-size:13px;
+font-weight:600;
 margin-bottom:8px;
 }
 
+/* ITEM */
 .laporan-items{
 margin-top:6px;
-line-height:1.5;
+line-height:1.6;
 font-weight:600;
+color:#334155;
 }
 
+/* TOTAL */
+.total-box{
+margin-top:10px;
+padding:10px;
+border-radius:10px;
+background:linear-gradient(135deg,#22c55e,#16a34a);
+color:white;
+font-weight:700;
+text-align:center;
+}
+
+/* CATATAN */
+.catatan{
+margin-top:8px;
+font-weight:600;
+color:#dc2626;
+}
+
+/* GAMBAR */
 img{
 width:100%;
-border-radius:10px;
-margin-top:8px;
+border-radius:12px;
+margin-top:10px;
+box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* LOADING */
+.loading{
+text-align:center;
+color:white;
+padding:20px;
 }
 </style>
 </head>
@@ -90,11 +152,10 @@ margin-top:8px;
 
 <h2>Laporan Jajan</h2>
 
-<div style="display:flex;margin-bottom:10px;">
+<div class="tab-wrap">
   <button id="btnLaporan" class="tab-btn active" onclick="showTab('laporan')">Laporan</button>
   <button id="btnRekap" class="tab-btn nonactive" onclick="showTab('rekap')">Rekap</button>
 </div>
-
 <div id="tabLaporan">
   <div id="listLaporan">Loading...</div>
 </div>
@@ -302,6 +363,16 @@ div.innerHTML=`
 <div class="laporan-tanggal">${g.label}</div>
 
 <div class="laporan-items">
+Masuk Ikhwan: ${g.masukIkhwan}<br>
+Masuk Akhwat: ${g.masukAkhwat}<br>
+Sisa Ikhwan: ${g.sisaIkhwan}<br>
+Sisa Akhwat: ${g.sisaAkhwat}<br>
+</div>
+
+<div class="total-box">
+Terjual: ${terjual} <br>
+Total: Rp ${uang.toLocaleString("id-ID")}
+</div>
 Masuk Ikhwan: ${g.masukIkhwan}<br>
 Masuk Akhwat: ${g.masukAkhwat}<br>
 Sisa Ikhwan: ${g.sisaIkhwan}<br>
