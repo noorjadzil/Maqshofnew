@@ -1,149 +1,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Laporan Jajan</title>
+<title>Input Jajan</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1e3a8a">
 
 <style>
 body{
 font-family:'Segoe UI',Arial;
 margin:0;
-background:linear-gradient(135deg,#0f172a,#1e293b,#334155);
-min-height:100vh;
+background:linear-gradient(135deg,#0f172a,#1e3a8a);
 }
 
-/* CONTAINER */
 .container{
 max-width:420px;
 margin:auto;
-padding:12px;
+padding:10px;
 }
 
-/* CARD UTAMA */
 .card{
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(18px);
-border-radius:20px;
+background:white;
+border-radius:16px;
 padding:15px;
-box-shadow:0 8px 25px rgba(0,0,0,0.25);
-border:1px solid rgba(255,255,255,0.1);
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
 }
 
-/* JUDUL */
-h2{
-text-align:center;
-color:#e2e8f0;
-margin-bottom:12px;
-font-weight:600;
-}
-
-/* TAB */
-.tab-wrap{
+.tabs{
 display:flex;
-background:rgba(255,255,255,0.08);
-border-radius:12px;
-padding:4px;
+background:#1e3a8a;
+border-radius:12px 12px 0 0;
+overflow:hidden;
 margin-bottom:10px;
 }
 
 .tab-btn{
 flex:1;
-padding:10px;
+padding:12px;
 border:none;
-border-radius:10px;
-color:#cbd5f5;
-cursor:pointer;
-transition:0.25s;
-font-weight:500;
-}
-
-.active{
-background:#e2e8f0;
-color:#1e293b;
+background:transparent;
+color:white;
 font-weight:700;
 }
 
-.nonactive{
-background:transparent;
+.tab-btn.active{
+background:#3b82f6;
 }
 
-/* CARD DATA */
-.laporan-card{
-background:#f8fafc;
-margin-top:12px;
-padding:14px;
-border-radius:14px;
-box-shadow:0 4px 12px rgba(0,0,0,0.1);
-animation:fadeUp 0.4s ease;
+h2{
+text-align:center;
+color:#1e3a8a;
 }
 
-@keyframes fadeUp{
-from{opacity:0; transform:translateY(10px);}
-to{opacity:1; transform:translateY(0);}
+label{
+font-weight:700;
+font-size:13px;
+margin-top:8px;
+display:block;
 }
 
-/* HEADER */
-.laporan-header{
-font-size:15px;
-font-weight:600;
-color:#1e293b;
-margin-bottom:6px;
-}
-
-/* TANGGAL */
-.laporan-tanggal{
-display:inline-block;
-background:#e2e8f0;
-color:#334155;
-padding:4px 10px;
-border-radius:8px;
-font-size:12px;
-font-weight:600;
-margin-bottom:8px;
-}
-
-/* ITEM */
-.laporan-items{
-margin-top:6px;
-line-height:1.6;
-font-weight:500;
-color:#475569;
-}
-
-/* TOTAL */
-.total-box{
-margin-top:10px;
+select,input[type="number"]{
+width:100%;
 padding:10px;
 border-radius:10px;
-background:linear-gradient(135deg,#16a34a,#22c55e);
-color:white;
+border:1px solid #cbd5f5;
+margin-bottom:10px;
 font-weight:600;
+}
+
+input[type="number"]{
 text-align:center;
-font-size:14px;
+font-size:16px;
 }
 
-/* CATATAN */
-.catatan{
-margin-top:8px;
-font-weight:500;
-color:#dc2626;
+.row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid #eee;
+padding:8px 0;
 }
 
-/* GAMBAR */
+.row input{
+width:80px;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:#1e3a8a;
+color:white;
+font-weight:700;
+margin-top:15px;
+}
+
 img{
 width:100%;
 border-radius:10px;
-margin-top:10px;
-box-shadow:0 3px 10px rgba(0,0,0,0.15);
+margin-top:8px;
 }
 
-/* LOADING */
-.loading{
-text-align:center;
-color:#cbd5e1;
-padding:20px;
+#catatan{
+width:100%;
+padding:12px;
+margin-top:6px;
+border-radius:10px;
+border:1px solid #cbd5f5;
+font-size:15px;
+font-weight:600;
+box-sizing:border-box;
+resize:none;
 }
 </style>
 </head>
@@ -151,244 +118,214 @@ padding:20px;
 <body>
 
 <div class="container">
+
+<div class="tabs">
+<button class="tab-btn active" onclick="showTab('input',event)">Input</button>
+
+</div>
+
 <div class="card">
 
-<h2>Laporan Jajan</h2>
+<div id="inputTab">
 
-<div class="tab-wrap">
-  <button id="btnLaporan" class="tab-btn active" onclick="showTab('laporan')">Laporan</button>
-  <button id="btnRekap" class="tab-btn nonactive" onclick="showTab('rekap')">Rekap</button>
-</div>
-<div id="tabLaporan">
-  <div id="listLaporan">Loading...</div>
+<h2>Input Jajan</h2>
+
+<label>Foto</label>
+<input type="file" id="foto" accept="image/*">
+<img id="preview" style="display:none">
+
+<label>Jenis</label>
+<select id="jenis">
+<option value="Masuk">Jajan Masuk</option>
+<option value="Sisa">Jajan Sisa</option>
+</select>
+
+<label>Tempat</label>
+<select id="tempat">
+<option>Ikhwan</option>
+<option>Akhwat</option>
+</select>
+
+<!-- 🔥 ITEM DARI SETTING -->
+<div id="dynamicItems"></div>
+
+<!-- SLOT -->
+<div class="row">
+<select id="slot1"><option value="">-- Pilih --</option></select>
+<input type="number" id="slot1_jumlah">
 </div>
 
-<div id="tabRekap" style="display:none;">
-  <div id="rekapHarian">Loading...</div>
+<div class="row">
+<select id="slot2"><option value="">-- Pilih --</option></select>
+<input type="number" id="slot2_jumlah">
 </div>
+
+<label>Catatan</label>
+<textarea id="catatan"></textarea>
+
+<button onclick="kirim()">Simpan</button>
+<button onclick="location.href='laporan.html'">📊 Lihat Laporan</button>
+<button onclick="location.href='setting.html'">⚙️ Setting</button>
+
+</div>
+
 
 </div>
 </div>
+
+<script>
+
+function showTab(tab,e){
+document.getElementById("inputTab").style.display = "block";
+document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+e.target.classList.add("active");
+}
+
+// 🔥 LOAD ITEM
+function loadItems(){
+let container=document.getElementById("dynamicItems");
+container.innerHTML="";
+
+db.ref("items").once("value",snap=>{
+snap.forEach(c=>{
+let nama=c.val();
+
+let div=document.createElement("div");
+div.className="row";
+
+div.innerHTML=`
+<span>${nama}</span>
+<input type="number" data-nama="${nama}">
+`;
+
+container.appendChild(div);
+});
+});
+}
+
+// 🔥 DROPDOWN
+function loadDropdownItems(){
+let slot1=document.getElementById("slot1");
+let slot2=document.getElementById("slot2");
+
+slot1.innerHTML='<option value="">-- Pilih --</option>';
+slot2.innerHTML='<option value="">-- Pilih --</option>';
+
+db.ref("items").once("value",snap=>{
+snap.forEach(c=>{
+let nama=c.val();
+
+let opt1=document.createElement("option");
+opt1.value=nama;
+opt1.textContent=nama;
+
+let opt2=opt1.cloneNode(true);
+
+slot1.appendChild(opt1);
+slot2.appendChild(opt2);
+});
+});
+}
+
+// 🔥 SIMPAN
+async function kirim(){
+
+let items=[];
+
+// item utama
+document.querySelectorAll("#dynamicItems input").forEach(input=>{
+let val=input.value;
+if(val && val!=0){
+items.push({
+barang:input.dataset.nama,
+jumlah:val
+});
+}
+});
+
+// slot
+function tambahSlot(idBarang,idJumlah){
+let barang=document.getElementById(idBarang).value;
+let jumlah=document.getElementById(idJumlah).value;
+
+if(barang && jumlah && jumlah!=0){
+items.push({barang:barang,jumlah:jumlah});
+}
+}
+
+tambahSlot("slot1","slot1_jumlah");
+tambahSlot("slot2","slot2_jumlah");
+
+// foto
+let fotoBase64="";
+let f=document.getElementById("foto").files[0];
+if(f){
+fotoBase64=await kompresGambar(f);
+}
+
+let data={
+waktu:new Date().toISOString(),
+tempat:document.getElementById("tempat").value,
+jenis:document.getElementById("jenis").value,
+items:items,
+catatan:document.getElementById("catatan").value,
+foto:fotoBase64
+};
+
+await db.ref("jajan").push(data);
+alert("Berhasil");
+location.reload();
+}
+
+// 🔥 KOMPRES FOTO
+function kompresGambar(file){
+return new Promise(resolve=>{
+let reader=new FileReader();
+reader.onload=e=>{
+let img=new Image();
+img.src=e.target.result;
+img.onload=()=>{
+let canvas=document.createElement("canvas");
+let scale=400/img.width;
+canvas.width=400;
+canvas.height=img.height*scale;
+let ctx=canvas.getContext("2d");
+ctx.drawImage(img,0,0,canvas.width,canvas.height);
+resolve(canvas.toDataURL("image/jpeg",0.5));
+};
+};
+reader.readAsDataURL(file);
+});
+}
+
+</script>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <script>
-// TAB
-function showTab(tab){
-  const laporan = document.getElementById("tabLaporan");
-  const rekap = document.getElementById("tabRekap");
-
-  const btnLaporan = document.getElementById("btnLaporan");
-  const btnRekap = document.getElementById("btnRekap");
-
-  if(tab==="laporan"){
-    laporan.style.display="block";
-    rekap.style.display="none";
-    btnLaporan.className="tab-btn active";
-    btnRekap.className="tab-btn nonactive";
-  }else{
-    laporan.style.display="none";
-    rekap.style.display="block";
-    btnLaporan.className="tab-btn nonactive";
-    btnRekap.className="tab-btn active";
-  }
-}
-
-// FIREBASE
-const firebaseConfig={
-apiKey:"AIzaSyAIEhd42LiAEu7CzsnTXubQdxH1dzu1nyQ",
-authDomain:"cilok-86ced.firebaseapp.com",
-databaseURL:"https://cilok-86ced-default-rtdb.asia-southeast1.firebasedatabase.app",
-projectId:"cilok-86ced",
-storageBucket:"cilok-86ced.firebasestorage.app",
-messagingSenderId:"1038629771281",
-appId:"1:1038629771281:web:45d56ba73acaf6613a79b0"
-};
-
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp({
+databaseURL:"https://maqshof-d5772-default-rtdb.asia-southeast1.firebasedatabase.app"
+});
 const db=firebase.database();
 
-// FORMAT DETAIL
-function formatTanggal(waktu){
-let date = new Date(waktu);
+window.onload=function(){
+loadItems();
+loadDropdownItems();
+}
+db.ref("config").once("value",snap=>{
+let c=snap.val();
+if(!c) return;
 
-let hari = date.toLocaleDateString("id-ID",{weekday:"long"});
-let tanggal = date.toLocaleDateString("id-ID",{day:"numeric", month:"long", year:"numeric"});
-let jam = date.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
-
-return `${hari}, ${tanggal} - ${jam}`;
+if(c.label){
+document.querySelector("h2").innerText="Input "+c.label;
 }
 
-// FORMAT HARI
-function formatTanggalHari(waktu){
-let date = new Date(waktu);
-
-let hari = date.toLocaleDateString("id-ID",{weekday:"long"});
-let tanggal = date.toLocaleDateString("id-ID",{day:"numeric", month:"long", year:"numeric"});
-
-return `${hari}, ${tanggal}`;
+if(c.theme){
+document.body.style.background=
+`linear-gradient(135deg,${c.theme.bg},${c.theme.primary})`;
 }
-
-// LOAD LAPORAN
-function loadLaporan(){
-
-let list=document.getElementById("listLaporan");
-list.innerHTML="Loading...";
-
-db.ref("jajan").limitToLast(50).once("value",snap=>{
-
-list.innerHTML="";
-
-if(!snap.val()){
-list.innerHTML="Belum ada data";
-return;
-}
-
-let arr=Object.values(snap.val()).reverse();
-
-arr.forEach(d=>{
-
-let items = (d.items || [])
-.map(i=>`• ${i.barang} (${i.jumlah})`)
-.join("<br>");
-
-let div=document.createElement("div");
-div.className="laporan-card";
-
-div.innerHTML=`
-<div class="laporan-header">${d.jenis} - ${d.tempat}</div>
-<div class="laporan-tanggal">${formatTanggal(d.waktu)}</div>
-<div class="laporan-items">${items}</div>
-
-${d.catatan ? `
-<div style="margin-top:8px;font-weight:700;color:#dc2626">
-Catatan: ${d.catatan}
-</div>
-` : ""}
-
-${d.foto ? `<img src="${d.foto}">` : ""}
-`;
-
-list.appendChild(div);
-
 });
-
-});
-}
-
-// HITUNG ITEM
-function totalItem(d){
-return (d.items || []).reduce((sum,i)=> sum + Number(i.jumlah || 0),0);
-}
-
-// LOAD REKAP (SUDAH FIX WIB)
-function loadRekap(){
-
-let container=document.getElementById("rekapHarian");
-container.innerHTML="Loading...";
-
-db.ref("jajan").once("value",snap=>{
-
-if(!snap.val()){
-container.innerHTML="Belum ada data";
-return;
-}
-
-let data=Object.values(snap.val());
-let grup={};
-
-data.forEach(d=>{
-
-if(!d.waktu) return;
-
-let dateObj = new Date(d.waktu);
-if(isNaN(dateObj)) return;
-
-// ✅ FIX WIB (INI KUNCI UTAMA)
-let key = dateObj.toLocaleDateString("id-ID", {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit"
-});
-
-let label = formatTanggalHari(dateObj);
-
-if(!grup[key]){
-grup[key]={
-label: label,
-masukIkhwan:0,
-masukAkhwat:0,
-sisaIkhwan:0,
-sisaAkhwat:0
-};
-}
-
-let jenis = (d.jenis || "").toLowerCase();
-let tempat = (d.tempat || "").toLowerCase();
-let total = totalItem(d);
-
-// MASUK
-if(jenis.includes("masuk") && tempat.includes("ikhwan")){
-  grup[key].masukIkhwan += total;
-}
-if(jenis.includes("masuk") && tempat.includes("akhwat")){
-  grup[key].masukAkhwat += total;
-}
-
-// SISA
-if(jenis.includes("sisa") && tempat.includes("ikhwan")){
-  grup[key].sisaIkhwan += total;
-}
-if(jenis.includes("sisa") && tempat.includes("akhwat")){
-  grup[key].sisaAkhwat += total;
-}
-
-});
-
-container.innerHTML="";
-
-// SORT TERBARU
-Object.keys(grup).sort((a,b)=> new Date(b) - new Date(a)).forEach(key=>{
-
-let g = grup[key];
-
-let terjual = (g.masukIkhwan + g.masukAkhwat) - (g.sisaIkhwan + g.sisaAkhwat);
-if(terjual < 0) terjual = 0;
-
-let uang = terjual * 4500;
-
-let div=document.createElement("div");
-div.className="laporan-card";
-
-div.innerHTML=`
-<div class="laporan-header">Rekap</div>
-<div class="laporan-tanggal">${g.label}</div>
-
-<div class="laporan-items">
-Masuk Ikhwan: ${g.masukIkhwan}<br>
-Masuk Akhwat: ${g.masukAkhwat}<br>
-Sisa Ikhwan: ${g.sisaIkhwan}<br>
-Sisa Akhwat: ${g.sisaAkhwat}<br>
-</div>
-
-<div class="total-box">
-Terjual: ${terjual} <br>
-Total: Rp ${uang.toLocaleString("id-ID")}
-</div>
-`;
-
-container.appendChild(div);
-
-});
-
-});
-}
-
-// LOAD
-loadLaporan();
-loadRekap();
-
 </script>
 
 </body>
