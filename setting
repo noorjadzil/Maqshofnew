@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Setting App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+font-family:'Segoe UI',Arial;
+margin:0;
+background:linear-gradient(135deg,#0f172a,#1e3a8a);
+}
+
+.container{
+max-width:420px;
+margin:auto;
+padding:10px;
+}
+
+.card{
+background:white;
+border-radius:16px;
+padding:15px;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+h2{
+text-align:center;
+color:#1e3a8a;
+margin-bottom:10px;
+}
+
+input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #cbd5f5;
+margin-bottom:10px;
+font-size:15px;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+font-weight:700;
+margin-top:8px;
+cursor:pointer;
+}
+
+.btn-primary{background:#1e3a8a;color:white;}
+.btn-green{background:#10b981;color:white;}
+.btn-gray{background:#64748b;color:white;}
+
+.row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid #eee;
+padding:10px 0;
+}
+
+.row input{
+width:90px;
+text-align:center;
+}
+
+.label-box{
+background:#f1f5f9;
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<h2>⚙️ Setting App</h2>
+
+<!-- 🔥 CUSTOM LABEL -->
+<div class="label-box">
+<b>Custom Label</b>
+<input type="text" id="labelApp" placeholder="Contoh: Kantin / Kas / Inventaris">
+<button class="btn-primary" onclick="saveLabel()">Simpan Label</button>
+</div>
+
+<!-- 🔥 THEME -->
+<div class="label-box">
+<b>Warna Tampilan</b>
+<label>Primary</label>
+<input type="color" id="colorPrimary">
+<label>Background</label>
+<input type="color" id="colorBg">
+<button class="btn-primary" onclick="saveTheme()">Simpan Warna</button>
+</div>
+
+<!-- 🔥 ITEM + HARGA -->
+<div class="label-box">
+<b>Item + Harga</b>
+
+<div style="display:flex;gap:5px;">
+<input type="text" id="namaItem" placeholder="Nama item">
+<input type="number" id="hargaItem" placeholder="Harga">
+<button onclick="tambahItem()" class="btn-primary">+</button>
+</div>
+
+<div id="listItem"></div>
+
+<button class="btn-green" onclick="undo()">↩️ Undo</button>
+</div>
+
+<button class="btn-gray" onclick="kembali()">⬅️ Kembali</button>
+
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+firebase.initializeApp({
+databaseURL:"https://maqshof-d5772-default-rtdb.asia-southeast1.firebasedatabase.app"
+});
+
+const db = firebase.database();
+let lastDeleted=null;
+
+// 🔥 LOAD ITEM + HARGA
+function loadItems(){
+let list=document.getElementById("listItem");
+list.innerHTML="Loading...";
+
+db.ref("items").on("value",snap=>{
+list.innerHTML="";
+
+if(!snap.exists()){
+list.innerHTML="Belum ada item";
+return;
+}
+
+snap.forEach(c=>{
+let key=c.key;
+let data=c.val();
+
+let nama=data.nama || data;
+let harga=data.harga || 0;
+
+let div=document.createElement("div");
+div.className="row";
+
+div.innerHTML=`
+<span>${nama}</span>
+<input type="number" value="${harga}" onchange="updateHarga('${key}',this.value)">
+<button onclick="hapusItem('${key}')">🗑️</button>
+`;
+
+list.appendChild(div);
+});
+});
+}
+
+// 🔥 TAMBAH ITEM + HARGA
+function tambahItem(){
+let nama=document.getElementById("namaItem").value.trim();
+let harga=document.getElementById("hargaItem").value;
+
+if(!nama || !harga){
+alert("Isi nama & harga");
+return;
+}
+
+db.ref("items").push({
+nama:nama,
+harga:Number(harga)
+});
+
+document.getElementById("namaItem").value="";
+document.getElementById("hargaItem").value="";
+}
+
+// 🔥 UPDATE HARGA
+function updateHarga(key,harga){
+db.ref("items/"+key+"/harga").set(Number(harga));
+}
+
+// 🔥 HAPUS
+function hapusItem(key){
+db.ref("items/"+key).once("value").then(snap=>{
+lastDeleted={key:key,value:snap.val()};
+db.ref("items/"+key).remove();
+});
+}
+
+// 🔥 UNDO
+function undo(){
+if(!lastDeleted){
+alert("Tidak ada undo");
+return;
+}
+db.ref("items/"+lastDeleted.key).set(lastDeleted.value);
+lastDeleted=null;
+}
+
+// 🔥 LABEL
+function saveLabel(){
+let val=document.getElementById("labelApp").value;
+db.ref("config/label").set(val);
+alert("Label disimpan");
+}
+
+// 🔥 THEME
+function saveTheme(){
+let primary=document.getElementById("colorPrimary").value;
+let bg=document.getElementById("colorBg").value;
+
+db.ref("config/theme").set({
+primary:primary,
+bg:bg
+});
+
+alert("Warna disimpan");
+}
+
+// 🔥 LOAD CONFIG
+function loadConfig(){
+db.ref("config").once("value",snap=>{
+let data=snap.val() || {};
+
+if(data.label){
+document.getElementById("labelApp").value=data.label;
+}
+
+if(data.theme){
+document.getElementById("colorPrimary").value=data.theme.primary || "#1e3a8a";
+document.getElementById("colorBg").value=data.theme.bg || "#0f172a";
+}
+});
+}
+
+// 🔥 BACK
+function kembali(){
+window.location.href="index.html";
+}
+
+// INIT
+window.onload=function(){
+loadItems();
+loadConfig();
+}
+</script>
+
+</body>
+</html>
