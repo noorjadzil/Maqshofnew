@@ -121,7 +121,6 @@ resize:none;
 
 <div class="tabs">
 <button class="tab-btn active" onclick="showTab('input',event)">Input</button>
-
 </div>
 
 <div class="card">
@@ -146,7 +145,7 @@ resize:none;
 <option>Akhwat</option>
 </select>
 
-<!-- 🔥 ITEM DARI SETTING -->
+<!-- ITEM -->
 <div id="dynamicItems"></div>
 
 <!-- SLOT -->
@@ -168,27 +167,27 @@ resize:none;
 <button onclick="location.href='setting.html'">⚙️ Setting</button>
 
 </div>
-
-
 </div>
 </div>
 
 <script>
 
+// TAB
 function showTab(tab,e){
 document.getElementById("inputTab").style.display = "block";
 document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
 e.target.classList.add("active");
 }
 
-// 🔥 LOAD ITEM
+// LOAD ITEM (FIX OBJECT, TANPA HARGA)
 function loadItems(){
 let container=document.getElementById("dynamicItems");
 container.innerHTML="";
 
 db.ref("items").once("value",snap=>{
 snap.forEach(c=>{
-let nama=c.val();
+let data = c.val();
+let nama = data.nama || data;
 
 let div=document.createElement("div");
 div.className="row";
@@ -203,7 +202,7 @@ container.appendChild(div);
 });
 }
 
-// 🔥 DROPDOWN
+// DROPDOWN (TANPA HARGA)
 function loadDropdownItems(){
 let slot1=document.getElementById("slot1");
 let slot2=document.getElementById("slot2");
@@ -213,7 +212,8 @@ slot2.innerHTML='<option value="">-- Pilih --</option>';
 
 db.ref("items").once("value",snap=>{
 snap.forEach(c=>{
-let nama=c.val();
+let data = c.val();
+let nama = data.nama || data;
 
 let opt1=document.createElement("option");
 opt1.value=nama;
@@ -227,7 +227,7 @@ slot2.appendChild(opt2);
 });
 }
 
-// 🔥 SIMPAN
+// SIMPAN
 async function kirim(){
 
 let items=[];
@@ -238,7 +238,7 @@ let val=input.value;
 if(val && val!=0){
 items.push({
 barang:input.dataset.nama,
-jumlah:val
+jumlah:Number(val)
 });
 }
 });
@@ -249,7 +249,10 @@ let barang=document.getElementById(idBarang).value;
 let jumlah=document.getElementById(idJumlah).value;
 
 if(barang && jumlah && jumlah!=0){
-items.push({barang:barang,jumlah:jumlah});
+items.push({
+barang:barang,
+jumlah:Number(jumlah)
+});
 }
 }
 
@@ -277,7 +280,7 @@ alert("Berhasil");
 location.reload();
 }
 
-// 🔥 KOMPRES FOTO
+// KOMPRES FOTO
 function kompresGambar(file){
 return new Promise(resolve=>{
 let reader=new FileReader();
@@ -313,6 +316,8 @@ window.onload=function(){
 loadItems();
 loadDropdownItems();
 }
+
+// CONFIG
 db.ref("config").once("value",snap=>{
 let c=snap.val();
 if(!c) return;
