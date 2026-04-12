@@ -337,7 +337,7 @@ let c=snap.val();
 if(!c) return;
 
 if(c.label){
-document.querySelector("h2").innerText="Input "+c.label;
+document.querySelector("h2").innerText="Laporan "+c.label;
 }
 
 if(c.theme){
