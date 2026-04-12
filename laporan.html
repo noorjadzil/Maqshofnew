@@ -123,10 +123,12 @@ margin-bottom:10px;
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <script>
+// =================== NAV ===================
 function kembali(){
   window.location.href = "index.html";
 }
-// TAB
+
+// =================== TAB ===================
 function showTab(tab){
   const laporan = document.getElementById("tabLaporan");
   const rekap = document.getElementById("tabRekap");
@@ -147,7 +149,7 @@ function showTab(tab){
   }
 }
 
-// FIREBASE
+// =================== FIREBASE ===================
 const firebaseConfig={
 databaseURL:"https://maqshof-d5772-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
@@ -155,7 +157,7 @@ databaseURL:"https://maqshof-d5772-default-rtdb.asia-southeast1.firebasedatabase
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 
-// FORMAT DETAIL
+// =================== FORMAT ===================
 function formatTanggal(waktu){
 let date = new Date(waktu);
 
@@ -166,7 +168,6 @@ let jam = date.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
 return `${hari}, ${tanggal} - ${jam}`;
 }
 
-// FORMAT HARI
 function formatTanggalHari(waktu){
 let date = new Date(waktu);
 
@@ -176,7 +177,7 @@ let tanggal = date.toLocaleDateString("id-ID",{day:"numeric", month:"long", year
 return `${hari}, ${tanggal}`;
 }
 
-// LOAD LAPORAN
+// =================== LAPORAN ===================
 function loadLaporan(){
 
 let list=document.getElementById("listLaporan");
@@ -223,20 +224,29 @@ list.appendChild(div);
 });
 }
 
-// HITUNG ITEM
-function totalItem(d){
-return (d.items || []).reduce((sum,i)=> sum + Number(i.jumlah || 0),0);
-}
-
-// LOAD REKAP (SUDAH FIX WIB)
+// =================== REKAP (FINAL FIX) ===================
 function loadRekap(){
 
 let container=document.getElementById("rekapHarian");
 container.innerHTML="Loading...";
 
+// ambil harga item
+db.ref("items").once("value",snapItem=>{
+
+let hargaMap = {};
+
+if(snapItem.exists()){
+snapItem.forEach(c=>{
+let d = c.val();
+let nama = (d.nama || "").toLowerCase().trim();
+hargaMap[nama] = Number(d.harga || 0);
+});
+}
+
+// ambil data jajan
 db.ref("jajan").once("value",snap=>{
 
-if(!snap.val()){
+if(!snap.exists()){
 container.innerHTML="Belum ada data";
 return;
 }
@@ -251,7 +261,6 @@ if(!d.waktu) return;
 let dateObj = new Date(d.waktu);
 if(isNaN(dateObj)) return;
 
-// ✅ FIX WIB (INI KUNCI UTAMA)
 let key = dateObj.toLocaleDateString("id-ID", {
   year: "numeric",
   month: "2-digit",
@@ -266,43 +275,58 @@ label: label,
 masukIkhwan:0,
 masukAkhwat:0,
 sisaIkhwan:0,
-sisaAkhwat:0
+sisaAkhwat:0,
+totalUang:0
 };
 }
 
 let jenis = (d.jenis || "").toLowerCase();
 let tempat = (d.tempat || "").toLowerCase();
-let total = totalItem(d);
 
-// MASUK
+// loop item
+(d.items || []).forEach(i=>{
+
+let nama = (i.barang || "").toLowerCase().trim();
+let jumlah = Number(i.jumlah || 0);
+let harga = hargaMap[nama] || 0;
+
+let subtotal = jumlah * harga;
+
+// masuk
 if(jenis.includes("masuk") && tempat.includes("ikhwan")){
-  grup[key].masukIkhwan += total;
-}
-if(jenis.includes("masuk") && tempat.includes("akhwat")){
-  grup[key].masukAkhwat += total;
+  grup[key].masukIkhwan += jumlah;
+  grup[key].totalUang += subtotal;
 }
 
-// SISA
-if(jenis.includes("sisa") && tempat.includes("ikhwan")){
-  grup[key].sisaIkhwan += total;
+if(jenis.includes("masuk") && tempat.includes("akhwat")){
+  grup[key].masukAkhwat += jumlah;
+  grup[key].totalUang += subtotal;
 }
+
+// sisa
+if(jenis.includes("sisa") && tempat.includes("ikhwan")){
+  grup[key].sisaIkhwan += jumlah;
+}
+
 if(jenis.includes("sisa") && tempat.includes("akhwat")){
-  grup[key].sisaAkhwat += total;
+  grup[key].sisaAkhwat += jumlah;
 }
 
 });
 
+});
+
+// render
 container.innerHTML="";
 
-// SORT TERBARU
-Object.keys(grup).sort((a,b)=> new Date(b) - new Date(a)).forEach(key=>{
+Object.keys(grup)
+.sort((a,b)=> new Date(b) - new Date(a))
+.forEach(key=>{
 
 let g = grup[key];
 
 let terjual = (g.masukIkhwan + g.masukAkhwat) - (g.sisaIkhwan + g.sisaAkhwat);
 if(terjual < 0) terjual = 0;
-
-let uang = terjual * 4500;
 
 let div=document.createElement("div");
 div.className="laporan-card";
@@ -318,7 +342,7 @@ Sisa Ikhwan: ${g.sisaIkhwan}<br>
 Sisa Akhwat: ${g.sisaAkhwat}<br><br>
 
 <b>Terjual: ${terjual}</b><br>
-<b>Total: Rp ${uang.toLocaleString("id-ID")}</b>
+<b>Total: Rp ${g.totalUang.toLocaleString("id-ID")}</b>
 </div>
 `;
 
@@ -327,11 +351,14 @@ container.appendChild(div);
 });
 
 });
+
+});
 }
 
-// LOAD
+// =================== INIT ===================
 loadLaporan();
 loadRekap();
+
 db.ref("config").once("value",snap=>{
 let c=snap.val();
 if(!c) return;
