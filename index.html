@@ -1,88 +1,39 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game Bahasa Arab - Bab 1</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #1e3a8a, #0f172a);
-  color: white;
-  text-align: center;
-  padding: 20px;
-}
-.card {
-  background: white;
-  color: black;
-  border-radius: 12px;
-  padding: 20px;
-  max-width: 400px;
-  margin: auto;
-}
-button {
-  padding: 10px 20px;
-  margin: 10px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-.correct { background: green; color: white; }
-.wrong { background: red; color: white; }
-</style>
+  <title>Belajar Arab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body>
+<body style="font-family:Arial;text-align:center;">
 
-<h1>Bab 1: Pengenalan Kata (Pesantren)</h1>
-<p>Pilih arti yang benar</p>
+<h2>Avatar Kamu</h2>
 
-<div class="card">
-  <h2 id="arab">مَسْجِدٌ</h2>
-  <div id="options"></div>
-</div>
+<img id="avatar" width="120">
 
-<script>
-const data = [
-  {arab: "مَسْجِدٌ", correct: "Masjid", options: ["Masjid", "Kamar", "Buku"]},
-  {arab: "غُرْفَةٌ", correct: "Kamar", options: ["Masjid", "Kamar", "Dapur"]},
-  {arab: "كِتَابٌ", correct: "Buku", options: ["Pena", "Buku", "Meja"]},
-  {arab: "مُدَرِّسٌ", correct: "Guru", options: ["Santri", "Guru", "Penjaga"]},
-  {arab: "طَالِبٌ", correct: "Santri", options: ["Guru", "Santri", "Tamu"]}
-];
+<br><br>
 
-let index = 0;
+<a href="setting.html">Ganti Avatar</a>
 
-function loadQuestion() {
-  const q = data[index];
-  document.getElementById("arab").innerText = q.arab;
-  const optionsDiv = document.getElementById("options");
-  optionsDiv.innerHTML = "";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
 
-  q.options.forEach(opt => {
-    const btn = document.createElement("button");
-    btn.innerText = opt;
-    btn.onclick = () => checkAnswer(opt);
-    optionsDiv.appendChild(btn);
-  });
-}
+const firebaseConfig = {
+  apiKey: "ISI_APIKEY_KAMU",
+  authDomain: "ISI_AUTHDOMAIN_KAMU",
+  projectId: "ISI_PROJECTID_KAMU",
+  databaseURL: "ISI_DATABASE_URL_KAMU"
+};
 
-function checkAnswer(answer) {
-  const correct = data[index].correct;
-  if (answer === correct) {
-    alert("Benar!");
-  } else {
-    alert("Salah! Jawaban: " + correct);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+onValue(ref(db, "setting/avatar"), (snapshot)=>{
+  const data = snapshot.val();
+  if(data){
+    document.getElementById("avatar").src = data.url;
   }
-
-  index++;
-  if (index < data.length) {
-    loadQuestion();
-  } else {
-    alert("Selesai!");
-  }
-}
-
-loadQuestion();
+});
 </script>
 
 </body>
