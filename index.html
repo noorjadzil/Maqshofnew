@@ -6,21 +6,23 @@
 </head>
 <body style="font-family:Arial;text-align:center;">
 
-<h2>Tebak Kata</h2>
+<h2>اختر الكلمة الصحيحة</h2>
 
-<!-- GAMBAR -->
-<img id="gambar" src="https://via.placeholder.com/150?text=KITAB" width="150">
+<!-- GAMBAR KITAB (AMAN) -->
+<img id="gambar" 
+src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Book_icon.svg/200px-Book_icon.svg.png" 
+width="150">
 
 <br><br>
 
-<!-- PILIHAN -->
-<div id="pilihan">
-  <button onclick="jawab('kitab')">kitab</button>
-  <button onclick="jawab('qalam')">qalam</button>
-  <button onclick="jawab('kursi')">kursi</button>
-  <button onclick="jawab('bab')">bab</button>
-  <button onclick="jawab('bait')">bait</button>
-  <button onclick="jawab('maktab')">maktab</button>
+<!-- PILIHAN ARAB -->
+<div>
+  <button onclick="jawab('كِتَابٌ')">كِتَابٌ</button>
+  <button onclick="jawab('قَلَمٌ')">قَلَمٌ</button>
+  <button onclick="jawab('كُرْسِيٌّ')">كُرْسِيٌّ</button>
+  <button onclick="jawab('بَابٌ')">بَابٌ</button>
+  <button onclick="jawab('بَيْتٌ')">بَيْتٌ</button>
+  <button onclick="jawab('مَكْتَبٌ')">مَكْتَبٌ</button>
 </div>
 
 <br>
@@ -29,15 +31,15 @@
 <p>Skor: <span id="skor">0</span></p>
 
 <script>
-let jawabanBenar = "kitab";
+let jawabanBenar = "كِتَابٌ";
 let skor = 0;
 
 function jawab(pilihan){
   if(pilihan === jawabanBenar){
-    document.getElementById("hasil").innerText = "Benar!";
+    document.getElementById("hasil").innerText = "✔️ صحيح";
     skor++;
   } else {
-    document.getElementById("hasil").innerText = "Salah!";
+    document.getElementById("hasil").innerText = "❌ خطأ";
   }
 
   document.getElementById("skor").innerText = skor;
