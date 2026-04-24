@@ -1,336 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<title>Input Jajan</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="manifest" href="manifest.json">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Bahasa Arab - Bab 1</title>
 <style>
-body{
-font-family:'Segoe UI',Arial;
-margin:0;
-background:linear-gradient(135deg,#0f172a,#1e3a8a);
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #1e3a8a, #0f172a);
+  color: white;
+  text-align: center;
+  padding: 20px;
 }
-
-.container{
-max-width:420px;
-margin:auto;
-padding:10px;
+.card {
+  background: white;
+  color: black;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 400px;
+  margin: auto;
 }
-
-.card{
-background:white;
-border-radius:16px;
-padding:15px;
-box-shadow:0 8px 20px rgba(0,0,0,0.2);
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
-
-.tabs{
-display:flex;
-background:#1e3a8a;
-border-radius:12px 12px 0 0;
-overflow:hidden;
-margin-bottom:10px;
-}
-
-.tab-btn{
-flex:1;
-padding:12px;
-border:none;
-background:transparent;
-color:white;
-font-weight:700;
-}
-
-.tab-btn.active{
-background:#3b82f6;
-}
-
-h2{
-text-align:center;
-color:#1e3a8a;
-}
-
-label{
-font-weight:700;
-font-size:13px;
-margin-top:8px;
-display:block;
-}
-
-select,input[type="number"]{
-width:100%;
-padding:10px;
-border-radius:10px;
-border:1px solid #cbd5f5;
-margin-bottom:10px;
-font-weight:600;
-}
-
-input[type="number"]{
-text-align:center;
-font-size:16px;
-}
-
-.row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-border-bottom:1px solid #eee;
-padding:8px 0;
-}
-
-.row input{
-width:80px;
-}
-
-button{
-width:100%;
-padding:14px;
-border:none;
-border-radius:12px;
-background:#1e3a8a;
-color:white;
-font-weight:700;
-margin-top:15px;
-}
-
-img{
-width:100%;
-border-radius:10px;
-margin-top:8px;
-}
-
-#catatan{
-width:100%;
-padding:12px;
-margin-top:6px;
-border-radius:10px;
-border:1px solid #cbd5f5;
-font-size:15px;
-font-weight:600;
-box-sizing:border-box;
-resize:none;
-}
+.correct { background: green; color: white; }
+.wrong { background: red; color: white; }
 </style>
 </head>
-
 <body>
 
-<div class="container">
-
-<div class="tabs">
-<button class="tab-btn active" onclick="showTab('input',event)">Input</button>
-</div>
+<h1>Bab 1: Pengenalan Kata (Pesantren)</h1>
+<p>Pilih arti yang benar</p>
 
 <div class="card">
-
-<div id="inputTab">
-
-<h2>Input Jajan</h2>
-
-<label>Foto</label>
-<input type="file" id="foto" accept="image/*">
-<img id="preview" style="display:none">
-
-<label>Jenis</label>
-<select id="jenis">
-<option value="Masuk">Jajan Masuk</option>
-<option value="Sisa">Jajan Sisa</option>
-</select>
-
-<label>Tempat</label>
-<select id="tempat">
-<option>Ikhwan</option>
-<option>Akhwat</option>
-</select>
-
-<!-- ITEM -->
-<div id="dynamicItems"></div>
-
-<!-- SLOT -->
-<div class="row">
-<select id="slot1"><option value="">-- Pilih --</option></select>
-<input type="number" id="slot1_jumlah">
-</div>
-
-<div class="row">
-<select id="slot2"><option value="">-- Pilih --</option></select>
-<input type="number" id="slot2_jumlah">
-</div>
-
-<label>Catatan</label>
-<textarea id="catatan"></textarea>
-
-<button onclick="kirim()">Simpan</button>
-<button onclick="location.href='laporan.html'">📊 Lihat Laporan</button>
-<button onclick="location.href='setting.html'">⚙️ Setting</button>
-
-</div>
-</div>
+  <h2 id="arab">مَسْجِدٌ</h2>
+  <div id="options"></div>
 </div>
 
 <script>
+const data = [
+  {arab: "مَسْجِدٌ", correct: "Masjid", options: ["Masjid", "Kamar", "Buku"]},
+  {arab: "غُرْفَةٌ", correct: "Kamar", options: ["Masjid", "Kamar", "Dapur"]},
+  {arab: "كِتَابٌ", correct: "Buku", options: ["Pena", "Buku", "Meja"]},
+  {arab: "مُدَرِّسٌ", correct: "Guru", options: ["Santri", "Guru", "Penjaga"]},
+  {arab: "طَالِبٌ", correct: "Santri", options: ["Guru", "Santri", "Tamu"]}
+];
 
-// TAB
-function showTab(tab,e){
-document.getElementById("inputTab").style.display = "block";
-document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-e.target.classList.add("active");
+let index = 0;
+
+function loadQuestion() {
+  const q = data[index];
+  document.getElementById("arab").innerText = q.arab;
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  q.options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.innerText = opt;
+    btn.onclick = () => checkAnswer(opt);
+    optionsDiv.appendChild(btn);
+  });
 }
 
-// LOAD ITEM (FIX OBJECT, TANPA HARGA)
-function loadItems(){
-let container=document.getElementById("dynamicItems");
-container.innerHTML="";
+function checkAnswer(answer) {
+  const correct = data[index].correct;
+  if (answer === correct) {
+    alert("Benar!");
+  } else {
+    alert("Salah! Jawaban: " + correct);
+  }
 
-db.ref("items").once("value",snap=>{
-snap.forEach(c=>{
-let data = c.val();
-let nama = data.nama || data;
-
-let div=document.createElement("div");
-div.className="row";
-
-div.innerHTML=`
-<span>${nama}</span>
-<input type="number" data-nama="${nama}">
-`;
-
-container.appendChild(div);
-});
-});
+  index++;
+  if (index < data.length) {
+    loadQuestion();
+  } else {
+    alert("Selesai!");
+  }
 }
 
-// DROPDOWN (TANPA HARGA)
-function loadDropdownItems(){
-let slot1=document.getElementById("slot1");
-let slot2=document.getElementById("slot2");
-
-slot1.innerHTML='<option value="">-- Pilih --</option>';
-slot2.innerHTML='<option value="">-- Pilih --</option>';
-
-db.ref("items").once("value",snap=>{
-snap.forEach(c=>{
-let data = c.val();
-let nama = data.nama || data;
-
-let opt1=document.createElement("option");
-opt1.value=nama;
-opt1.textContent=nama;
-
-let opt2=opt1.cloneNode(true);
-
-slot1.appendChild(opt1);
-slot2.appendChild(opt2);
-});
-});
-}
-
-// SIMPAN
-async function kirim(){
-
-let items=[];
-
-// item utama
-document.querySelectorAll("#dynamicItems input").forEach(input=>{
-let val=input.value;
-if(val && val!=0){
-items.push({
-barang:input.dataset.nama,
-jumlah:Number(val)
-});
-}
-});
-
-// slot
-function tambahSlot(idBarang,idJumlah){
-let barang=document.getElementById(idBarang).value;
-let jumlah=document.getElementById(idJumlah).value;
-
-if(barang && jumlah && jumlah!=0){
-items.push({
-barang:barang,
-jumlah:Number(jumlah)
-});
-}
-}
-
-tambahSlot("slot1","slot1_jumlah");
-tambahSlot("slot2","slot2_jumlah");
-
-// foto
-let fotoBase64="";
-let f=document.getElementById("foto").files[0];
-if(f){
-fotoBase64=await kompresGambar(f);
-}
-
-let data={
-waktu:new Date().toISOString(),
-tempat:document.getElementById("tempat").value,
-jenis:document.getElementById("jenis").value,
-items:items,
-catatan:document.getElementById("catatan").value,
-foto:fotoBase64
-};
-
-await db.ref("jajan").push(data);
-alert("Berhasil");
-location.reload();
-}
-
-// KOMPRES FOTO
-function kompresGambar(file){
-return new Promise(resolve=>{
-let reader=new FileReader();
-reader.onload=e=>{
-let img=new Image();
-img.src=e.target.result;
-img.onload=()=>{
-let canvas=document.createElement("canvas");
-let scale=400/img.width;
-canvas.width=400;
-canvas.height=img.height*scale;
-let ctx=canvas.getContext("2d");
-ctx.drawImage(img,0,0,canvas.width,canvas.height);
-resolve(canvas.toDataURL("image/jpeg",0.5));
-};
-};
-reader.readAsDataURL(file);
-});
-}
-
-</script>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
-<script>
-firebase.initializeApp({
-databaseURL:"https://maqshof-d5772-default-rtdb.asia-southeast1.firebasedatabase.app"
-});
-const db=firebase.database();
-
-window.onload=function(){
-loadItems();
-loadDropdownItems();
-}
-
-// CONFIG
-db.ref("config").once("value",snap=>{
-let c=snap.val();
-if(!c) return;
-
-if(c.label){
-document.querySelector("h2").innerText="Input "+c.label;
-}
-
-if(c.theme){
-document.body.style.background=
-`linear-gradient(135deg,${c.theme.bg},${c.theme.primary})`;
-}
-});
+loadQuestion();
 </script>
 
 </body>
