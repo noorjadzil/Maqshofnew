@@ -8,11 +8,13 @@
 
 <h2>Avatar Kamu</h2>
 
-<img id="avatar" width="120">
+<img id="avatar" width="120" src="https://via.placeholder.com/120?text=Belum+Ada">
 
 <br><br>
 
 <a href="setting.html">Ganti Avatar</a>
+
+<p id="status">Memuat...</p>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
@@ -28,10 +30,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// ambil data
 onValue(ref(db, "setting/avatar"), (snapshot)=>{
   const data = snapshot.val();
-  if(data){
+
+  if(data && data.url){
     document.getElementById("avatar").src = data.url;
+    document.getElementById("status").innerText = "Berhasil load";
+  } else {
+    document.getElementById("status").innerText = "Belum ada data";
   }
 });
 </script>
