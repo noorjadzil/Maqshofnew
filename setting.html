@@ -1,55 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Setting Avatar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body style="font-family:Arial;text-align:center;">
+<title>Setting</title>
 
-<h2>Pilih Avatar</h2>
-
-<img src="https://via.placeholder.com/100?text=A" style="margin:10px;cursor:pointer;" onclick="pilih('https://via.placeholder.com/100?text=A')">
-<img src="https://via.placeholder.com/100?text=B" style="margin:10px;cursor:pointer;" onclick="pilih('https://via.placeholder.com/100?text=B')">
-<img src="https://via.placeholder.com/100?text=C" style="margin:10px;cursor:pointer;" onclick="pilih('https://via.placeholder.com/100?text=C')">
-
-<br><br>
-
-<button onclick="simpan()" style="padding:10px 20px;">Simpan</button>
-
-<p id="status"></p>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDGgPaeVEkv3U0pLU0eyB0gww69Cm_yAK0",
-  authDomain: "bahasa-arab-90f36.firebaseapp.com",
-  projectId: "bahasa-arab-90f36",
-  databaseURL: "https://bahasa-arab-90f36-default-rtdb.asia-southeast1.firebasedatabase.app"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-let pilihan = "";
-
-window.pilih = function(url){
-  pilihan = url;
-  document.getElementById("status").innerText = "Dipilih";
+<style>
+body {
+  font-family: Arial;
+  padding: 20px;
+  background: #f4f6f9;
 }
 
-window.simpan = function(){
-  if(pilihan===""){
-    alert("Pilih dulu!");
-    return;
-  }
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  margin: auto;
+}
 
-  set(ref(db, "setting/avatar"), {
-    url: pilihan
-  });
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+}
 
-  document.getElementById("status").innerText = "Tersimpan!";
+button {
+  padding: 10px;
+  width: 100%;
+  background: #2d89ff;
+  color: white;
+  border: none;
+}
+</style>
+
+</head>
+<body>
+
+<div class="card">
+<h2>Setting Tema</h2>
+
+<label>Font</label>
+<select id="font">
+  <option>Arial</option>
+  <option>Verdana</option>
+  <option>Tahoma</option>
+</select>
+
+<label>Warna Background</label>
+<input type="color" id="bg">
+
+<label>Warna Teks</label>
+<input type="color" id="text">
+
+<label>Warna Utama (Header)</label>
+<input type="color" id="primary">
+
+<button onclick="simpan()">Simpan</button>
+<button onclick="kembali()">Kembali</button>
+
+</div>
+
+<script>
+function simpan(){
+  const setting = {
+    font: document.getElementById("font").value,
+    bg: document.getElementById("bg").value,
+    text: document.getElementById("text").value,
+    primary: document.getElementById("primary").value
+  };
+
+  localStorage.setItem("setting", JSON.stringify(setting));
+  alert("Tersimpan!");
+}
+
+function kembali(){
+  window.location = "index.html";
 }
 </script>
 
