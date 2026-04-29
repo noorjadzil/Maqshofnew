@@ -1,58 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Firebase Test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aplikasi Barang</title>
+
+<style>
+:root {
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --text: #000;
+  --primary: #2d89ff;
+  --font: Arial;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  margin: 0;
+}
+
+.header {
+  background: var(--primary);
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.container {
+  max-width: 900px;
+  margin: 20px auto;
+}
+
+.card {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+}
+
+button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+}
+
+table {
+  width: 100%;
+}
+
+th {
+  background: var(--primary);
+  color: white;
+}
+</style>
+
 </head>
 <body>
 
-<h2>Input Data</h2>
-<input type="text" id="nama" placeholder="Nama">
-<input type="number" id="jumlah" placeholder="Jumlah">
-<button onclick="simpan()">Simpan</button>
+<div class="header">
+  <div>Aplikasi Barang</div>
+  <button onclick="window.location='setting.html'">⚙️ Setting</button>
+</div>
 
-<h2>Data:</h2>
-<ul id="list"></ul>
+<div class="container">
+
+<div class="card">
+<h3>Input Barang</h3>
+<input id="nama" placeholder="Nama Barang">
+<input id="vendor" type="number" placeholder="Harga Vendor">
+<input id="jual" type="number" placeholder="Harga Jual">
+<button onclick="simpan()">Simpan</button>
+</div>
+
+<div class="card">
+<h3>Data</h3>
+<table>
+<thead>
+<tr>
+<th>Nama</th>
+<th>Vendor</th>
+<th>Jual</th>
+<th>Profit</th>
+</tr>
+</thead>
+<tbody id="data"></tbody>
+</table>
+</div>
+
+</div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDGgPaeVEkv3U0pLU0eyB0gww69Cm_yAK0",
-    authDomain: "bahasa-arab-90f36.firebaseapp.com",
-    databaseURL: "https://bahasa-arab-90f36-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "bahasa-arab-90f36",
-    storageBucket: "bahasa-arab-90f36.firebasestorage.app",
-    messagingSenderId: "383589687078",
-    appId: "1:383589687078:web:8acad56c6e1348debe6be7"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDGgPaeVEkv3U0pLU0eyB0gww69Cm_yAK0",
+  authDomain: "bahasa-arab-90f36.firebaseapp.com",
+  databaseURL: "https://bahasa-arab-90f36-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "bahasa-arab-90f36",
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-  // SIMPAN DATA
-  window.simpan = function() {
-    const nama = document.getElementById("nama").value;
-    const jumlah = document.getElementById("jumlah").value;
+// APPLY SETTING
+function applySetting(){
+  const s = JSON.parse(localStorage.getItem("setting")) || {};
+  document.documentElement.style.setProperty('--bg', s.bg || '#f4f6f9');
+  document.documentElement.style.setProperty('--text', s.text || '#000');
+  document.documentElement.style.setProperty('--primary', s.primary || '#2d89ff');
+  document.documentElement.style.setProperty('--font', s.font || 'Arial');
+}
+applySetting();
 
-    set(ref(db, 'laporan/' + Date.now()), {
-      nama: nama,
-      jumlah: jumlah
-    });
-  }
+// SIMPAN
+window.simpan = function(){
+  const nama = namaInput.value;
+  const vendor = vendorInput.value;
+  const jual = jualInput.value;
 
-  // AMBIL DATA REALTIME
-  const dataRef = ref(db, 'laporan/');
-  onValue(dataRef, (snapshot) => {
-    const data = snapshot.val();
-    const list = document.getElementById("list");
-    list.innerHTML = "";
-
-    for (let id in data) {
-      list.innerHTML += `<li>${data[id].nama} - ${data[id].jumlah}</li>`;
-    }
+  set(ref(db, 'barang/'+Date.now()), {
+    nama, vendor:Number(vendor), jual:Number(jual)
   });
+}
 
+// ELEMENT
+const namaInput = document.getElementById("nama");
+const vendorInput = document.getElementById("vendor");
+const jualInput = document.getElementById("jual");
+
+// TAMPIL DATA
+onValue(ref(db,'barang/'), snap=>{
+  const data = snap.val();
+  const el = document.getElementById("data");
+  el.innerHTML = "";
+
+  for(let id in data){
+    let p = data[id].jual - data[id].vendor;
+    el.innerHTML += `
+      <tr>
+        <td>${data[id].nama}</td>
+        <td>${data[id].vendor}</td>
+        <td>${data[id].jual}</td>
+        <td>${p}</td>
+      </tr>`;
+  }
+});
 </script>
 
 </body>
