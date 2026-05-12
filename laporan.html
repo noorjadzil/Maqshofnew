@@ -192,7 +192,16 @@ list.innerHTML="Belum ada data";
 return;
 }
 
-let arr=Object.values(snap.val()).reverse();
+// ambil data + key
+let arr=[];
+
+snap.forEach(c=>{
+  let d = c.val();
+  d.key = c.key;
+  arr.push(d);
+});
+
+arr.reverse();
 
 arr.forEach(d=>{
 
@@ -204,9 +213,23 @@ let div=document.createElement("div");
 div.className="laporan-card";
 
 div.innerHTML=`
-<div class="laporan-header">${d.jenis} - ${d.tempat}</div>
-<div class="laporan-tanggal">${formatTanggal(d.waktu)}</div>
-<div class="laporan-items">${items}</div>
+<div class="laporan-header">
+${d.jenis} - ${d.tempat}
+
+${d.riwayatEdit ? '<span style="color:red;font-size:12px"> (edited)</span>' : ''}
+
+<span onclick="toggleEdit('${d.key}')" style="cursor:pointer;float:right">✏️</span>
+</div>
+
+<div class="laporan-tanggal" id="tgl-${d.key}">
+${formatTanggal(d.waktu)}
+</div>
+
+<div class="laporan-items" id="items-${d.key}">
+${items}
+</div>
+
+<div id="edit-${d.key}" style="display:none;margin-top:10px"></div>
 
 ${d.catatan ? `
 <div style="margin-top:8px;font-weight:700;color:#dc2626">
@@ -372,6 +395,226 @@ document.body.style.background=
 `linear-gradient(135deg,${c.theme.bg},${c.theme.primary})`;
 }
 });
+// ================= EDIT JUMLAH =================
+function editJumlah(key, index, oldValue){
+
+let baru = prompt("Ubah jumlah", oldValue);
+if(baru===null) return;
+
+db.ref("jajan/"+key+"/items").once("value",snap=>{
+
+let items = snap.val() || [];
+
+if(!items[index]) return;
+
+items[index].jumlah = Number(baru);
+
+db.ref("jajan/"+key).update({
+  items: items
+}).then(()=>{
+  loadLaporan();
+});
+
+});
+
+}
+
+// ================= EDIT TANGGAL =================
+function editTanggal(key, oldWaktu){
+
+let dateObj = new Date(oldWaktu);
+
+let local = dateObj.getFullYear() + "-" +
+String(dateObj.getMonth()+1).padStart(2,"0") + "-" +
+String(dateObj.getDate()).padStart(2,"0") + " " +
+String(dateObj.getHours()).padStart(2,"0") + ":" +
+String(dateObj.getMinutes()).padStart(2,"0");
+
+let input = prompt("Edit tanggal (YYYY-MM-DD HH:mm)", local);
+if(input===null) return;
+
+let newDate = new Date(input);
+
+if(isNaN(newDate)){
+  alert("Format salah!");
+  return;
+}
+
+db.ref("jajan/"+key).update({
+  waktu: newDate.toISOString()
+}).then(()=>{
+  loadLaporan();
+});
+
+}
+
+// ================= EDIT TOGGLE =================
+function toggleEdit(key){
+
+let box = document.getElementById("edit-"+key);
+
+if(box.style.display==="block"){
+  box.style.display="none";
+  box.innerHTML="";
+  return;
+}
+
+db.ref("jajan/"+key).once("value",snap=>{
+
+let d = snap.val();
+
+// format tanggal
+let dateObj = new Date(d.waktu);
+let local = dateObj.getFullYear() + "-" +
+String(dateObj.getMonth()+1).padStart(2,"0") + "-" +
+String(dateObj.getDate()).padStart(2,"0") + "T" +
+String(dateObj.getHours()).padStart(2,"0") + ":" +
+String(dateObj.getMinutes()).padStart(2,"0");
+
+// item
+let itemsHTML = (d.items || []).map((i,idx)=>`
+<div style="display:flex;justify-content:space-between;margin-bottom:6px">
+  <span>${i.barang}</span>
+  <input type="number" value="${i.jumlah}" 
+  id="jml-${key}-${idx}" 
+  style="width:70px;padding:4px;border-radius:6px;border:1px solid #ccc">
+</div>
+`).join("");
+
+box.innerHTML = `
+<div style="background:#f8fafc;padding:10px;border-radius:10px;border:1px solid #e2e8f0">
+
+<b style="color:#1e3a8a">Edit Data</b><br><br>
+
+Tanggal:<br>
+<input type="datetime-local" id="tglEdit-${key}" value="${local}" 
+style="width:100%;padding:6px;border:1px solid #ccc;border-radius:6px"><br><br>
+
+${itemsHTML}
+
+<button onclick="simpanEdit('${key}')" style="
+margin-top:10px;
+width:100%;
+padding:10px;
+background:#1e3a8a;
+color:white;
+border:none;
+border-radius:8px;
+font-weight:700;
+">
+💾 Simpan
+</button>
+
+<button onclick="lihatRiwayat('${key}')" style="
+margin-top:6px;
+width:100%;
+padding:8px;
+background:#64748b;
+color:white;
+border:none;
+border-radius:6px;
+font-size:12px;
+">
+📜 Riwayat Edit
+</button>
+
+<div id="history-${key}" style="display:none;font-size:12px;margin-top:8px"></div>
+
+</div>
+`;
+
+box.style.display="block";
+
+});
+}
+
+
+// ================= SIMPAN + RIWAYAT =================
+function simpanEdit(key){
+
+db.ref("jajan/"+key).once("value",snap=>{
+
+let oldData = snap.val();
+let items = oldData.items || [];
+
+// tanggal
+let tglInput = document.getElementById("tglEdit-"+key).value;
+let newDate = new Date(tglInput);
+
+if(isNaN(newDate)){
+  alert("Tanggal salah!");
+  return;
+}
+
+// ambil item baru
+let newItems = items.map((i,idx)=>{
+  let val = document.getElementById(`jml-${key}-${idx}`).value;
+  return {
+    barang: i.barang,
+    jumlah: Number(val || 0)
+  };
+});
+
+// data baru
+let newData = {
+  waktu: newDate.toISOString(),
+  items: newItems
+};
+
+// 🔥 simpan riwayat
+db.ref("jajan/"+key+"/riwayatEdit").push({
+  waktuEdit: new Date().toISOString(),
+  sebelum: oldData.items,
+  sesudah: newItems
+});
+
+// 🔥 update utama
+db.ref("jajan/"+key).update(newData).then(()=>{
+  alert("Berhasil diupdate");
+  loadLaporan();
+});
+
+});
+}
+
+
+// ================= LIHAT RIWAYAT =================
+function lihatRiwayat(key){
+
+let box = document.getElementById("history-"+key);
+
+if(box.style.display==="block"){
+  box.style.display="none";
+  return;
+}
+
+db.ref("jajan/"+key+"/riwayatEdit").once("value",snap=>{
+
+if(!snap.exists()){
+  box.innerHTML = "Belum ada riwayat";
+  box.style.display="block";
+  return;
+}
+
+let html = "";
+
+snap.forEach(c=>{
+let d = c.val();
+
+html += `
+<div style="border-top:1px solid #ccc;padding-top:5px;margin-top:5px">
+<b>${new Date(d.waktuEdit).toLocaleString("id-ID")}</b><br>
+Sebelum: ${d.sebelum.map(i=>i.jumlah).join(", ")}<br>
+Sesudah: ${d.sesudah.map(i=>i.jumlah).join(", ")}
+</div>
+`;
+});
+
+box.innerHTML = html;
+box.style.display="block";
+
+});
+}
 </script>
 
 </body>
