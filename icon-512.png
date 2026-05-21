@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kasir-pwa-v1';
+const CACHE_NAME = 'kasir-pwa-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -11,7 +11,10 @@ const ASSETS = [
   './js/produk.js',
   './js/laporan.js',
   './js/wa.js',
-  './manifest.json'
+  './js/setting.js',
+  './manifest.json',
+  './assets/icon-192.png',
+  './assets/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -27,7 +30,12 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request))
+    caches.match(event.request).then(cached => {
+      return cached || fetch(event.request).then(response => {
+        return response;
+      });
+    })
   );
 });
