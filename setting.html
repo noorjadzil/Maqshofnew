@@ -9,7 +9,7 @@
 input,textarea,select{width:100%;border:1px solid #cbd5e1;background:#fff;border-radius:14px;padding:12px;font:inherit;outline:none}input:focus,textarea:focus,select:focus{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.12)}textarea{min-height:84px;resize:vertical}
 .table-box{overflow:auto;border-radius:16px;border:1px solid var(--line)}table{width:100%;border-collapse:collapse;min-width:680px;background:#fff}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:center;font-size:14px}th{background:#eef4ff;color:#1e3a8a;font-weight:900}.left{text-align:left}.num{max-width:120px;text-align:center}
 .btns{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:14px;padding:12px 14px;font-weight:900;cursor:pointer;color:#fff;background:#1e3a8a;box-shadow:0 10px 18px rgba(30,58,138,.18)}.btn.green{background:var(--green)}.btn.red{background:var(--red)}.btn.amber{background:var(--amber)}.btn.light{background:#e2e8f0;color:#0f172a}.btn:active{transform:scale(.99)}
-.total{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(135deg,#ecfeff,#eff6ff);border:1px solid #bfdbfe;border-radius:18px;padding:14px;margin:12px 0}.total b{font-size:24px;color:#1e3a8a}.muted{font-size:12px;color:var(--muted)}.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#e0f2fe;color:#075985;padding:6px 10px;font-weight:900;font-size:12px}.empty{padding:18px;text-align:center;color:#64748b;background:#fff;border-radius:16px;border:1px dashed #cbd5e1}.row-actions{display:flex;gap:8px;justify-content:center}.smallbtn{border:0;border-radius:10px;padding:8px 10px;font-weight:900;cursor:pointer}
+.total{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(135deg,#ecfeff,#eff6ff);border:1px solid #bfdbfe;border-radius:18px;padding:14px;margin:12px 0}.total b{font-size:24px;color:#1e3a8a}.muted{font-size:12px;color:var(--muted)}.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#e0f2fe;color:#075985;padding:6px 10px;font-weight:900;font-size:12px}.empty{padding:18px;text-align:center;color:#64748b;background:#fff;border-radius:16px;border:1px dashed #cbd5e1}.row-actions{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}.smallbtn{border:0;border-radius:10px;padding:8px 10px;font-weight:900;cursor:pointer;background:#e2e8f0;color:#0f172a}.smallbtn.add{background:#dbeafe;color:#1e3a8a}.smallbtn.move{background:#dcfce7;color:#166534}.smallbtn.danger{background:#fee2e2;color:#991b1b}
 @media(max-width:720px){.hero-inner{display:block}.nav{margin-top:16px}.grid{grid-template-columns:1fr}.brand h1{font-size:22px}table{min-width:620px}.btn{width:100%}.total{display:block}.total b{display:block;margin-top:6px}}
 </style></head><body>
 <header class="hero"><div class="hero-inner"><div class="brand"><h1>Menu Setting</h1><p>Atur macam, item, harga, stok, dan catatan barang</p></div><nav class="nav"><a href="index.html">Input</a><a href="laporan.html">Laporan</a><a class="active" href="setting.html">Setting</a></nav></div></header>
@@ -41,12 +41,74 @@ function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&l
 let SET=null;
 async function init(){SET=await getSettings();renderAll()}
 function renderAll(){renderBarang("produkBox","produk","Penjualan Bubur");renderBarang("extraBox","extra","Extra Topping / Tambahan");renderBarang("minumanBox","minuman","Minuman / Lainnya");renderNama("stokBox","stok");renderNama("kurangBox","kurang")}
-function renderBarang(box,key,title){const data=SET[key]||[];let html=`<h2 style="margin-top:18px">${title}</h2><div class="table-box"><table><thead><tr><th>Nama</th><th>Harga</th><th>Aksi</th></tr></thead><tbody>`;data.forEach((it,i)=>{html+=`<tr><td><input value="${esc(it.nama)}" oninput="SET.${key}[${i}].nama=this.value"></td><td><input type="number" value="${Number(it.harga||0)}" oninput="SET.${key}[${i}].harga=Number(this.value||0)"></td><td><button class="smallbtn" onclick="hapusItem('${key}',${i})">Hapus</button></td></tr>`});html+=`</tbody></table></div><button class="btn light" onclick="tambahItem('${key}')">+ Tambah ${title}</button>`;document.getElementById(box).innerHTML=html}
-function renderNama(box,key){let html='<div class="table-box"><table><thead><tr><th>Nama</th><th>Aksi</th></tr></thead><tbody>';(SET[key]||[]).forEach((nama,i)=>{html+=`<tr><td><input value="${esc(nama)}" oninput="SET.${key}[${i}]=this.value"></td><td><button class="smallbtn" onclick="hapusNama('${key}',${i})">Hapus</button></td></tr>`});html+='</tbody></table></div>';document.getElementById(box).innerHTML=html}
-function tambahItem(key){SET[key].push({nama:"Item Baru",harga:0});renderAll()}
+function renderBarang(box,key,title){
+  const data=SET[key]||[];
+  let html=`<h2 style="margin-top:18px">${title}</h2><div class="table-box"><table><thead><tr><th>Nama</th><th>Harga</th><th>Aksi</th></tr></thead><tbody>`;
+  data.forEach((it,i)=>{
+    html+=`<tr>
+      <td><input value="${esc(it.nama)}" oninput="SET.${key}[${i}].nama=this.value"></td>
+      <td><input type="number" value="${Number(it.harga||0)}" oninput="SET.${key}[${i}].harga=Number(this.value||0)"></td>
+      <td>
+        <div class="row-actions">
+          <button class="smallbtn add" onclick="tambahItem('${key}',${i})">+ Atas</button>
+          <button class="smallbtn add" onclick="tambahItem('${key}',${i+1})">+ Bawah</button>
+          <button class="smallbtn move" onclick="naikItem('${key}',${i})" title="Naik">↑</button>
+          <button class="smallbtn move" onclick="turunItem('${key}',${i})" title="Turun">↓</button>
+          <button class="smallbtn danger" onclick="hapusItem('${key}',${i})">Hapus</button>
+        </div>
+      </td>
+    </tr>`;
+  });
+  html+=`</tbody></table></div>
+    <div class="btns" style="margin-top:10px">
+      <button class="btn light" onclick="tambahItem('${key}',0)">+ Tambah Paling Atas</button>
+      <button class="btn light" onclick="tambahItem('${key}')">+ Tambah Paling Bawah</button>
+    </div>`;
+  document.getElementById(box).innerHTML=html;
+}
+function renderNama(box,key){
+  let html='<div class="table-box"><table><thead><tr><th>Nama</th><th>Aksi</th></tr></thead><tbody>';
+  (SET[key]||[]).forEach((nama,i)=>{
+    html+=`<tr>
+      <td><input value="${esc(nama)}" oninput="SET.${key}[${i}]=this.value"></td>
+      <td>
+        <div class="row-actions">
+          <button class="smallbtn add" onclick="tambahNama('${key}',${i})">+ Atas</button>
+          <button class="smallbtn add" onclick="tambahNama('${key}',${i+1})">+ Bawah</button>
+          <button class="smallbtn move" onclick="naikNama('${key}',${i})" title="Naik">↑</button>
+          <button class="smallbtn move" onclick="turunNama('${key}',${i})" title="Turun">↓</button>
+          <button class="smallbtn danger" onclick="hapusNama('${key}',${i})">Hapus</button>
+        </div>
+      </td>
+    </tr>`;
+  });
+  html+='</tbody></table></div>';
+  document.getElementById(box).innerHTML=html;
+}
+function tambahItem(key,index=null){
+  const itemBaru={nama:"Item Baru",harga:0};
+  if(index===null){SET[key].push(itemBaru)}else{SET[key].splice(index,0,itemBaru)}
+  renderAll();
+}
 function hapusItem(key,i){if(confirm("Hapus item ini?")){SET[key].splice(i,1);renderAll()}}
-function tambahNama(key){SET[key].push("Nama Baru");renderAll()}
+function tambahNama(key,index=null){
+  const namaBaru="Nama Baru";
+  if(index===null){SET[key].push(namaBaru)}else{SET[key].splice(index,0,namaBaru)}
+  renderAll();
+}
 function hapusNama(key,i){if(confirm("Hapus data ini?")){SET[key].splice(i,1);renderAll()}}
+function naikItem(key,i){
+  if(i<=0)return;
+  [SET[key][i-1],SET[key][i]]=[SET[key][i],SET[key][i-1]];
+  renderAll();
+}
+function turunItem(key,i){
+  if(i>=SET[key].length-1)return;
+  [SET[key][i+1],SET[key][i]]=[SET[key][i],SET[key][i+1]];
+  renderAll();
+}
+function naikNama(key,i){naikItem(key,i)}
+function turunNama(key,i){turunItem(key,i)}
 async function simpanSetting(){SET.key="app";await putOne("settings",SET);alert("Setting berhasil disimpan")}
 async function resetSetting(){if(confirm("Kembalikan setting ke default awal?")){SET={key:"app",...structuredClone(DEFAULT_SETTINGS)};await putOne("settings",SET);renderAll();alert("Setting kembali default")}}
 init();
