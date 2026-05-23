@@ -4,278 +4,382 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>MAQSHOF</title>
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#07111f" />
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="css/style.css" />
 
   <style>
-    :root {
-      --navy: #0f172a;
-      --blue: #1e3a8a;
-      --sky: #38bdf8;
-      --bg: #eef4ff;
-      --card: rgba(255,255,255,.92);
+    :root{
+      --bg:#f3f7ff;
+      --dark:#07111f;
+      --navy:#0f172a;
+      --blue:#2563eb;
+      --cyan:#38bdf8;
+      --card:#ffffff;
+      --muted:#64748b;
+      --line:#e2e8f0;
+      --shadow:0 18px 50px rgba(15,23,42,.14);
     }
 
-    body {
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+    body{
+      margin:0 !important;
+      min-height:100vh;
+      padding-bottom:96px;
       background:
-        radial-gradient(circle at top left, rgba(56,189,248,.25), transparent 34%),
-        linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%) !important;
-      min-height: 100vh;
-      padding-bottom: 92px;
+        radial-gradient(circle at 10% 0%, rgba(37,99,235,.25), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(56,189,248,.22), transparent 24%),
+        linear-gradient(180deg,#f8fbff 0%,var(--bg) 100%) !important;
+      color:var(--navy);
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif !important;
     }
 
-    .app-header {
-      display: none !important;
-    }
+    .app-header{display:none !important}
 
-    .tabs {
-      position: fixed !important;
-      left: 12px;
-      right: 12px;
-      bottom: 12px;
-      top: auto !important;
-      z-index: 50;
-      max-width: 640px;
-      margin: auto;
-      display: grid !important;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      padding: 8px;
-      border-radius: 24px;
-      background: rgba(255,255,255,.86) !important;
-      border: 1px solid rgba(203,213,225,.9) !important;
-      box-shadow: 0 18px 44px rgba(15,23,42,.22);
-      backdrop-filter: blur(18px);
-    }
-
-    .tab-btn {
-      border-radius: 18px !important;
-      margin: 0 !important;
-      padding: 11px 4px !important;
-      background: transparent !important;
-      color: #64748b !important;
-      font-size: 12px !important;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, #1e3a8a, #2563eb) !important;
-      color: white !important;
-      box-shadow: 0 10px 22px rgba(37,99,235,.32);
-    }
-
-    .container {
-      padding-top: 0 !important;
-      max-width: 980px !important;
-    }
-
-    .hero {
+    .top-app{
+      position:sticky;
+      top:0;
+      z-index:20;
+      padding:14px 14px 16px;
       background:
-        radial-gradient(circle at 85% 0%, rgba(56,189,248,.40), transparent 30%),
-        linear-gradient(135deg, #0f172a 0%, #1e3a8a 58%, #2563eb 100%);
-      color: white;
-      padding: 22px 16px 18px;
-      border-bottom-left-radius: 32px;
-      border-bottom-right-radius: 32px;
-      box-shadow: 0 18px 45px rgba(15,23,42,.26);
-      margin-bottom: 16px;
+        radial-gradient(circle at 90% 0%, rgba(56,189,248,.38), transparent 30%),
+        linear-gradient(135deg,#07111f 0%,#0f172a 45%,#1d4ed8 100%);
+      color:white;
+      border-bottom-left-radius:32px;
+      border-bottom-right-radius:32px;
+      box-shadow:0 20px 50px rgba(15,23,42,.28);
     }
 
-    .hero-inner {
-      max-width: 980px;
-      margin: auto;
+    .top-inner{
+      max-width:980px;
+      margin:auto;
     }
 
-    .hero-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
+    .top-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
     }
 
-    .eyebrow {
-      margin: 0 0 6px;
-      font-size: 12px;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      color: #bfdbfe;
-      font-weight: 800;
+    .brand-kicker{
+      margin:0 0 5px;
+      font-size:11px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:#bfdbfe;
+      font-weight:900;
     }
 
-    .hero h1 {
-      margin: 0;
-      font-size: 32px;
-      letter-spacing: -.04em;
-      font-weight: 950;
+    #pageTitle{
+      margin:0;
+      font-size:29px;
+      line-height:1;
+      letter-spacing:-.05em;
+      font-weight:950;
     }
 
-    .hero p {
-      margin: 7px 0 0;
-      color: #dbeafe;
-      font-size: 14px;
+    #pageDesc{
+      margin:8px 0 0;
+      color:#dbeafe;
+      font-size:13px;
+      line-height:1.35;
     }
 
-    .logo-mark {
-      width: 58px;
-      height: 58px;
-      border-radius: 20px;
-      display: grid;
-      place-items: center;
-      background: rgba(255,255,255,.14);
-      border: 1px solid rgba(255,255,255,.30);
-      font-size: 26px;
-      font-weight: 950;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.28);
+    .brand-logo{
+      width:58px;
+      height:58px;
+      border-radius:22px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.26);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
+      font-size:26px;
+      font-weight:950;
     }
 
-    .hero-stats {
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+    .quick-info{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:9px;
+      margin-top:15px;
     }
 
-    .hero-stats div {
-      background: rgba(255,255,255,.13);
-      border: 1px solid rgba(255,255,255,.22);
-      border-radius: 18px;
-      padding: 12px;
-      backdrop-filter: blur(10px);
+    .quick-info div{
+      padding:10px;
+      border-radius:18px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.18);
+      backdrop-filter:blur(12px);
     }
 
-    .hero-stats span {
-      display: block;
-      color: #bfdbfe;
-      font-size: 11px;
-      margin-bottom: 4px;
+    .quick-info span{
+      display:block;
+      color:#bfdbfe;
+      font-size:10px;
+      margin-bottom:3px;
     }
 
-    .hero-stats b {
-      font-size: 13px;
+    .quick-info b{
+      font-size:12px;
     }
 
-    .card {
-      border-radius: 22px !important;
-      background: rgba(255,255,255,.94) !important;
-      border: 1px solid rgba(219,228,240,.95) !important;
-      box-shadow: 0 14px 35px rgba(15,23,42,.10) !important;
-      backdrop-filter: blur(12px);
+    .container{
+      max-width:980px !important;
+      margin:auto !important;
+      padding:16px 14px 10px !important;
     }
 
-    .card h2 {
-      font-size: 19px !important;
-      letter-spacing: -.02em;
+    .tab-page{
+      display:none !important;
+      animation:pageIn .22s ease both;
     }
 
-    input, textarea, select {
-      border-radius: 15px !important;
-      padding: 13px !important;
-      background: #f8fafc !important;
+    .tab-page.active{
+      display:block !important;
     }
 
-    input:focus, textarea:focus, select:focus {
-      border-color: #60a5fa !important;
-      box-shadow: 0 0 0 4px rgba(96,165,250,.18) !important;
-      background: white !important;
-      outline: none;
+    @keyframes pageIn{
+      from{opacity:0;transform:translateY(10px) scale(.99)}
+      to{opacity:1;transform:translateY(0) scale(1)}
     }
 
-    button {
-      border-radius: 16px !important;
-      padding: 13px !important;
-      font-weight: 900 !important;
+    .tabs{
+      position:fixed !important;
+      left:12px !important;
+      right:12px !important;
+      bottom:12px !important;
+      top:auto !important;
+      z-index:99 !important;
+      max-width:620px;
+      margin:auto !important;
+      display:grid !important;
+      grid-template-columns:repeat(4,1fr) !important;
+      gap:8px !important;
+      padding:8px !important;
+      border-radius:28px !important;
+      background:rgba(255,255,255,.88) !important;
+      border:1px solid rgba(203,213,225,.88) !important;
+      box-shadow:0 20px 55px rgba(15,23,42,.22) !important;
+      backdrop-filter:blur(22px);
     }
 
-    .primary {
-      background: linear-gradient(135deg, #1e3a8a, #2563eb) !important;
-      color: white !important;
-      box-shadow: 0 12px 24px rgba(37,99,235,.25);
+    .tab-btn{
+      margin:0 !important;
+      padding:10px 4px !important;
+      border:0 !important;
+      border-radius:21px !important;
+      background:transparent !important;
+      color:#64748b !important;
+      font-size:11px !important;
+      font-weight:900 !important;
+      line-height:1.15 !important;
+      display:grid !important;
+      place-items:center !important;
+      gap:3px !important;
+      box-shadow:none !important;
     }
 
-    .green {
-      background: linear-gradient(135deg, #15803d, #16a34a) !important;
-      color: white !important;
+    .tab-btn .ico{
+      width:30px;
+      height:30px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      font-size:17px;
+      background:#eef2ff;
+      color:#1e3a8a;
     }
 
-    .red {
-      background: linear-gradient(135deg, #991b1b, #dc2626) !important;
-      color: white !important;
+    .tab-btn.active{
+      color:white !important;
+      background:linear-gradient(135deg,#0f172a,#2563eb) !important;
+      box-shadow:0 12px 28px rgba(37,99,235,.34) !important;
     }
 
-    .category-title {
-      background: linear-gradient(135deg, #dbeafe, #e0f2fe) !important;
-      color: #1e3a8a !important;
-      border-radius: 16px !important;
-      padding: 12px !important;
-      font-weight: 900 !important;
+    .tab-btn.active .ico{
+      background:rgba(255,255,255,.18);
+      color:white;
     }
 
-    .item-row,
-    .setting-row {
-      border-radius: 18px !important;
-      background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
-      border: 1px solid #e2e8f0 !important;
-      padding: 12px !important;
-      margin-bottom: 10px !important;
+    .card{
+      border-radius:26px !important;
+      background:rgba(255,255,255,.96) !important;
+      border:1px solid rgba(226,232,240,.95) !important;
+      box-shadow:var(--shadow) !important;
+      margin-bottom:14px !important;
+      overflow:hidden;
     }
 
-    .total-box {
-      border-radius: 20px !important;
+    .card h2{
+      font-size:19px !important;
+      letter-spacing:-.03em;
+      font-weight:950 !important;
+    }
+
+    label{
+      font-size:13px !important;
+      font-weight:900 !important;
+      color:#334155 !important;
+    }
+
+    input,textarea,select{
+      border-radius:17px !important;
+      padding:14px !important;
+      border:1px solid #dbe4f0 !important;
+      background:#f8fafc !important;
+      font-size:15px !important;
+      outline:none !important;
+    }
+
+    input:focus,textarea:focus,select:focus{
+      border-color:#60a5fa !important;
+      background:white !important;
+      box-shadow:0 0 0 4px rgba(96,165,250,.18) !important;
+    }
+
+    button{
+      border-radius:18px !important;
+      padding:14px !important;
+      font-weight:950 !important;
+      letter-spacing:-.01em;
+    }
+
+    .primary{
+      background:linear-gradient(135deg,#0f172a,#2563eb) !important;
+      color:white !important;
+    }
+
+    .green{
+      background:linear-gradient(135deg,#047857,#16a34a) !important;
+      color:white !important;
+    }
+
+    .red{
+      background:linear-gradient(135deg,#991b1b,#dc2626) !important;
+      color:white !important;
+    }
+
+    .gray{
+      background:#e2e8f0 !important;
+      color:#0f172a !important;
+    }
+
+    .yellow{
+      background:#fef3c7 !important;
+      color:#92400e !important;
+    }
+
+    .category-title{
+      background:linear-gradient(135deg,#e0f2fe,#dbeafe) !important;
+      color:#1e3a8a !important;
+      border-radius:18px !important;
+      padding:13px !important;
+      font-weight:950 !important;
+      margin-top:18px !important;
+    }
+
+    .item-row,.setting-row{
+      border-radius:22px !important;
+      padding:13px !important;
+      margin-bottom:11px !important;
+      background:linear-gradient(180deg,#fff,#f8fafc) !important;
+      border:1px solid #e2e8f0 !important;
+    }
+
+    .total-box{
+      border-radius:24px !important;
+      padding:18px !important;
+      font-size:27px !important;
+      font-weight:950 !important;
+      letter-spacing:-.04em;
       background:
-        radial-gradient(circle at top right, rgba(56,189,248,.25), transparent 36%),
-        linear-gradient(135deg, #ecfeff, #eff6ff) !important;
-      font-size: 25px !important;
-      color: #0f172a !important;
+        radial-gradient(circle at 90% 0%, rgba(56,189,248,.28), transparent 35%),
+        linear-gradient(135deg,#ecfeff,#eff6ff) !important;
+      border:1px solid #bae6fd !important;
     }
 
-    @media (max-width: 640px) {
-      .hero h1 {
-        font-size: 29px;
+    .badge{
+      border-radius:999px !important;
+      padding:7px 11px !important;
+      background:#dbeafe !important;
+      color:#1e3a8a !important;
+      font-weight:950 !important;
+    }
+
+    .table-wrap{
+      border-radius:22px !important;
+      overflow:auto !important;
+      border:1px solid #e2e8f0 !important;
+    }
+
+    table{
+      background:white !important;
+    }
+
+    th{
+      background:#f1f5f9 !important;
+      font-size:12px !important;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      color:#334155 !important;
+    }
+
+    th,td{
+      padding:11px 9px !important;
+    }
+
+    @media(max-width:640px){
+      .top-app{
+        border-bottom-left-radius:28px;
+        border-bottom-right-radius:28px;
       }
 
-      .hero {
-        border-bottom-left-radius: 26px;
-        border-bottom-right-radius: 26px;
+      #pageTitle{
+        font-size:27px;
+      }
+
+      .quick-info{
+        gap:7px;
+      }
+
+      .quick-info div{
+        padding:9px 8px;
       }
     }
   </style>
 </head>
 
 <body>
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-top">
+  <header class="top-app">
+    <div class="top-inner">
+      <div class="top-row">
         <div>
-          <p class="eyebrow">Aplikasi Laporan</p>
-          <h1 id="appTitle">MAQSHOF</h1>
-          <p id="appSubtitle">Input, laporan, dan pengaturan item</p>
+          <p class="brand-kicker">MAQSHOF SYSTEM</p>
+          <h1 id="pageTitle">Input Laporan</h1>
+          <p id="pageDesc">Catat penjualan harian dengan cepat, rapi, dan tersimpan offline.</p>
         </div>
-        <div class="logo-mark">M</div>
+        <div class="brand-logo">M</div>
       </div>
 
-      <div class="hero-stats">
+      <div class="quick-info">
         <div>
           <span>Mode</span>
           <b>Offline</b>
         </div>
         <div>
-          <span>Penyimpanan</span>
+          <span>Data</span>
           <b>IndexedDB</b>
         </div>
         <div>
           <span>Status</span>
-          <b>Siap Pakai</b>
+          <b>Siap</b>
         </div>
       </div>
     </div>
-  </section>
-
-  <nav class="tabs">
-    <button class="tab-btn active" data-tab="input">＋<br>Input</button>
-    <button class="tab-btn" data-tab="harian">◷<br>Harian</button>
-    <button class="tab-btn" data-tab="bulanan">▦<br>Bulanan</button>
-    <button class="tab-btn" data-tab="setting">⚙<br>Setting</button>
-  </nav>
+  </header>
 
   <main class="container">
     <section id="tab-input" class="tab-page active"></section>
@@ -284,6 +388,64 @@
     <section id="tab-setting" class="tab-page"></section>
   </main>
 
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="input">
+      <span class="ico">＋</span>
+      Input
+    </button>
+    <button class="tab-btn" data-tab="harian">
+      <span class="ico">◷</span>
+      Harian
+    </button>
+    <button class="tab-btn" data-tab="bulanan">
+      <span class="ico">▦</span>
+      Bulanan
+    </button>
+    <button class="tab-btn" data-tab="setting">
+      <span class="ico">⚙</span>
+      Setting
+    </button>
+  </nav>
+
   <script type="module" src="js/app.js"></script>
+
+  <script>
+    const pageInfo = {
+      input: {
+        title: "Input Laporan",
+        desc: "Catat penjualan harian dengan cepat, rapi, dan tersimpan offline."
+      },
+      harian: {
+        title: "Laporan Harian",
+        desc: "Lihat laporan per tanggal, kirim WhatsApp, atau hapus data harian."
+      },
+      bulanan: {
+        title: "Laporan Bulanan",
+        desc: "Rekap penjualan satu bulan dan hapus data lama agar tidak menumpuk."
+      },
+      setting: {
+        title: "Setting Item",
+        desc: "Atur macam, item, harga, dan urutan tanpa mengubah kode aplikasi."
+      }
+    };
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tab = btn.dataset.tab;
+
+        document.querySelectorAll(".tab-btn").forEach(x => x.classList.remove("active"));
+        document.querySelectorAll(".tab-page").forEach(x => x.classList.remove("active"));
+
+        btn.classList.add("active");
+        const page = document.getElementById("tab-" + tab);
+        if (page) page.classList.add("active");
+
+        document.getElementById("pageTitle").textContent = pageInfo[tab].title;
+        document.getElementById("pageDesc").textContent = pageInfo[tab].desc;
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+  </script>
 </body>
 </html>
