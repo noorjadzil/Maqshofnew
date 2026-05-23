@@ -1,1 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Laporan Penjualan Harian</title>
 
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Laporan Penjualan Harian</h1>
+  <p>Bubur Extra Topping</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Data Laporan</h2>
+
+    <label>Tanggal</label>
+    <input type="date" id="tanggal">
+
+    <label>Catatan</label>
+    <textarea id="catatan"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>Penjualan Bubur</h2>
+    <table id="tabelProduk">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Harga</th>
+          <th>Jumlah</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Extra Topping</h2>
+    <table id="tabelExtra">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Harga</th>
+          <th>Jumlah</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Minuman</h2>
+    <table id="tabelMinuman">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Harga</th>
+          <th>Jumlah</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Total Semua</h2>
+
+    <div class="total-box" id="grandTotal">
+      Rp 0
+    </div>
+
+    <button class="primary" onclick="simpan()">
+      Simpan
+    </button>
+
+    <button class="green" onclick="kirimWA()">
+      Kirim WhatsApp
+    </button>
+  </div>
+
+</div>
+
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
