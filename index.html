@@ -1,451 +1,544 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>MAQSHOF</title>
-  <meta name="theme-color" content="#07111f" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="css/style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>MAQSHOF</title>
 
-  <style>
-    :root{
-      --bg:#f3f7ff;
-      --dark:#07111f;
-      --navy:#0f172a;
-      --blue:#2563eb;
-      --cyan:#38bdf8;
-      --card:#ffffff;
-      --muted:#64748b;
-      --line:#e2e8f0;
-      --shadow:0 18px 50px rgba(15,23,42,.14);
-    }
+<style>
+:root{
+  --bg:#f4f8ff;
+  --dark:#07111f;
+  --navy:#0f172a;
+  --blue:#2563eb;
+  --cyan:#38bdf8;
+  --white:#fff;
+  --muted:#64748b;
+  --line:#e2e8f0;
+  --shadow:0 18px 50px rgba(15,23,42,.12);
+}
 
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
-    body{
-      margin:0 !important;
-      min-height:100vh;
-      padding-bottom:96px;
-      background:
-        radial-gradient(circle at 10% 0%, rgba(37,99,235,.25), transparent 28%),
-        radial-gradient(circle at 90% 10%, rgba(56,189,248,.22), transparent 24%),
-        linear-gradient(180deg,#f8fbff 0%,var(--bg) 100%) !important;
-      color:var(--navy);
-      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif !important;
-    }
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(37,99,235,.20), transparent 30%),
+    radial-gradient(circle at top right, rgba(56,189,248,.20), transparent 30%),
+    linear-gradient(180deg,#f8fbff 0%,var(--bg) 100%);
+  color:var(--navy);
+  min-height:100vh;
+  padding-bottom:95px;
+}
 
-    .app-header{display:none !important}
+.top{
+  background:
+    radial-gradient(circle at 90% 0%, rgba(56,189,248,.40), transparent 30%),
+    linear-gradient(135deg,#07111f 0%,#0f172a 45%,#1d4ed8 100%);
+  color:white;
+  padding:20px 16px 18px;
+  border-bottom-left-radius:32px;
+  border-bottom-right-radius:32px;
+  box-shadow:0 20px 50px rgba(15,23,42,.28);
+}
 
-    .top-app{
-      position:sticky;
-      top:0;
-      z-index:20;
-      padding:14px 14px 16px;
-      background:
-        radial-gradient(circle at 90% 0%, rgba(56,189,248,.38), transparent 30%),
-        linear-gradient(135deg,#07111f 0%,#0f172a 45%,#1d4ed8 100%);
-      color:white;
-      border-bottom-left-radius:32px;
-      border-bottom-right-radius:32px;
-      box-shadow:0 20px 50px rgba(15,23,42,.28);
-    }
+.top-inner{
+  max-width:950px;
+  margin:auto;
+}
 
-    .top-inner{
-      max-width:980px;
-      margin:auto;
-    }
+.top-row{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:flex-start;
+}
 
-    .top-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-    }
+.kicker{
+  margin:0 0 6px;
+  font-size:11px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#bfdbfe;
+  font-weight:900;
+}
 
-    .brand-kicker{
-      margin:0 0 5px;
-      font-size:11px;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      color:#bfdbfe;
-      font-weight:900;
-    }
+#title{
+  margin:0;
+  font-size:30px;
+  letter-spacing:-.05em;
+  font-weight:950;
+}
 
-    #pageTitle{
-      margin:0;
-      font-size:29px;
-      line-height:1;
-      letter-spacing:-.05em;
-      font-weight:950;
-    }
+#desc{
+  margin:8px 0 0;
+  color:#dbeafe;
+  font-size:13px;
+  line-height:1.4;
+}
 
-    #pageDesc{
-      margin:8px 0 0;
-      color:#dbeafe;
-      font-size:13px;
-      line-height:1.35;
-    }
+.logo{
+  width:58px;
+  height:58px;
+  border-radius:22px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.26);
+  font-size:26px;
+  font-weight:950;
+}
 
-    .brand-logo{
-      width:58px;
-      height:58px;
-      border-radius:22px;
-      display:grid;
-      place-items:center;
-      background:rgba(255,255,255,.14);
-      border:1px solid rgba(255,255,255,.26);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
-      font-size:26px;
-      font-weight:950;
-    }
+.quick{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:16px;
+}
 
-    .quick-info{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:9px;
-      margin-top:15px;
-    }
+.quick div{
+  padding:11px;
+  border-radius:18px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+}
 
-    .quick-info div{
-      padding:10px;
-      border-radius:18px;
-      background:rgba(255,255,255,.12);
-      border:1px solid rgba(255,255,255,.18);
-      backdrop-filter:blur(12px);
-    }
+.quick span{
+  display:block;
+  color:#bfdbfe;
+  font-size:10px;
+  margin-bottom:4px;
+}
 
-    .quick-info span{
-      display:block;
-      color:#bfdbfe;
-      font-size:10px;
-      margin-bottom:3px;
-    }
+.quick b{
+  font-size:12px;
+}
 
-    .quick-info b{
-      font-size:12px;
-    }
+.container{
+  max-width:950px;
+  margin:auto;
+  padding:16px 14px 0;
+}
 
-    .container{
-      max-width:980px !important;
-      margin:auto !important;
-      padding:16px 14px 10px !important;
-    }
+.page{
+  display:none;
+  animation:fade .2s ease;
+}
 
-    .tab-page{
-      display:none !important;
-      animation:pageIn .22s ease both;
-    }
+.page.active{
+  display:block;
+}
 
-    .tab-page.active{
-      display:block !important;
-    }
+@keyframes fade{
+  from{
+    opacity:0;
+    transform:translateY(10px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
 
-    @keyframes pageIn{
-      from{opacity:0;transform:translateY(10px) scale(.99)}
-      to{opacity:1;transform:translateY(0) scale(1)}
-    }
+.card{
+  background:rgba(255,255,255,.96);
+  border-radius:26px;
+  border:1px solid rgba(226,232,240,.95);
+  box-shadow:var(--shadow);
+  padding:16px;
+  margin-bottom:14px;
+}
 
-    .tabs{
-      position:fixed !important;
-      left:12px !important;
-      right:12px !important;
-      bottom:12px !important;
-      top:auto !important;
-      z-index:99 !important;
-      max-width:620px;
-      margin:auto !important;
-      display:grid !important;
-      grid-template-columns:repeat(4,1fr) !important;
-      gap:8px !important;
-      padding:8px !important;
-      border-radius:28px !important;
-      background:rgba(255,255,255,.88) !important;
-      border:1px solid rgba(203,213,225,.88) !important;
-      box-shadow:0 20px 55px rgba(15,23,42,.22) !important;
-      backdrop-filter:blur(22px);
-    }
+.card h2{
+  margin:0 0 12px;
+  font-size:19px;
+  font-weight:950;
+  letter-spacing:-.03em;
+}
 
-    .tab-btn{
-      margin:0 !important;
-      padding:10px 4px !important;
-      border:0 !important;
-      border-radius:21px !important;
-      background:transparent !important;
-      color:#64748b !important;
-      font-size:11px !important;
-      font-weight:900 !important;
-      line-height:1.15 !important;
-      display:grid !important;
-      place-items:center !important;
-      gap:3px !important;
-      box-shadow:none !important;
-    }
+label{
+  display:block;
+  margin-top:12px;
+  margin-bottom:6px;
+  font-size:13px;
+  font-weight:900;
+  color:#334155;
+}
 
-    .tab-btn .ico{
-      width:30px;
-      height:30px;
-      border-radius:14px;
-      display:grid;
-      place-items:center;
-      font-size:17px;
-      background:#eef2ff;
-      color:#1e3a8a;
-    }
+input,textarea{
+  width:100%;
+  border:1px solid #dbe4f0;
+  background:#f8fafc;
+  border-radius:18px;
+  padding:14px;
+  font-size:15px;
+  outline:none;
+}
 
-    .tab-btn.active{
-      color:white !important;
-      background:linear-gradient(135deg,#0f172a,#2563eb) !important;
-      box-shadow:0 12px 28px rgba(37,99,235,.34) !important;
-    }
+input:focus,textarea:focus{
+  border-color:#60a5fa;
+  background:white;
+  box-shadow:0 0 0 4px rgba(96,165,250,.18);
+}
 
-    .tab-btn.active .ico{
-      background:rgba(255,255,255,.18);
-      color:white;
-    }
+textarea{
+  min-height:90px;
+  resize:vertical;
+}
 
-    .card{
-      border-radius:26px !important;
-      background:rgba(255,255,255,.96) !important;
-      border:1px solid rgba(226,232,240,.95) !important;
-      box-shadow:var(--shadow) !important;
-      margin-bottom:14px !important;
-      overflow:hidden;
-    }
+.item{
+  display:grid;
+  grid-template-columns:1.4fr .8fr .8fr;
+  gap:10px;
+  align-items:end;
+  padding:12px;
+  border-radius:22px;
+  border:1px solid #e2e8f0;
+  background:linear-gradient(180deg,#fff,#f8fafc);
+  margin-bottom:11px;
+}
 
-    .card h2{
-      font-size:19px !important;
-      letter-spacing:-.03em;
-      font-weight:950 !important;
-    }
+.item small{
+  color:var(--muted);
+}
 
-    label{
-      font-size:13px !important;
-      font-weight:900 !important;
-      color:#334155 !important;
-    }
+.category{
+  background:linear-gradient(135deg,#e0f2fe,#dbeafe);
+  color:#1e3a8a;
+  border-radius:18px;
+  padding:13px;
+  font-weight:950;
+  margin:18px 0 12px;
+}
 
-    input,textarea,select{
-      border-radius:17px !important;
-      padding:14px !important;
-      border:1px solid #dbe4f0 !important;
-      background:#f8fafc !important;
-      font-size:15px !important;
-      outline:none !important;
-    }
+.total{
+  border-radius:24px;
+  padding:18px;
+  font-size:28px;
+  text-align:center;
+  font-weight:950;
+  background:
+    radial-gradient(circle at 90% 0%, rgba(56,189,248,.28), transparent 35%),
+    linear-gradient(135deg,#ecfeff,#eff6ff);
+  border:1px solid #bae6fd;
+}
 
-    input:focus,textarea:focus,select:focus{
-      border-color:#60a5fa !important;
-      background:white !important;
-      box-shadow:0 0 0 4px rgba(96,165,250,.18) !important;
-    }
+button{
+  width:100%;
+  border:0;
+  border-radius:18px;
+  padding:14px;
+  font-size:15px;
+  font-weight:950;
+  margin-top:10px;
+}
 
-    button{
-      border-radius:18px !important;
-      padding:14px !important;
-      font-weight:950 !important;
-      letter-spacing:-.01em;
-    }
+.primary{
+  background:linear-gradient(135deg,#0f172a,#2563eb);
+  color:white;
+}
 
-    .primary{
-      background:linear-gradient(135deg,#0f172a,#2563eb) !important;
-      color:white !important;
-    }
+.green{
+  background:linear-gradient(135deg,#047857,#16a34a);
+  color:white;
+}
 
-    .green{
-      background:linear-gradient(135deg,#047857,#16a34a) !important;
-      color:white !important;
-    }
+.red{
+  background:linear-gradient(135deg,#991b1b,#dc2626);
+  color:white;
+}
 
-    .red{
-      background:linear-gradient(135deg,#991b1b,#dc2626) !important;
-      color:white !important;
-    }
+.gray{
+  background:#e2e8f0;
+  color:#0f172a;
+}
 
-    .gray{
-      background:#e2e8f0 !important;
-      color:#0f172a !important;
-    }
+.nav{
+  position:fixed;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  z-index:99;
+  max-width:620px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  padding:8px;
+  border-radius:28px;
+  background:rgba(255,255,255,.88);
+  border:1px solid rgba(203,213,225,.88);
+  box-shadow:0 20px 55px rgba(15,23,42,.22);
+  backdrop-filter:blur(22px);
+}
 
-    .yellow{
-      background:#fef3c7 !important;
-      color:#92400e !important;
-    }
+.nav button{
+  margin:0;
+  padding:10px 4px;
+  background:transparent;
+  color:#64748b;
+  border-radius:21px;
+  font-size:11px;
+  display:grid;
+  place-items:center;
+  gap:4px;
+}
 
-    .category-title{
-      background:linear-gradient(135deg,#e0f2fe,#dbeafe) !important;
-      color:#1e3a8a !important;
-      border-radius:18px !important;
-      padding:13px !important;
-      font-weight:950 !important;
-      margin-top:18px !important;
-    }
+.nav button.active{
+  background:linear-gradient(135deg,#0f172a,#2563eb);
+  color:white;
+  box-shadow:0 12px 28px rgba(37,99,235,.34);
+}
 
-    .item-row,.setting-row{
-      border-radius:22px !important;
-      padding:13px !important;
-      margin-bottom:11px !important;
-      background:linear-gradient(180deg,#fff,#f8fafc) !important;
-      border:1px solid #e2e8f0 !important;
-    }
+.ico{
+  width:30px;
+  height:30px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:#eef2ff;
+  color:#1e3a8a;
+  font-size:17px;
+}
 
-    .total-box{
-      border-radius:24px !important;
-      padding:18px !important;
-      font-size:27px !important;
-      font-weight:950 !important;
-      letter-spacing:-.04em;
-      background:
-        radial-gradient(circle at 90% 0%, rgba(56,189,248,.28), transparent 35%),
-        linear-gradient(135deg,#ecfeff,#eff6ff) !important;
-      border:1px solid #bae6fd !important;
-    }
+.nav button.active .ico{
+  background:rgba(255,255,255,.18);
+  color:white;
+}
 
-    .badge{
-      border-radius:999px !important;
-      padding:7px 11px !important;
-      background:#dbeafe !important;
-      color:#1e3a8a !important;
-      font-weight:950 !important;
-    }
+@media(max-width:640px){
+  .item{
+    grid-template-columns:1fr;
+  }
 
-    .table-wrap{
-      border-radius:22px !important;
-      overflow:auto !important;
-      border:1px solid #e2e8f0 !important;
-    }
-
-    table{
-      background:white !important;
-    }
-
-    th{
-      background:#f1f5f9 !important;
-      font-size:12px !important;
-      text-transform:uppercase;
-      letter-spacing:.04em;
-      color:#334155 !important;
-    }
-
-    th,td{
-      padding:11px 9px !important;
-    }
-
-    @media(max-width:640px){
-      .top-app{
-        border-bottom-left-radius:28px;
-        border-bottom-right-radius:28px;
-      }
-
-      #pageTitle{
-        font-size:27px;
-      }
-
-      .quick-info{
-        gap:7px;
-      }
-
-      .quick-info div{
-        padding:9px 8px;
-      }
-    }
-  </style>
+  #title{
+    font-size:27px;
+  }
+}
+</style>
 </head>
 
 <body>
-  <header class="top-app">
-    <div class="top-inner">
-      <div class="top-row">
-        <div>
-          <p class="brand-kicker">MAQSHOF SYSTEM</p>
-          <h1 id="pageTitle">Input Laporan</h1>
-          <p id="pageDesc">Catat penjualan harian dengan cepat, rapi, dan tersimpan offline.</p>
-        </div>
-        <div class="brand-logo">M</div>
+
+<header class="top">
+  <div class="top-inner">
+
+    <div class="top-row">
+      <div>
+        <p class="kicker">MAQSHOF SYSTEM</p>
+        <h1 id="title">Input Laporan</h1>
+        <p id="desc">Catat penjualan harian dengan cepat dan profesional.</p>
       </div>
 
-      <div class="quick-info">
-        <div>
-          <span>Mode</span>
-          <b>Offline</b>
-        </div>
-        <div>
-          <span>Data</span>
-          <b>IndexedDB</b>
-        </div>
-        <div>
-          <span>Status</span>
-          <b>Siap</b>
-        </div>
+      <div class="logo">M</div>
+    </div>
+
+    <div class="quick">
+      <div>
+        <span>Mode</span>
+        <b>Offline</b>
+      </div>
+
+      <div>
+        <span>Storage</span>
+        <b>IndexedDB</b>
+      </div>
+
+      <div>
+        <span>Status</span>
+        <b>Siap</b>
       </div>
     </div>
-  </header>
 
-  <main class="container">
-    <section id="tab-input" class="tab-page active"></section>
-    <section id="tab-harian" class="tab-page"></section>
-    <section id="tab-bulanan" class="tab-page"></section>
-    <section id="tab-setting" class="tab-page"></section>
-  </main>
+  </div>
+</header>
 
-  <nav class="tabs">
-    <button class="tab-btn active" data-tab="input">
-      <span class="ico">＋</span>
-      Input
-    </button>
-    <button class="tab-btn" data-tab="harian">
-      <span class="ico">◷</span>
-      Harian
-    </button>
-    <button class="tab-btn" data-tab="bulanan">
-      <span class="ico">▦</span>
-      Bulanan
-    </button>
-    <button class="tab-btn" data-tab="setting">
-      <span class="ico">⚙</span>
-      Setting
-    </button>
-  </nav>
+<div class="container">
 
-  <script type="module" src="js/app.js"></script>
+  <!-- INPUT -->
+  <section class="page active" id="inputPage">
 
-  <script>
-    const pageInfo = {
-      input: {
-        title: "Input Laporan",
-        desc: "Catat penjualan harian dengan cepat, rapi, dan tersimpan offline."
-      },
-      harian: {
-        title: "Laporan Harian",
-        desc: "Lihat laporan per tanggal, kirim WhatsApp, atau hapus data harian."
-      },
-      bulanan: {
-        title: "Laporan Bulanan",
-        desc: "Rekap penjualan satu bulan dan hapus data lama agar tidak menumpuk."
-      },
-      setting: {
-        title: "Setting Item",
-        desc: "Atur macam, item, harga, dan urutan tanpa mengubah kode aplikasi."
-      }
-    };
+    <div class="card">
+      <h2>Input Laporan</h2>
 
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const tab = btn.dataset.tab;
+      <label>Tanggal</label>
+      <input type="date">
 
-        document.querySelectorAll(".tab-btn").forEach(x => x.classList.remove("active"));
-        document.querySelectorAll(".tab-page").forEach(x => x.classList.remove("active"));
+      <label>Catatan</label>
+      <textarea placeholder="Tambahkan catatan..."></textarea>
+    </div>
 
-        btn.classList.add("active");
-        const page = document.getElementById("tab-" + tab);
-        if (page) page.classList.add("active");
+    <div class="card">
+      <h2>Daftar Item</h2>
 
-        document.getElementById("pageTitle").textContent = pageInfo[tab].title;
-        document.getElementById("pageDesc").textContent = pageInfo[tab].desc;
+      <div class="category">Bubur</div>
 
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    });
-  </script>
+      <div class="item">
+        <div>
+          <b>Bubur Ori</b><br>
+          <small>Rp 7.000</small>
+        </div>
+
+        <div>
+          <label>Jumlah</label>
+          <input type="number" value="0">
+        </div>
+
+        <div>
+          <label>Total</label>
+          <div class="total" style="font-size:15px;padding:14px">Rp 0</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div>
+          <b>Bubur Ayam</b><br>
+          <small>Rp 12.000</small>
+        </div>
+
+        <div>
+          <label>Jumlah</label>
+          <input type="number" value="0">
+        </div>
+
+        <div>
+          <label>Total</label>
+          <div class="total" style="font-size:15px;padding:14px">Rp 0</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <h2>Total Semua</h2>
+
+      <div class="total">
+        Rp 0
+      </div>
+
+      <button class="primary">Simpan Laporan</button>
+      <button class="green">Kirim WhatsApp</button>
+    </div>
+
+  </section>
+
+  <!-- HARIAN -->
+  <section class="page" id="harianPage">
+    <div class="card">
+      <h2>Laporan Harian</h2>
+
+      <label>Pilih Tanggal</label>
+      <input type="date">
+
+      <button class="primary">Tampilkan</button>
+      <button class="red">Hapus Data</button>
+    </div>
+  </section>
+
+  <!-- BULANAN -->
+  <section class="page" id="bulananPage">
+    <div class="card">
+      <h2>Laporan Bulanan</h2>
+
+      <label>Pilih Bulan</label>
+      <input type="month">
+
+      <button class="primary">Tampilkan Rekap</button>
+      <button class="red">Hapus Data Bulan Ini</button>
+    </div>
+  </section>
+
+  <!-- SETTING -->
+  <section class="page" id="settingPage">
+    <div class="card">
+      <h2>Setting Item</h2>
+
+      <label>Kategori</label>
+      <input type="text" placeholder="Contoh: Bubur">
+
+      <label>Nama Item</label>
+      <input type="text" placeholder="Contoh: Bubur Ori">
+
+      <label>Harga</label>
+      <input type="number">
+
+      <button class="primary">Simpan Item</button>
+    </div>
+  </section>
+
+</div>
+
+<nav class="nav">
+
+  <button class="active" onclick="openPage('input')">
+    <span class="ico">＋</span>
+    Input
+  </button>
+
+  <button onclick="openPage('harian')">
+    <span class="ico">◷</span>
+    Harian
+  </button>
+
+  <button onclick="openPage('bulanan')">
+    <span class="ico">▦</span>
+    Bulanan
+  </button>
+
+  <button onclick="openPage('setting')">
+    <span class="ico">⚙</span>
+    Setting
+  </button>
+
+</nav>
+
+<script>
+function openPage(page){
+
+  document.querySelectorAll(".page").forEach(el=>{
+    el.classList.remove("active");
+  });
+
+  document.querySelectorAll(".nav button").forEach(el=>{
+    el.classList.remove("active");
+  });
+
+  document.getElementById(page+"Page").classList.add("active");
+
+  event.currentTarget.classList.add("active");
+
+  const data = {
+    input:{
+      title:"Input Laporan",
+      desc:"Catat penjualan harian dengan cepat dan profesional."
+    },
+    harian:{
+      title:"Laporan Harian",
+      desc:"Lihat laporan per tanggal dan hapus data yang tidak dibutuhkan."
+    },
+    bulanan:{
+      title:"Laporan Bulanan",
+      desc:"Rekap bulanan yang rapi dan mudah dipahami."
+    },
+    setting:{
+      title:"Setting Item",
+      desc:"Atur item dan kategori tanpa edit kode aplikasi."
+    }
+  };
+
+  document.getElementById("title").innerText=data[page].title;
+  document.getElementById("desc").innerText=data[page].desc;
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
+</script>
+
 </body>
 </html>
