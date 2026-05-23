@@ -26,3 +26,8 @@ Aplikasi laporan sederhana berbasis HTML, CSS, JavaScript modular, dan IndexedDB
 
 Data tersimpan di browser/HP menggunakan IndexedDB.
 Kalau browser dibersihkan total, data lokal bisa ikut hilang. Gunakan fitur backup nanti bila sudah ditambahkan.
+
+
+## Versi Modern
+
+Tampilan sudah dibuat lebih profesional dengan hero dashboard, bottom navigation, card modern, dan desain lebih nyaman untuk HP.
