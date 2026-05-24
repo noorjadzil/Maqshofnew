@@ -1,1 +1,22 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Input 2 - Bubur Ayam Bandung Akang Hamzah</title><link rel="stylesheet" href="style.css"></head><body><div id="app"></div><script src="app.js"></script><script>initInput(2)</script></body></html>
+<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Input 2 - Stepper</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="hero"><h1>Input 2 — Stepper Harian</h1><p>Konsep bertahap: data laporan → penjualan → stok → simpan.</p></header><main class="wrap">
+<div class="card"><div class="row"><div><label>Tanggal</label><input type="date" id="tanggal"></div><div><label>Shift / Periode</label><select id="shift"><option>Pagi</option><option>Sore</option><option>Malam</option><option>Full Day</option></select></div></div><label>Catatan</label><textarea id="catatan" placeholder="Catatan tambahan..."></textarea></div>
+<div class="tabs" id="tabs"></div><section id="area"></section>
+<div class="card"><div class="section-title"><div><b>Total sementara</b><div class="total" id="total">Rp 0</div></div><button class="green" onclick="simpanLaporan()">Simpan</button></div><button class="soft" onclick="kirim()">Kirim WhatsApp</button></div>
+</main><div id="nav"></div><script src="db.js"></script><script>
+let S, current='produk', latest=null; const keys=['produk','extra','minuman','stok','cekBarang'];
+const labels={produk:'Bubur',extra:'Extra Topping',minuman:'Minuman',stok:'Stok',cekBarang:'Cek Barang'};
+window.onload=async()=>{S=await getSettings(); tanggal.value=today(); navEl(); renderTabs(); render();};
+function navEl(){document.getElementById('nav').innerHTML=nav('input').replaceAll('Input2','Input2').replaceAll('laporan2','laporan2').replaceAll('setting2','setting2')}
+function renderTabs(){tabs.innerHTML=keys.map(k=>`<button class="${k===current?'on':''}" onclick="current='${k}';renderTabs();render()">${labels[k]}</button>`).join('')}
+function render(){let html='<div class="card"><h2>'+labels[current]+'</h2>';
+ if(['produk','extra','minuman'].includes(current)){html+='<div class="grid">'+activeItems(S,current).map((x,i)=>`<div class="card" style="margin:0"><b>${x.nama}</b><p class="muted">${rupiah(x.harga)}</p><div class="qty"><button class="ghost" onclick="chg('${current}',${i},-1)">−</button><input id="${current}_${i}" type="number" min="0" value="0" oninput="hitung()"><button class="soft" onclick="chg('${current}',${i},1)">+</button></div></div>`).join('')+'</div>'}
+ if(current==='stok'){html+='<div class="grid">'+(S.stok||[]).map((n,i)=>`<div><label>${n}</label><div class="row"><input id="stok_awal_${i}" type="number" placeholder="Awal"><input id="stok_sisa_${i}" type="number" placeholder="Sisa"></div></div>`).join('')+'</div>'}
+ if(current==='cekBarang'){html+='<div class="grid">'+(S.cekBarang||[]).map((n,i)=>`<label class="pill"><input id="cek_${i}" type="checkbox" style="width:auto"> ${n} kurang</label>`).join('')+'</div>'}
+ area.innerHTML=html+'</div>'; hitung();}
+function chg(k,i,d){let el=document.getElementById(`${k}_${i}`); el.value=Math.max(0,Number(el.value||0)+d); hitung()}
+function kumpul(){let data={tanggal:tanggal.value,shift:shift.value,catatan:catatan.value,konsep:'Input2'}; ['produk','extra','minuman'].forEach(k=>data[k]=activeItems(S,k).map((x,i)=>({...x,jumlah:Number(document.getElementById(`${k}_${i}`)?.value||0)}))); data.stok=(S.stok||[]).map((n,i)=>({nama:n,awal:Number(document.getElementById(`stok_awal_${i}`)?.value||0),sisa:Number(document.getElementById(`stok_sisa_${i}`)?.value||0)})); data.cekBarang=(S.cekBarang||[]).filter((n,i)=>document.getElementById(`cek_${i}`)?.checked).map(n=>({nama:n,kurang:true})); return calcReport(data)}
+function hitung(){latest=kumpul(); total.innerText=rupiah(latest.total)}
+async function simpanLaporan(){latest=kumpul(); await saveReport(latest); alert('Tersimpan di IndexedDB')}
+async function kirim(){latest=kumpul(); openWA(latest,S)}
+</script></body></html>
