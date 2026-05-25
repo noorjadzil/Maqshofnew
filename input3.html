@@ -8,20 +8,22 @@
 
 <style>
 .tab-wrap{
-display:flex;
-gap:10px;
-overflow-x:auto;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
 padding:0 0 10px;
 margin-bottom:14px;
-scrollbar-width:none;
+width:100%;
 }
-.tab-wrap::-webkit-scrollbar{
-display:none;
-}
+
 .tab-wrap button{
-flex:none;
-white-space:nowrap;
-min-width:145px;
+width:100%;
+min-width:0;
+white-space:normal;
+font-size:13px;
+padding:10px 6px;
+line-height:1.2;
+text-align:center;
 }
 .tab-page{
 animation:fade .2s ease;
