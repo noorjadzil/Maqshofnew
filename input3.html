@@ -50,6 +50,32 @@ cursor:pointer;
 font-size:18px;
 font-weight:900;
 }
+  .menu-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+}
+
+.menu-grid button{
+padding:10px !important;
+border-radius:16px;
+}
+
+.menu-grid b{
+font-size:14px;
+display:block;
+margin-bottom:4px;
+line-height:1.2;
+}
+
+.menu-grid .muted{
+font-size:12px;
+}
+
+.menu-grid .pill{
+font-size:12px;
+padding:4px 8px;
+}
 </style>
 </head>
 
@@ -143,7 +169,7 @@ function render(){
       <div class="card">
         <h2>${tabs.find(t=>t.id===currentTab).nama}</h2>
 
-        <div class="grid">
+        <div class="grid menu-grid">
           ${activeItems(S,currentTab).map((x,i)=>`
             <button 
               class="ghost"
