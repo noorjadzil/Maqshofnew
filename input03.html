@@ -344,7 +344,19 @@ function hitung(){
 }
 
 async function simpanLaporan(){
+
   await saveReport(kumpul());
+
+  ['produk','extra','minuman'].forEach(k=>{
+    qty[k] = qty[k].map(()=>0);
+  });
+
+  stokValue = stokValue.map(()=>0);
+
+  catatan.value = '';
+
+  render();
+
   alert('Tersimpan');
 }
 
