@@ -84,6 +84,15 @@ function snoozeAlarm(){stopBeep();document.getElementById("alarmBox").style.disp
 function checkAlarm(){if(activeAlarm)return;const now=Date.now();const due=getNotes().find(n=>n.alarmActive&&n.alarmTime&&Math.abs(new Date(n.alarmTime).getTime()-now)<30000);if(due)showAlarm(due)}
 setInterval(checkAlarm,8000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAlarm()});requestNotif();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js').catch(()=>{})}
+
+<!-- TAMBAHKAN DI SINI -->
+<script src="notifications.js"></script>
+
+<script>
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("service-worker.js");
+}
 </script>
+
 </body>
 </html>
