@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nozil Note</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07111f;--card:#0f172a;--line:#334155;--gold:#facc15;--text:#fff;--muted:#94a3b8}
+body{font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top left,#1e3a8a55,transparent 35%),linear-gradient(135deg,#020617,#07111f,#0f172a);color:var(--text);min-height:100vh;padding:16px 16px 92px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.logo{font-size:26px;font-weight:950;letter-spacing:-.5px}.logo span{color:var(--gold)}
+.btn{border:0;border-radius:16px;padding:12px 16px;background:linear-gradient(135deg,#facc15,#f97316);color:#111827;font-weight:950;text-decoration:none;box-shadow:0 12px 30px #0008}
+.search{width:100%;padding:15px;border-radius:20px;border:1px solid var(--line);background:#020617cc;color:white;margin-bottom:12px;outline:none}
+.filters{display:flex;gap:8px;overflow:auto;margin-bottom:14px;padding-bottom:2px}
+.filters button{white-space:nowrap;border:1px solid var(--line);background:#0f172acc;color:white;border-radius:999px;padding:9px 13px;font-weight:800}
+.grid{display:grid;gap:14px}
+.card{padding:16px;border-radius:26px;box-shadow:0 16px 42px #0009;border:1px solid #ffffff22;overflow:hidden;animation:pop .25s ease}
+@keyframes pop{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+.card h3{font-size:19px;margin-bottom:8px}
+.card p{color:#e2e8f0;white-space:pre-wrap;line-height:1.45}
+.meta{margin-top:12px;font-size:12px;color:#cbd5e1;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.actions{display:flex;gap:8px;margin-top:12px}
+.actions a,.actions button{flex:1;border:0;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:900}
+.edit{background:#38bdf8;color:#082f49}.del{background:#ef4444;color:white}
+.empty{text-align:center;margin-top:72px;color:#94a3b8;line-height:1.7}
+.nav{position:fixed;left:16px;right:16px;bottom:16px;display:flex;gap:10px;z-index:20}
+.nav a{flex:1;text-align:center;background:#0f172ae6;color:white;border:1px solid #ffffff22;border-radius:20px;padding:13px;text-decoration:none;font-weight:900;backdrop-filter:blur(12px)}
+.toast{position:fixed;left:18px;right:18px;bottom:88px;background:#0f172a;border:1px solid #ffffff22;border-radius:18px;padding:14px 16px;box-shadow:0 18px 50px #000;display:none;z-index:120;font-weight:800}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:100;padding:20px;backdrop-filter:blur(8px)}
+.modalCard{width:100%;max-width:420px;background:linear-gradient(135deg,#0f172a,#111827);border:1px solid #ffffff24;border-radius:28px;padding:22px;box-shadow:0 30px 80px #000}
+.modalCard h2{margin-bottom:10px}.modalCard p{color:#cbd5e1;line-height:1.5}
+.modalBtns{display:flex;gap:10px;margin-top:18px}.modalBtns button{flex:1;border:0;border-radius:15px;padding:13px;font-weight:950}.cancel{background:#334155;color:white}.confirm{background:#ef4444;color:white}
+.alarmBox{position:fixed;inset:0;background:#000e;display:none;z-index:99;padding:20px;align-items:center;justify-content:center;backdrop-filter:blur(10px)}
+.alarmCard{width:100%;max-width:470px;min-height:440px;border-radius:34px;padding:30px;text-align:center;display:flex;flex-direction:column;justify-content:center;box-shadow:0 35px 90px #000;border:1px solid #ffffff33}
+.alarmCard h1{font-size:36px;margin-bottom:16px}.alarmCard p{font-size:23px;line-height:1.5;white-space:pre-wrap}
+.alarmBtns{display:flex;gap:10px;margin-top:28px}.alarmBtns button{flex:1;border:0;border-radius:17px;padding:15px;font-weight:950}
+.done{background:#22c55e;color:#052e16}.snooze{background:#facc15;color:#111827}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">Nozil <span>Note</span></div>
+  <a class="btn" href="catatan.html">+ Catatan</a>
+</div>
+
+<input class="search" id="search" placeholder="Cari judul, isi, tag...">
+
+<div class="filters">
+  <button onclick="setFilter('all')">Semua</button>
+  <button onclick="setFilter('pin')">📌 Pin</button>
+  <button onclick="setFilter('alarm')">⏰ Alarm</button>
+  <button onclick="setFilter('favorite')">⭐ Favorit</button>
+  <button onclick="setFilter('archive')">Arsip</button>
+</div>
+
+<div id="list" class="grid"></div>
+
+<div class="nav"><a href="index.html">Catatan</a><a href="setting.html">Setting</a></div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="deleteModal">
+  <div class="modalCard">
+    <h2>Hapus Catatan?</h2>
+    <p>Catatan ini akan dihapus dari perangkat ini. Pastikan sudah backup kalau penting.</p>
+    <div class="modalBtns">
+      <button class="cancel" onclick="closeDelete()">Batal</button>
+      <button class="confirm" onclick="confirmDelete()">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<div class="alarmBox" id="alarmBox">
+  <div class="alarmCard" id="alarmCard">
+    <h1 id="alarmTitle">Alarm Catatan</h1>
+    <p id="alarmBody"></p>
+    <div class="alarmBtns">
+      <button class="snooze" onclick="snoozeAlarm()">Tunda</button>
+      <button class="done" onclick="finishAlarm()">Selesai</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY="nozil_notes_v3";
+let filter="all", activeAlarm=null, deleteId=null, audioCtx=null, beepTimer=null, beepGain=null;
+const list=document.getElementById("list"), search=document.getElementById("search");
+
+function getNotes(){return JSON.parse(localStorage.getItem(KEY)||"[]")}
+function saveNotes(data){localStorage.setItem(KEY,JSON.stringify(data))}
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.style.display="block";clearTimeout(t._timer);t._timer=setTimeout(()=>t.style.display="none",2300)}
+function setFilter(v){filter=v;render()}
+function askDelete(id){deleteId=id;document.getElementById("deleteModal").style.display="flex"}
+function closeDelete(){deleteId=null;document.getElementById("deleteModal").style.display="none"}
+function confirmDelete(){if(deleteId){saveNotes(getNotes().filter(n=>n.id!==deleteId));toast("Catatan berhasil dihapus");render()}closeDelete()}
+function bgStyle(n){if(n.customImage)return `background:linear-gradient(#0009,#0009),url(${n.customImage}) center/cover;color:white;`;return n.bgStyle||"background:linear-gradient(135deg,#0f172a,#1e3a8a);color:white;"}
+function render(){
+  const q=search.value.toLowerCase();
+  let notes=getNotes().filter(n=>{
+    const text=((n.title||"")+" "+(n.body||"")+" "+(n.tag||"")).toLowerCase();
+    if(q && !text.includes(q))return false;
+    if(filter==="pin"&&!n.pin)return false;
+    if(filter==="alarm"&&!n.alarmActive)return false;
+    if(filter==="favorite"&&!n.favorite)return false;
+    if(filter==="archive"&&!n.archive)return false;
+    if(filter!=="archive"&&n.archive)return false;
+    return true;
+  });
+  notes.sort((a,b)=>(b.pin===true)-(a.pin===true)||(b.favorite===true)-(a.favorite===true)||(b.updated||0)-(a.updated||0));
+  if(!notes.length){list.innerHTML='<div class="empty">Belum ada catatan.<br>Tekan + Catatan untuk mulai.</div>';return}
+  list.innerHTML=notes.map(n=>`
+    <div class="card" style="${bgStyle(n)}">
+      <h3>${n.pin?'📌 ':''}${n.favorite?'⭐ ':''}${esc(n.title||'Tanpa Judul')}</h3>
+      <p style="font-size:${n.fontSize||18}px;color:${n.textColor||'inherit'}">${esc((n.body||'').slice(0,180))}</p>
+      <div class="meta">
+        <span>${n.tag?'#'+esc(n.tag):'Catatan'}</span>
+        <span>${n.alarmActive?'⏰ '+esc(n.alarmTime||'Alarm aktif'):''}</span>
+        <span>${new Date(n.updated||Date.now()).toLocaleDateString('id-ID')}</span>
+      </div>
+      <div class="actions">
+        <a class="edit" href="catatan.html?id=${n.id}">Edit</a>
+        <button class="del" onclick="askDelete('${n.id}')">Hapus</button>
+      </div>
+    </div>`).join("");
+}
+search.oninput=render;render();
+
+function startBeep(type="beep-premium", volume=0.35){
+  stopBeep();
+  audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  let step=0;
+  beepTimer=setInterval(()=>{
+    step++;
+    const pattern={
+      "beep-normal":[850,420,900],
+      "beep-fast":[1000,180,300],
+      "beep-slow":[620,700,1300],
+      "beep-premium":[880,180,260,1170,180,520],
+      "beep-deep":[320,600,1000],
+      "beep-soft":[520,300,900],
+      "beep-triple":[900,130,190,900,130,190,900,130,650],
+      "beep-rising":[520+step*35,260,650],
+      "digital":[1200,120,180,900,120,500],
+      "classic":[700,500,750],
+      "emergency":[1300,160,220],
+      "minimal-tick":[420,80,700]
+    }[type]||[850,420,900];
+    playPattern(pattern,volume);
+  },900);
+}
+function playPattern(arr,volume){
+  let delay=0;
+  for(let i=0;i<arr.length;i+=3){
+    setTimeout(()=>playTone(arr[i],arr[i+1],volume),delay);
+    delay+=arr[i+2]||300;
+  }
+}
+function playTone(freq,dur,volume){
+  if(!audioCtx)return;
+  const osc=audioCtx.createOscillator(), gain=audioCtx.createGain();
+  osc.type="sine";osc.frequency.value=freq;gain.gain.value=volume;
+  osc.connect(gain);gain.connect(audioCtx.destination);osc.start();setTimeout(()=>osc.stop(),dur);
+  if(navigator.vibrate) navigator.vibrate(120);
+}
+function stopBeep(){if(beepTimer)clearInterval(beepTimer);beepTimer=null}
+function showAlarm(note){
+  activeAlarm=note;
+  document.getElementById("alarmTitle").textContent=note.title||"Alarm Catatan";
+  document.getElementById("alarmBody").textContent=note.body||"Catatan penting";
+  document.getElementById("alarmCard").style.cssText=bgStyle(note);
+  document.getElementById("alarmBox").style.display="flex";
+  startBeep(note.alarmSound||"beep-premium",(note.alarmVolume||55)/100);
+}
+function finishAlarm(){
+  stopBeep();document.getElementById("alarmBox").style.display="none";
+  if(!activeAlarm)return;
+  let notes=getNotes().map(n=>{
+    if(n.id===activeAlarm.id){
+      if(n.repeatAlarm==="daily"){const d=new Date(n.alarmTime);d.setDate(d.getDate()+1);n.alarmTime=d.toISOString().slice(0,16)}
+      else n.alarmActive=false;
+      n.updated=Date.now();
+    }
+    return n;
+  });
+  saveNotes(notes);activeAlarm=null;toast("Alarm selesai");render();
+}
+function snoozeAlarm(){
+  stopBeep();document.getElementById("alarmBox").style.display="none";
+  if(!activeAlarm)return;
+  let minutes=Number(activeAlarm.snoozeMinutes||5);
+  let notes=getNotes().map(n=>{if(n.id===activeAlarm.id){n.alarmTime=new Date(Date.now()+minutes*60000).toISOString().slice(0,16);n.updated=Date.now()}return n});
+  saveNotes(notes);activeAlarm=null;toast("Alarm ditunda "+minutes+" menit");render();
+}
+function checkAlarm(){
+  if(activeAlarm)return;
+  const now=Date.now();
+  const due=getNotes().find(n=>n.alarmActive&&n.alarmTime&&Math.abs(new Date(n.alarmTime).getTime()-now)<30000);
+  if(due)showAlarm(due);
+}
+setInterval(checkAlarm,8000);
+</script>
+</body>
+</html>
