@@ -1,8 +1,11 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nozil Note</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#07111f">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#07111f;--card:#0f172a;--line:#334155;--gold:#facc15;--text:#fff;--muted:#94a3b8;--blue:#38bdf8;--red:#ef4444;--green:#22c55e}
@@ -36,10 +39,14 @@ body{font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 
 <div class="modal" id="mainModal"><div class="modalCard"><h2 id="modalTitle"></h2><p id="modalText"></p><div id="modalExtra"></div><div class="modalBtns" id="modalBtns"></div></div></div>
 <div class="sheet" id="actionSheet"><h3>Kelola Catatan</h3><div class="sheetGrid"><button class="goldBtn" onclick="toggleFavorite()">⭐ Favorit</button><button class="blueBtn" onclick="toggleArchive()">🗂️ Arsip</button><button class="darkBtn" onclick="openMoveFolder()">📁 Pindah Folder</button><button class="darkBtn" onclick="copyNoteText()">📋 Salin</button><button class="redBtn" onclick="askDeleteFromSheet()">🗑️ Hapus</button><button class="darkBtn" onclick="closeSheet()">Tutup</button></div></div>
 <div class="alarmBox" id="alarmBox"><div class="alarmCard" id="alarmCard"><h1 id="alarmTitle">Alarm Catatan</h1><p id="alarmBody"></p><div class="alarmBtns"><button class="snooze" onclick="snoozeAlarm()">Tunda</button><button class="done" onclick="finishAlarm()">Selesai</button></div></div></div>
+
+<script src="./notifications.js"></script>
+
 <script>
 const KEY="nozil_notes_v3", FOLDER_KEY="nozil_folders_v1";
 let filter="all", activeFolder="all", activeAlarm=null, selectedId=null, audioCtx=null, beepTimer=null;
 const list=document.getElementById("list"), search=document.getElementById("search"), sortBy=document.getElementById("sortBy");
+
 function getNotes(){return JSON.parse(localStorage.getItem(KEY)||"[]")}
 function saveNotes(data){localStorage.setItem(KEY,JSON.stringify(data))}
 function getFolders(){let f=JSON.parse(localStorage.getItem(FOLDER_KEY)||"[]"); if(!f.length){f=["Umum","Penting","Kerja","Pribadi"];localStorage.setItem(FOLDER_KEY,JSON.stringify(f))} return f}
@@ -48,7 +55,7 @@ function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&l
 function toast(msg,type="success"){const t=document.getElementById("toast");t.className="toast "+type;t.textContent=msg;t.style.display="block";clearTimeout(t._timer);t._timer=setTimeout(()=>t.style.display="none",2400)}
 function modal(title,text,buttons,extra=""){document.getElementById("modalTitle").textContent=title;document.getElementById("modalText").textContent=text;document.getElementById("modalExtra").innerHTML=extra;document.getElementById("modalBtns").innerHTML=buttons.map(b=>`<button class="${b.cls||'cancel'}" onclick="${b.onclick}">${b.text}</button>`).join("");document.getElementById("mainModal").style.display="flex"}
 function closeModal(){document.getElementById("mainModal").style.display="none"}
-function setFilter(v){filter=v;document.querySelectorAll('#filters button').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(v)||v==='all'&&b.textContent==='Semua'));render()}
+function setFilter(v){filter=v;document.querySelectorAll('#filters button').forEach(b=>b.classList.remove('active'));const btn=[...document.querySelectorAll('#filters button')].find(b=>b.getAttribute('onclick')===`setFilter('${v}')`);if(btn)btn.classList.add('active');render()}
 function setFolder(v){activeFolder=v;renderFolderBar();render()}
 function renderFolderBar(){const folders=getFolders();let html=`<button class="folderChip ${activeFolder==='all'?'active':''}" onclick="setFolder('all')">Semua Folder</button>`;html+=folders.map(f=>`<button class="folderChip ${activeFolder===f?'active':''}" onclick="setFolder('${esc(f)}')">📁 ${esc(f)}</button>`).join("");html+=`<button class="folderChip add" onclick="addFolder()">+ Folder</button>`;document.getElementById("folderBar").innerHTML=html}
 function addFolder(){modal("Folder Baru","Buat folder agar catatan lebih rapi dan profesional.",[{text:"Batal",cls:"cancel",onclick:"closeModal()"},{text:"Simpan",cls:"primary",onclick:"saveNewFolder()"}],`<input class="input" id="folderName" placeholder="Contoh: Hafalan, Kerja, Belanja">`);setTimeout(()=>document.getElementById('folderName')?.focus(),80)}
@@ -58,7 +65,6 @@ function getFiltered(){const q=search.value.toLowerCase();return getNotes().filt
 function sortNotes(notes){const s=sortBy.value;if(s==="title")notes.sort((a,b)=>(a.title||"").localeCompare(b.title||""));else if(s==="alarm")notes.sort((a,b)=>new Date(a.alarmTime||8640000000000000)-new Date(b.alarmTime||8640000000000000));else notes.sort((a,b)=>(b.pin===true)-(a.pin===true)||(b.favorite===true)-(a.favorite===true)||(b.updated||0)-(a.updated||0));return notes}
 function renderStats(){const n=getNotes();document.getElementById("stats").innerHTML=`<div class="stat"><b>${n.filter(x=>!x.archive).length}</b><span>Aktif</span></div><div class="stat"><b>${n.filter(x=>x.pin).length}</b><span>Pin</span></div><div class="stat"><b>${n.filter(x=>x.alarmActive).length}</b><span>Alarm</span></div><div class="stat"><b>${getFolders().length}</b><span>Folder</span></div>`}
 function render(){renderFolderBar();renderStats();let notes=sortNotes(getFiltered());if(!notes.length){list.innerHTML='<div class="empty">Belum ada catatan.<br>Tekan + Catatan untuk mulai.</div>';return}list.innerHTML=notes.map(n=>`<div class="card" style="${bgStyle(n)}"><button class="pinBtn" onclick="quickPin('${n.id}')">${n.pin?'📌':'＋'}</button><h3>${n.pin?'📌 ':''}${n.favorite?'⭐ ':''}${esc(n.title||'Tanpa Judul')}</h3><p style="font-size:${n.fontSize||18}px;color:${n.textColor||'inherit'}">${esc((n.body||'').slice(0,180))}</p><div class="badge">📁 ${esc(n.folder||'Umum')}</div><div class="meta"><span>${n.tag?'#'+esc(n.tag):'Catatan'}</span><span>${n.alarmActive?'⏰ '+esc(n.alarmTime||'Alarm aktif'):''}</span><span>${new Date(n.updated||Date.now()).toLocaleDateString('id-ID')}</span></div><div class="actions"><a class="edit" href="catatan.html?id=${n.id}">Edit</a><button class="del" onclick="askDelete('${n.id}')">Hapus</button><button class="more" onclick="openSheet('${n.id}')">⋯</button></div></div>`).join("")}
-search.oninput=render;setFilter('all');render();
 function askDelete(id){selectedId=id;modal("Hapus Catatan?","Catatan ini akan dihapus dari perangkat ini. Pastikan sudah backup kalau penting.",[{text:"Batal",cls:"cancel",onclick:"closeModal()"},{text:"Ya, Hapus",cls:"confirm",onclick:"confirmDelete()"}])}
 function confirmDelete(){if(selectedId){saveNotes(getNotes().filter(n=>n.id!==selectedId));toast("Catatan berhasil dihapus");render()}selectedId=null;closeModal();closeSheet()}
 function openSheet(id){selectedId=id;document.getElementById("actionSheet").classList.add("show")}
@@ -72,9 +78,36 @@ function copyNoteText(){const n=getSelected();if(!n)return;navigator.clipboard?.
 function askDeleteFromSheet(){askDelete(selectedId)}
 function openMoveFolder(){const opts=getFolders().map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join("");modal("Pindah Folder","Pilih folder tujuan untuk catatan ini.",[{text:"Batal",cls:"cancel",onclick:"closeModal()"},{text:"Pindah",cls:"primary",onclick:"moveFolderNow()"}],`<select class="input" id="moveFolder">${opts}</select>`)}
 function moveFolderNow(){const f=document.getElementById("moveFolder").value;updateSelected(n=>n.folder=f);toast("Catatan dipindahkan ke folder "+f);closeModal();closeSheet()}
-async function requestNotif(){if(!('Notification' in window))return toast('Perangkat/browser belum mendukung notifikasi','warn');if(Notification.permission==='default')await Notification.requestPermission();return Notification.permission==='granted'}
-async function showSystemNotif(note){const ok=await requestNotif();if(!ok)return;try{if(navigator.serviceWorker?.ready){const reg=await navigator.serviceWorker.ready;reg.showNotification(note.title||'Alarm Catatan',{body:(note.body||'Catatan penting').slice(0,180),tag:'nozil-note-'+note.id,renotify:true,vibrate:[300,120,300],requireInteraction:true,icon:'icon-192.png',badge:'icon-192.png',data:{id:note.id}})}else{new Notification(note.title||'Alarm Catatan',{body:(note.body||'Catatan penting').slice(0,180)})}}catch(e){console.log(e)}}
-function startBeep(type="beep-premium",volume=0.35){stopBeep();audioCtx=new (window.AudioContext||window.webkitAudioContext)();let step=0;beepTimer=setInterval(()=>{step++;const pattern={"beep-normal":[850,420,900],"beep-fast":[1000,180,300],"beep-slow":[620,700,1300],"beep-premium":[880,180,260,1170,180,520],"beep-deep":[320,600,1000],"beep-soft":[520,300,900],"beep-triple":[900,130,190,900,130,190,900,130,650],"beep-rising":[520+step*35,260,650],"digital":[1200,120,180,900,120,500],"classic":[700,500,750],"emergency":[1300,160,220],"minimal-tick":[420,80,700]}[type]||[850,420,900];playPattern(pattern,volume)},900)}
+
+async function requestNotif(){
+  if(!('Notification' in window))return false;
+  if(Notification.permission==='default')await Notification.requestPermission();
+  return Notification.permission==='granted';
+}
+
+async function showSystemNotif(note){
+  const ok=await requestNotif();
+  if(!ok)return;
+  try{
+    if(navigator.serviceWorker?.ready){
+      const reg=await navigator.serviceWorker.ready;
+      reg.showNotification(note.title||'Alarm Catatan',{
+        body:(note.body||'Catatan penting').slice(0,180),
+        tag:'nozil-note-'+note.id,
+        renotify:true,
+        vibrate:[300,120,300],
+        requireInteraction:true,
+        icon:'./icon-192.png',
+        badge:'./icon-192.png',
+        data:{id:note.id}
+      });
+    }else{
+      new Notification(note.title||'Alarm Catatan',{body:(note.body||'Catatan penting').slice(0,180),icon:'./icon-192.png'});
+    }
+  }catch(e){console.log(e)}
+}
+
+function startBeep(type="beep-premium",volume=0.35){stopBeep();audioCtx=new (window.AudioContext||window.webkitAudioContext)();let step=0;beepTimer=setInterval(()=>{step++;const pattern={"beep-normal":[850,420,900],"beep-fast":[1000,180,300],"beep-slow":[620,700,1300],"beep-premium":[880,180,260,1170,180,520],"beep-deep":[320,600,1000],"beep-soft":[520,300,900],"beep-triple":[900,130,190,900,120,190,900,130,650],"beep-rising":[520+step*35,260,650],"digital":[1200,120,180,900,120,500],"classic":[700,500,750],"emergency":[1300,160,220],"minimal-tick":[420,80,700]}[type]||[850,420,900];playPattern(pattern,volume)},900)}
 function playPattern(arr,volume){let delay=0;for(let i=0;i<arr.length;i+=3){setTimeout(()=>playTone(arr[i],arr[i+1],volume),delay);delay+=arr[i+2]||300}}
 function playTone(freq,dur,volume){if(!audioCtx)return;const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type="sine";osc.frequency.value=freq;gain.gain.value=volume;osc.connect(gain);gain.connect(audioCtx.destination);osc.start();setTimeout(()=>osc.stop(),dur);if(navigator.vibrate)navigator.vibrate(120)}
 function stopBeep(){if(beepTimer)clearInterval(beepTimer);beepTimer=null}
@@ -82,17 +115,17 @@ function showAlarm(note){activeAlarm=note;document.getElementById("alarmTitle").
 function finishAlarm(){stopBeep();document.getElementById("alarmBox").style.display="none";if(!activeAlarm)return;let notes=getNotes().map(n=>{if(n.id===activeAlarm.id){if(n.repeatAlarm==="daily"){const d=new Date(n.alarmTime);d.setDate(d.getDate()+1);n.alarmTime=d.toISOString().slice(0,16)}else n.alarmActive=false;n.updated=Date.now()}return n});saveNotes(notes);activeAlarm=null;toast("Alarm selesai");render()}
 function snoozeAlarm(){stopBeep();document.getElementById("alarmBox").style.display="none";if(!activeAlarm)return;let minutes=Number(activeAlarm.snoozeMinutes||5);let notes=getNotes().map(n=>{if(n.id===activeAlarm.id){n.alarmTime=new Date(Date.now()+minutes*60000).toISOString().slice(0,16);n.updated=Date.now()}return n});saveNotes(notes);activeAlarm=null;toast("Alarm ditunda "+minutes+" menit");render()}
 function checkAlarm(){if(activeAlarm)return;const now=Date.now();const due=getNotes().find(n=>n.alarmActive&&n.alarmTime&&Math.abs(new Date(n.alarmTime).getTime()-now)<30000);if(due)showAlarm(due)}
-setInterval(checkAlarm,8000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAlarm()});requestNotif();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js').catch(()=>{})}
 
-<!-- TAMBAHKAN DI SINI -->
-<script src="notifications.js"></script>
+search.oninput=render;
+setFilter('all');
+render();
+setInterval(checkAlarm,8000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAlarm()});
+requestNotif();
 
-<script>
-if("serviceWorker" in navigator){
-navigator.serviceWorker.register("service-worker.js");
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
 }
 </script>
-
 </body>
 </html>
