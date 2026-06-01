@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Catatan</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,Arial,sans-serif;background:#07111f;color:white;min-height:100vh;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+a{color:white;text-decoration:none}
+.btn{border:0;border-radius:14px;padding:12px 15px;background:#facc15;color:#111827;font-weight:800}
+.panel{background:#0f172a;border:1px solid #334155;border-radius:24px;padding:16px;margin-bottom:14px}
+input,textarea,select{width:100%;border:1px solid #334155;background:#020617;color:white;border-radius:16px;padding:14px;margin-top:8px;margin-bottom:12px;font-size:16px}
+textarea{min-height:230px;resize:vertical;line-height:1.6}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{font-size:13px;color:#cbd5e1;font-weight:700}
+.preview{border-radius:28px;padding:26px;min-height:260px;margin-top:12px;display:flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 18px 45px #0008}
+.preview h2{font-size:32px;margin-bottom:10px}
+.preview p{font-size:22px;white-space:pre-wrap}
+.small{font-size:12px;color:#94a3b8}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a href="index.html">← Kembali</a>
+  <button class="btn" onclick="saveNote()">Simpan</button>
+</div>
+
+<div class="panel">
+  <label>Judul</label>
+  <input id="title" placeholder="Judul catatan">
+
+  <label>Isi Catatan</label>
+  <textarea id="body" placeholder="Tulis catatan penting di sini..."></textarea>
+
+  <div class="row">
+    <div>
+      <label>Pin</label>
+      <select id="pin">
+        <option value="false">Tidak</option>
+        <option value="true">Ya, penting</option>
+      </select>
+    </div>
+    <div>
+      <label>Background</label>
+      <select id="bg" onchange="applyBg()">
+        <option value="navy">Navy Elegant</option>
+        <option value="black">Black Premium</option>
+        <option value="gold">Sunset Gold</option>
+        <option value="green">Green Calm</option>
+        <option value="paper">Paper Note</option>
+        <option value="red">Red Yellow</option>
+      </select>
+    </div>
+  </div>
+
+  <label>Upload Background Sendiri</label>
+  <input type="file" id="customBg" accept="image/*">
+  <div class="small">Gambar akan disimpan di catatan ini.</div>
+</div>
+
+<div class="panel">
+  <label>Alarm Catatan</label>
+  <select id="alarmActive">
+    <option value="false">Nonaktif</option>
+    <option value="true">Aktifkan Alarm</option>
+  </select>
+
+  <label>Waktu Alarm</label>
+  <input type="datetime-local" id="alarmTime">
+
+  <label>Suara Alarm</label>
+  <select id="alarmSound">
+    <option value="soft">Soft Bell</option>
+    <option value="classic">Classic Alarm</option>
+    <option value="azan">Azan Lembut</option>
+    <option value="digital">Digital Reminder</option>
+  </select>
+
+  <label>Tampil Saat Layar Terkunci</label>
+  <select id="lockMode">
+    <option value="notif">Notifikasi biasa</option>
+    <option value="fullscreen">Fullscreen saat alarm</option>
+    <option value="lockscreen">Lockscreen note</option>
+  </select>
+</div>
+
+<div class="panel">
+  <label>Preview Layar Terkunci</label>
+  <div id="preview" class="preview">
+    <div>
+      <h2 id="pTitle">Judul Catatan</h2>
+      <p id="pBody">Isi catatan akan tampil besar di sini.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY="nozil_notes_v1";
+const params=new URLSearchParams(location.search);
+const id=params.get("id") || "note_"+Date.now();
+let customImage="";
+
+const title=document.getElementById("title");
+const body=document.getElementById("body");
+const pin=document.getElementById("pin");
+const bg=document.getElementById("bg");
+const alarmActive=document.getElementById("alarmActive");
+const alarmTime=document.getElementById("alarmTime");
+const alarmSound=document.getElementById("alarmSound");
+const lockMode=document.getElementById("lockMode");
+const preview=document.getElementById("preview");
+const pTitle=document.getElementById("pTitle");
+const pBody=document.getElementById("pBody");
+
+function getNotes(){
+  return JSON.parse(localStorage.getItem(KEY)||"[]");
+}
+
+function saveNotes(data){
+  localStorage.setItem(KEY,JSON.stringify(data));
+}
+
+function bgStyle(value){
+  const map={
+    navy:"background:linear-gradient(135deg,#0f172a,#1e3a8a);color:white;",
+    black:"background:linear-gradient(135deg,#020617,#111827);color:white;",
+    gold:"background:linear-gradient(135deg,#78350f,#facc15);color:white;",
+    green:"background:linear-gradient(135deg,#052e16,#22c55e);color:white;",
+    paper:"background:linear-gradient(135deg,#fff7ed,#fde68a);color:#1f2937;",
+    red:"background:linear-gradient(135deg,#7f1d1d,#facc15);color:white;"
+  };
+  return map[value]||map.navy;
+}
+
+function applyBg(){
+  if(customImage){
+    preview.style.cssText=`background:linear-gradient(#0008,#0008),url(${customImage}) center/cover;color:white;`;
+  }else{
+    preview.style.cssText=bgStyle(bg.value);
+  }
+  pTitle.textContent=title.value||"Judul Catatan";
+  pBody.textContent=body.value||"Isi catatan akan tampil besar di sini.";
+}
+
+function loadNote(){
+  const note=getNotes().find(n=>n.id===id);
+  if(!note) return;
+  title.value=note.title||"";
+  body.value=note.body||"";
+  pin.value=String(note.pin||false);
+  bg.value=note.bg||"navy";
+  alarmActive.value=String(note.alarmActive||false);
+  alarmTime.value=note.alarmTime||"";
+  alarmSound.value=note.alarmSound||"soft";
+  lockMode.value=note.lockMode||"notif";
+  customImage=note.customImage||"";
+  applyBg();
+}
+
+function saveNote(){
+  let notes=getNotes();
+  const data={
+    id,
+    title:title.value,
+    body:body.value,
+    pin:pin.value==="true",
+    bg:bg.value,
+    bgStyle: customImage ? `background:linear-gradient(#0009,#0009),url(${customImage}) center/cover;color:white;` : bgStyle(bg.value),
+    customImage,
+    alarmActive:alarmActive.value==="true",
+    alarmTime:alarmTime.value,
+    alarmSound:alarmSound.value,
+    lockMode:lockMode.value,
+    updated:Date.now(),
+    created:(notes.find(n=>n.id===id)||{}).created || Date.now()
+  };
+
+  const i=notes.findIndex(n=>n.id===id);
+  if(i>=0) notes[i]=data;
+  else notes.push(data);
+
+  saveNotes(notes);
+  alert("Catatan tersimpan");
+  location.href="index.html";
+}
+
+document.getElementById("customBg").addEventListener("change",function(){
+  const file=this.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    customImage=e.target.result;
+    applyBg();
+  };
+  reader.readAsDataURL(file);
+});
+
+[title,body,pin,bg,alarmActive,alarmTime,alarmSound,lockMode].forEach(el=>{
+  el.addEventListener("input",applyBg);
+  el.addEventListener("change",applyBg);
+});
+
+loadNote();
+applyBg();
+</script>
+
+</body>
+</html>
