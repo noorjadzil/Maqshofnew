@@ -6,18 +6,21 @@
 <title>Setting Nozil Note</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Segoe UI,Arial,sans-serif;background:#07111f;color:white;min-height:100vh;padding:16px}
+body{font-family:Segoe UI,Arial,sans-serif;background:#07111f;color:white;min-height:100vh;padding:16px 16px 90px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-a{color:white;text-decoration:none}
+a{color:white;text-decoration:none;font-weight:800}
 h1{font-size:25px}
 .panel{background:#0f172a;border:1px solid #334155;border-radius:24px;padding:16px;margin-bottom:14px}
-button,select,textarea{width:100%;border:0;border-radius:16px;padding:14px;margin-top:10px;font-weight:800}
-button{background:#facc15;color:#111827}
+label{font-size:13px;color:#cbd5e1;font-weight:800}
+button,select,input,textarea{width:100%;border-radius:16px;padding:14px;margin-top:9px;margin-bottom:10px;font-size:15px}
+button{border:0;background:#facc15;color:#111827;font-weight:900}
+select,input,textarea{border:1px solid #334155;background:#020617;color:white}
+textarea{min-height:160px}
 .danger{background:#ef4444;color:white}
-textarea{background:#020617;color:white;border:1px solid #334155;min-height:130px;font-weight:400}
-.small{font-size:13px;color:#94a3b8;line-height:1.5}
+.good{background:#22c55e;color:#052e16}
+.small{font-size:13px;color:#94a3b8;line-height:1.6}
 .nav{position:fixed;left:16px;right:16px;bottom:16px;display:flex;gap:10px}
-.nav a{flex:1;text-align:center;background:#0f172a;color:white;border:1px solid #334155;border-radius:18px;padding:13px;text-decoration:none;font-weight:700}
+.nav a{flex:1;text-align:center;background:#0f172a;color:white;border:1px solid #334155;border-radius:18px;padding:13px;text-decoration:none;font-weight:800}
 </style>
 </head>
 <body>
@@ -29,31 +32,53 @@ textarea{background:#020617;color:white;border:1px solid #334155;min-height:130p
 
 <div class="panel">
   <h3>Mode Aplikasi</h3>
-  <p class="small">Versi ini masih GitHub/HTML. Alarm lockscreen asli nanti diperkuat saat masuk Capacitor/APK.</p>
-  <select id="mode">
-    <option value="simple">Simple</option>
-    <option value="premium">Premium</option>
-    <option value="focus">Focus Note</option>
+  <p class="small">
+    Versi GitHub sudah siap sebagai pondasi. Alarm asli lockscreen nanti diperkuat saat masuk Capacitor/APK.
+  </p>
+
+  <label>Tampilan</label>
+  <select id="theme">
+    <option value="navy">Navy Premium</option>
+    <option value="dark">Dark Elegant</option>
+    <option value="light">Light Clean</option>
   </select>
+
+  <label>Mode Default Catatan</label>
+  <select id="defaultMode">
+    <option value="normal">Normal</option>
+    <option value="focus">Focus Note</option>
+    <option value="lockscreen">Lockscreen Note</option>
+  </select>
+
   <button onclick="saveSetting()">Simpan Setting</button>
 </div>
 
 <div class="panel">
   <h3>Backup Data</h3>
-  <p class="small">Salin data ini untuk backup catatan.</p>
-  <button onclick="exportData()">Export Backup</button>
-  <textarea id="backup" placeholder="Data backup akan muncul di sini"></textarea>
+  <p class="small">Download semua catatan menjadi file backup.</p>
+  <button class="good" onclick="downloadBackup()">Download Backup</button>
+  <button onclick="showBackup()">Tampilkan Backup Teks</button>
+  <textarea id="backupText" placeholder="Backup teks akan muncul di sini"></textarea>
 </div>
 
 <div class="panel">
   <h3>Restore Data</h3>
-  <p class="small">Tempel data backup lalu tekan Restore.</p>
-  <button onclick="restoreData()">Restore Backup</button>
+  <p class="small">Pilih file backup atau tempel teks backup lalu restore.</p>
+
+  <label>Upload File Backup</label>
+  <input type="file" id="backupFile" accept=".json">
+
+  <button onclick="restoreFromText()">Restore Dari Teks</button>
+</div>
+
+<div class="panel">
+  <h3>Info Data</h3>
+  <p class="small" id="info">Memuat...</p>
 </div>
 
 <div class="panel">
   <h3>Reset</h3>
-  <p class="small">Hapus semua catatan dari browser ini.</p>
+  <p class="small">Ini akan menghapus semua catatan dari browser ini.</p>
   <button class="danger" onclick="resetData()">Hapus Semua Catatan</button>
 </div>
 
@@ -63,49 +88,107 @@ textarea{background:#020617;color:white;border:1px solid #334155;min-height:130p
 </div>
 
 <script>
-const NOTE_KEY="nozil_notes_v1";
-const SET_KEY="nozil_setting_v1";
+const NOTE_KEY="nozil_notes_v2";
+const SET_KEY="nozil_setting_v2";
 
+function getNotes(){
+  return JSON.parse(localStorage.getItem(NOTE_KEY)||"[]");
+}
+function getSetting(){
+  return JSON.parse(localStorage.getItem(SET_KEY)||"{}");
+}
 function saveSetting(){
-  localStorage.setItem(SET_KEY,JSON.stringify({
-    mode:document.getElementById("mode").value
-  }));
+  const data={
+    theme:document.getElementById("theme").value,
+    defaultMode:document.getElementById("defaultMode").value,
+    updated:new Date().toISOString(),
+    apkReady:true
+  };
+  localStorage.setItem(SET_KEY,JSON.stringify(data));
   alert("Setting tersimpan");
 }
-
 function loadSetting(){
-  const s=JSON.parse(localStorage.getItem(SET_KEY)||"{}");
-  if(s.mode) document.getElementById("mode").value=s.mode;
+  const s=getSetting();
+  if(s.theme) document.getElementById("theme").value=s.theme;
+  if(s.defaultMode) document.getElementById("defaultMode").value=s.defaultMode;
 }
-
-function exportData(){
-  const data={
-    notes:JSON.parse(localStorage.getItem(NOTE_KEY)||"[]"),
-    setting:JSON.parse(localStorage.getItem(SET_KEY)||"{}"),
-    exportedAt:new Date().toISOString()
+function backupObject(){
+  return {
+    app:"Nozil Note",
+    version:"2.0-github-apk-ready",
+    exportedAt:new Date().toISOString(),
+    notes:getNotes(),
+    setting:getSetting()
   };
-  document.getElementById("backup").value=JSON.stringify(data,null,2);
 }
-
-function restoreData(){
+function showBackup(){
+  document.getElementById("backupText").value=JSON.stringify(backupObject(),null,2);
+}
+function downloadBackup(){
+  const data=JSON.stringify(backupObject(),null,2);
+  const blob=new Blob([data],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="nozil-note-backup-"+new Date().toISOString().slice(0,10)+".json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function restoreData(data){
+  if(!data.notes || !Array.isArray(data.notes)){
+    alert("File backup tidak valid");
+    return;
+  }
+  localStorage.setItem(NOTE_KEY,JSON.stringify(data.notes));
+  if(data.setting) localStorage.setItem(SET_KEY,JSON.stringify(data.setting));
+  alert("Restore berhasil");
+  updateInfo();
+}
+function restoreFromText(){
   try{
-    const data=JSON.parse(document.getElementById("backup").value);
-    if(data.notes) localStorage.setItem(NOTE_KEY,JSON.stringify(data.notes));
-    if(data.setting) localStorage.setItem(SET_KEY,JSON.stringify(data.setting));
-    alert("Restore berhasil");
+    const text=document.getElementById("backupText").value;
+    const data=JSON.parse(text);
+    restoreData(data);
   }catch(e){
-    alert("Data backup tidak valid");
+    alert("Teks backup tidak valid");
   }
 }
-
+document.getElementById("backupFile").addEventListener("change",function(){
+  const file=this.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      restoreData(JSON.parse(e.target.result));
+    }catch(err){
+      alert("File backup tidak valid");
+    }
+  };
+  reader.readAsText(file);
+});
 function resetData(){
   if(confirm("Yakin hapus semua catatan?")){
     localStorage.removeItem(NOTE_KEY);
     alert("Semua catatan dihapus");
+    updateInfo();
   }
+}
+function updateInfo(){
+  const notes=getNotes();
+  const alarm=notes.filter(n=>n.alarmActive).length;
+  const pin=notes.filter(n=>n.pin).length;
+  const archive=notes.filter(n=>n.archive).length;
+
+  document.getElementById("info").innerHTML=
+    "Total catatan: <b>"+notes.length+"</b><br>"+
+    "Catatan pin: <b>"+pin+"</b><br>"+
+    "Alarm aktif: <b>"+alarm+"</b><br>"+
+    "Arsip: <b>"+archive+"</b><br><br>"+
+    "Status: siap GitHub, siap dibungkus Capacitor/APK.";
 }
 
 loadSetting();
+updateInfo();
 </script>
 
 </body>
