@@ -32,68 +32,32 @@ body{font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 
 
 @media(min-width:720px){body{max-width:760px;margin:auto}.grid{grid-template-columns:1fr 1fr}.nav{max-width:730px;margin:auto}.stats{grid-template-columns:repeat(4,1fr)}}
 
-/* NOZIL PRO COMPACT */
-.stats{display:block!important}
-.stat{display:none!important}
-#stats::after{
-content:"";
-display:block;
-padding:8px 12px;
-background:#0f172a;
-border:1px solid #ffffff14;
-border-radius:12px;
-font-size:13px;
-}
-.grid{display:flex!important;flex-direction:column!important;gap:4px!important}
-.card{
-padding:10px 12px!important;
-border-radius:12px!important;
-box-shadow:none!important;
-border:1px solid #ffffff12!important;
-min-height:auto!important;
-}
-.card h3{
-font-size:15px!important;
-margin-bottom:3px!important;
-}
-.card p{
-font-size:13px!important;
-line-height:1.35!important;
-display:-webkit-box;
--webkit-line-clamp:2;
--webkit-box-orient:vertical;
-overflow:hidden;
-}
-.actions{display:none!important}
-.badge{display:none!important}
-.meta{
-margin-top:5px!important;
-font-size:11px!important;
-}
-.folderChip{
-padding:5px 10px!important;
-font-size:12px!important;
-}
-.filters button{
-padding:6px 10px!important;
-font-size:12px!important;
-}
-.search,.select{
-padding:10px!important;
-border-radius:12px!important;
-}
-.pinBtn{
-width:28px!important;
-height:28px!important;
-right:8px!important;
-top:8px!important;
-}
+/* Professional View Modes */
+.vm-compact .card{padding:8px 10px;border-radius:10px;box-shadow:none}
+.vm-compact .actions{display:none}
+.vm-compact .card h3{font-size:14px;margin-bottom:2px}
+.vm-compact .card p{font-size:12px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.vm-detail .card{padding:14px;border-radius:14px}
+.vm-notebook .card{max-width:220px;display:inline-block;margin:6px;background:linear-gradient(135deg,#1e293b,#0f172a)}
+.vm-grid .grid{display:grid!important;grid-template-columns:1fr 1fr;gap:10px}
+.vm-timeline .card{border-left:4px solid #38bdf8}
+.vm-folder .card p{display:none}
 
 </style>
 </head>
 <body>
 <div class="top"><div class="logo">Nozil <span>Note</span></div><a class="btn" href="catatan.html">+ Catatan</a></div>
-<div class="tools"><input class="search" id="search" placeholder="Cari judul, isi, tag, folder..."><select class="select" id="viewMode" onchange="setViewMode()"><option value="compact">Compact</option><option value="comfortable">Comfortable</option><option value="grid">Grid</option></select><select class="select" id="sortBy" onchange="render()"><option value="updated">Terbaru</option><option value="title">Judul</option><option value="alarm">Alarm</option></select></div>
+<div class="tools">
+<input class="search" id="search" placeholder="Cari judul, isi, tag, folder...">
+<select class="select" id="viewMode" onchange="setViewMode()">
+<option value="compact">📋 Compact</option>
+<option value="detail">📄 Detail</option>
+<option value="notebook">📚 Notebook</option>
+<option value="grid">🗂️ Grid</option>
+<option value="timeline">📅 Timeline</option>
+<option value="folder">📁 Folder</option>
+</select>
+<select class="select" id="sortBy" onchange="render()"><option value="updated">Terbaru</option><option value="title">Judul</option><option value="alarm">Alarm</option></select></div>
 <div class="folderBar" id="folderBar"></div>
 <div class="filters" id="filters"><button onclick="setFilter('all')">Semua</button><button onclick="setFilter('pin')">📌 Pin</button><button onclick="setFilter('alarm')">⏰ Alarm</button><button onclick="setFilter('favorite')">⭐ Favorit</button><button onclick="setFilter('archive')">Arsip</button></div>
 <div class="stats" id="stats"></div>
@@ -160,7 +124,7 @@ function bgStyle(n){if(n.customImage)return `background:linear-gradient(#0009,#0
 function getFiltered(){const q=search.value.toLowerCase();return getNotes().filter(n=>{const text=((n.title||"")+" "+(n.body||"")+" "+(n.tag||"")+" "+(n.folder||"Umum")).toLowerCase();if(q&&!text.includes(q))return false;if(activeFolder!=="all"&&(n.folder||"Umum")!==activeFolder)return false;if(filter==="pin"&&!n.pin)return false;if(filter==="alarm"&&!n.alarmActive)return false;if(filter==="favorite"&&!n.favorite)return false;if(filter==="archive"&&!n.archive)return false;if(filter!=="archive"&&n.archive)return false;return true})}
 function sortNotes(notes){const s=sortBy.value;if(s==="title")notes.sort((a,b)=>(a.title||"").localeCompare(b.title||""));else if(s==="alarm")notes.sort((a,b)=>new Date(a.alarmTime||8640000000000000)-new Date(b.alarmTime||8640000000000000));else notes.sort((a,b)=>(b.pin===true)-(a.pin===true)||(b.favorite===true)-(a.favorite===true)||(b.updated||0)-(a.updated||0));return notes}
 function renderStats(){const n=getNotes();document.getElementById("stats").innerHTML=`<div class="stat"><b>${n.filter(x=>!x.archive).length}</b><span>Aktif</span></div><div class="stat"><b>${n.filter(x=>x.pin).length}</b><span>Pin</span></div><div class="stat"><b>${n.filter(x=>x.alarmActive).length}</b><span>Alarm</span></div><div class="stat"><b>${getFolders().length}</b><span>Folder</span></div>`}
-function render(){renderFolderBar();renderStats();let notes=sortNotes(getFiltered());if(!notes.length){list.innerHTML='<div class="empty">Belum ada catatan.<br>Tekan + Catatan untuk mulai.</div>';return}list.innerHTML=notes.map(n=>`<div class="card" style="${bgStyle(n)}"><button class="pinBtn" onclick="quickPin('${n.id}')">${n.pin?'📌':'＋'}</button><h3>${n.pin?'📌 ':''}${n.favorite?'⭐ ':''}${esc(n.title||'Tanpa Judul')}</h3><p style="font-size:${n.fontSize||18}px;color:${n.textColor||'inherit'}">${esc((n.body||'').trim().slice(0,60))}${(n.body||'').length>220?'...':''}</p><div class="badge">📁 ${esc(n.folder||'Umum')}</div><div class="meta"><span>${n.tag?'#'+esc(n.tag):'Catatan'}</span><span>${n.alarmActive?'⏰ '+esc(n.alarmTime||'Alarm aktif'):''}</span><span>${new Date(n.updated||Date.now()).toLocaleDateString('id-ID')}</span></div><div class="actions"><button class="view" onclick="openReader('${n.id}')">Buka</button><a class="edit" href="catatan.html?id=${n.id}">Edit</a><button class="del" onclick="askDelete('${n.id}')">Hapus</button><button class="more" onclick="openSheet('${n.id}')">⋯</button></div></div>`).join("")}
+function render(){renderFolderBar();renderStats();let notes=sortNotes(getFiltered());if(!notes.length){list.innerHTML='<div class="empty">Belum ada catatan.<br>Tekan + Catatan untuk mulai.</div>';return}list.innerHTML=notes.map(n=>`<div class="card" style="${bgStyle(n)}"><button class="pinBtn" onclick="quickPin('${n.id}')">${n.pin?'📌':'＋'}</button><h3>${n.pin?'📌 ':''}${n.favorite?'⭐ ':''}${esc(n.title||'Tanpa Judul')}</h3><p style="font-size:${n.fontSize||18}px;color:${n.textColor||'inherit'}">${esc((n.body||'').trim().slice(0,220))}${(n.body||'').length>220?'...':''}</p><div class="badge">📁 ${esc(n.folder||'Umum')}</div><div class="meta"><span>${n.tag?'#'+esc(n.tag):'Catatan'}</span><span>${n.alarmActive?'⏰ '+esc(n.alarmTime||'Alarm aktif'):''}</span><span>${new Date(n.updated||Date.now()).toLocaleDateString('id-ID')}</span></div><div class="actions"><button class="view" onclick="openReader('${n.id}')">Lihat</button><a class="edit" href="catatan.html?id=${n.id}">Edit</a><button class="del" onclick="askDelete('${n.id}')">Hapus</button><button class="more" onclick="openSheet('${n.id}')">⋯</button></div></div>`).join("")}
 function askDelete(id){selectedId=id;modal("Hapus Catatan?","Catatan ini akan dihapus dari perangkat ini. Pastikan sudah backup kalau penting.",[{text:"Batal",cls:"cancel",onclick:"closeModal()"},{text:"Ya, Hapus",cls:"confirm",onclick:"confirmDelete()"}])}
 function confirmDelete(){if(selectedId){saveNotes(getNotes().filter(n=>n.id!==selectedId));toast("Catatan berhasil dihapus");render()}selectedId=null;closeModal();closeSheet()}
 function openSheet(id){selectedId=id;document.getElementById("actionSheet").classList.add("show")}
@@ -215,19 +179,23 @@ function checkAlarm(){if(activeAlarm)return;const now=Date.now();const due=getNo
 
 function setViewMode(){
  const m=document.getElementById('viewMode').value;
- localStorage.setItem('nozil_view',m);
- document.body.classList.remove('vm-compact','vm-comfortable','vm-grid');
+ localStorage.setItem('nozilViewMode',m);
+ document.body.className=document.body.className.replace(/vm-[^ ]+/g,'');
  document.body.classList.add('vm-'+m);
+
+ const g=document.getElementById('list');
  if(m==='grid'){
-   list.style.display='grid';
-   list.style.gridTemplateColumns='1fr 1fr';
+   g.style.display='grid';
+   g.style.gridTemplateColumns='1fr 1fr';
+ }else if(m==='notebook'){
+   g.style.display='block';
  }else{
-   list.style.display='flex';
-   list.style.flexDirection='column';
+   g.style.display='flex';
+   g.style.flexDirection='column';
  }
 }
 window.addEventListener('load',()=>{
- const m=localStorage.getItem('nozil_view')||'compact';
+ const m=localStorage.getItem('nozilViewMode')||'compact';
  const v=document.getElementById('viewMode');
  if(v){v.value=m;setViewMode();}
 });
