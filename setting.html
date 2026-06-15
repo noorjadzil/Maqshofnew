@@ -1,38 +1,40 @@
-<!DOCTYPE html><html><head><meta charset='utf-8'>
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
 <title>Nozil Editor</title>
 <style>
-body{margin:0;background:#111827}
-#frame{width:100vw;height:100vh;border:0}
-#editor{position:fixed;display:none;z-index:9999;background:#0f172a;color:#fff;
-padding:10px;border-radius:12px;width:280px;border:1px solid #334155}
-input{width:100%;margin:4px 0}
-.row{display:flex;gap:6px} button{flex:1}
+body{margin:0}
+iframe{width:100vw;height:100vh;border:0}
+#editor{display:none;position:fixed;z-index:99999;background:#0f172a;color:#fff;
+padding:12px;border-radius:12px;width:320px;border:1px solid #334155}
+input{width:100%} .row{display:flex;gap:6px;margin-top:6px} button{flex:1}
+#back{position:fixed;top:10px;left:10px;z-index:9999}
 </style></head><body>
-<iframe id='frame' src='index.html'></iframe>
-<div id='editor'>
-<div id='label'>Editor</div>
-<input id='txt'>
-<div class='row'><input id='color' type='color'><input id='bg' type='color'></div>
-<div class='row'><button onclick='resetEl()'>Reset</button><button onclick='saveEl()'>Simpan</button></div>
+<button id="back" onclick="location.href='index.html'">← Kembali</button>
+<iframe id="frame" src="index.html"></iframe>
+
+<div id="editor">
+<div id="lbl">Editor</div>
+<input id="txt" placeholder="Teks">
+<div class="row">
+<input id="fg" type="color">
+<input id="bg" type="color">
 </div>
+<div class="row">
+<button onclick="resetEl()">Reset</button>
+<button onclick="saveEl()">Simpan</button>
+</div>
+</div>
+
 <script>
 let selected=null,backup='';
 
 frame.onload=()=>{
  const d=frame.contentWindow.document;
-
- // restore tersimpan
- const saved=JSON.parse(localStorage.getItem('nozil_editor_save')||'{}');
- Object.keys(saved).forEach(k=>{
-   const el=d.querySelector(k);
-   if(el) el.setAttribute('style',saved[k]);
- });
-
  d.addEventListener('click',e=>{
    e.preventDefault();e.stopPropagation();
    if(selected) selected.style.outline='';
    selected=e.target;
-   backup=selected.getAttribute('style')||'';
+   backup=selected.style.cssText;
    selected.style.outline='2px solid #3b82f6';
 
    const r=selected.getBoundingClientRect();
@@ -40,30 +42,42 @@ frame.onload=()=>{
    editor.style.left=r.left+'px';
    editor.style.top=(r.bottom+8)+'px';
 
-   label.textContent='Edit '+selected.tagName.toLowerCase();
-   txt.value=selected.innerText||'';
+   txt.value=selected.textContent||'';
+   lbl.textContent='Edit '+selected.tagName.toLowerCase();
  },true);
 };
 
-txt.oninput=()=>{if(selected)selected.innerText=txt.value}
-color.oninput=()=>{if(selected)selected.style.color=color.value}
-bg.oninput=()=>{if(selected)selected.style.background=bg.value}
-
-function selector(el){
+function makeSelector(el){
  if(el.id) return '#'+el.id;
- return el.tagName.toLowerCase()+':nth-of-type(1)';
+ if(el.className && typeof el.className==='string'){
+   let c=el.className.trim().split(' ')[0];
+   if(c) return '.'+c;
+ }
+ return el.tagName.toLowerCase();
 }
+
+txt.oninput=()=>{ if(selected) selected.textContent=txt.value; };
+fg.oninput=()=>{ if(selected) selected.style.color=fg.value; };
+bg.oninput=()=>{ if(selected) selected.style.background=bg.value; };
 
 function saveEl(){
  if(!selected) return;
- const all=JSON.parse(localStorage.getItem('nozil_editor_save')||'{}');
- all[selector(selected)] = selected.getAttribute('style')||'';
- localStorage.setItem('nozil_editor_save',JSON.stringify(all));
- alert('Tersimpan');
+ const sel=makeSelector(selected);
+ const theme=JSON.parse(localStorage.getItem('nozil_theme')||'{}');
+ theme[sel]={
+   style:selected.style.cssText,
+   text:selected.textContent
+ };
+ localStorage.setItem('nozil_theme',JSON.stringify(theme));
+
+ // langsung update preview
+ frame.contentWindow.location.reload();
+
+ alert('Tersimpan & diterapkan ke index');
 }
 
 function resetEl(){
- if(!selected) return;
- selected.setAttribute('style',backup);
+ if(selected) selected.style.cssText=backup;
 }
-</script></body></html>
+</script>
+</body></html>

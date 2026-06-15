@@ -378,5 +378,24 @@ window.addEventListener('message',e=>{
  }
 });
 </script>
+
+<script>
+(function(){
+function applyTheme(){
+ try{
+   const theme=JSON.parse(localStorage.getItem('nozil_theme')||'{}');
+   Object.keys(theme).forEach(sel=>{
+      document.querySelectorAll(sel).forEach(el=>{
+         if(theme[sel].style) el.style.cssText=theme[sel].style;
+         if(theme[sel].text!==undefined) el.textContent=theme[sel].text;
+      });
+   });
+ }catch(e){}
+}
+applyTheme();
+document.addEventListener('DOMContentLoaded',applyTheme);
+window.addEventListener('storage',applyTheme);
+})();
+</script>
 </body>
 </html>
