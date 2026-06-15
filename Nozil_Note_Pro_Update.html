@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nozil Note</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#07111f">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07111f;--card:#0f172a;--line:#334155;--gold:#facc15;--text:#fff;--muted:#94a3b8;--blue:#38bdf8;--red:#ef4444;--green:#22c55e}
+body{font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top left,#1e3a8a55,transparent 35%),linear-gradient(135deg,#020617,#07111f,#0f172a);color:var(--text);min-height:100vh;padding:16px 16px 98px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px}.logo{font-size:26px;font-weight:950;letter-spacing:-.5px}.logo span{color:var(--gold)}
+.btn{border:0;border-radius:16px;padding:12px 16px;background:linear-gradient(135deg,#facc15,#f97316);color:#111827;font-weight:950;text-decoration:none;box-shadow:0 12px 30px #0008;cursor:pointer}.btn2{background:#0f172ae6;color:white;border:1px solid #ffffff22;box-shadow:none}
+.tools{display:grid;grid-template-columns:1fr auto;gap:9px;margin-bottom:12px}.search{width:100%;padding:15px;border-radius:20px;border:1px solid var(--line);background:#020617cc;color:white;outline:none}.select{padding:0 12px;border-radius:20px;border:1px solid var(--line);background:#020617cc;color:white;font-weight:800;max-width:150px}
+.folderBar{display:flex;gap:8px;overflow:auto;margin-bottom:12px;padding-bottom:2px}.folderChip{white-space:nowrap;border:1px solid #ffffff22;background:#0f172acc;color:white;border-radius:999px;padding:9px 13px;font-weight:850;cursor:pointer}.folderChip.active{background:linear-gradient(135deg,#38bdf8,#1d4ed8);border-color:#7dd3fc}.folderChip.add{background:#111827;border-style:dashed;color:#facc15}
+.filters{display:flex;gap:8px;overflow:auto;margin-bottom:14px;padding-bottom:2px}.filters button{white-space:nowrap;border:1px solid var(--line);background:#0f172acc;color:white;border-radius:999px;padding:9px 13px;font-weight:800;cursor:pointer}.filters button.active{background:#facc15;color:#111827;border-color:#facc15}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}.stat{background:#0f172acc;border:1px solid #ffffff18;border-radius:18px;padding:12px;text-align:center}.stat b{display:block;font-size:18px}.stat span{font-size:11px;color:#cbd5e1}
+.grid{display:grid;gap:14px}.card{padding:16px;border-radius:26px;box-shadow:0 16px 42px #0009;border:1px solid #ffffff22;overflow:hidden;animation:pop .25s ease;position:relative}@keyframes pop{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+.card h3{font-size:19px;margin-bottom:8px;padding-right:35px}.card p{color:#e2e8f0;white-space:pre-wrap;line-height:1.45}.meta{margin-top:12px;font-size:12px;color:#cbd5e1;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.actions{display:grid;grid-template-columns:1fr 1fr 1fr 42px;gap:8px;margin-top:12px}.actions a,.actions button{border:0;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:900;cursor:pointer}.view{background:#facc15;color:#111827}.edit{background:#38bdf8;color:#082f49}.del{background:#ef4444;color:white}.more{background:#334155;color:white}.empty{text-align:center;margin-top:72px;color:#94a3b8;line-height:1.7}
+.badge{display:inline-flex;align-items:center;gap:5px;background:#0007;border:1px solid #ffffff24;border-radius:99px;padding:5px 8px;margin-top:9px;font-size:11px;color:#e5e7eb}.pinBtn{position:absolute;right:14px;top:14px;background:#0006;border:1px solid #ffffff24;color:white;border-radius:13px;width:34px;height:34px;font-weight:900;cursor:pointer}
+.nav{position:fixed;left:16px;right:16px;bottom:16px;display:flex;gap:10px;z-index:20}.nav a{flex:1;text-align:center;background:#0f172ae6;color:white;border:1px solid #ffffff22;border-radius:20px;padding:13px;text-decoration:none;font-weight:900;backdrop-filter:blur(12px)}
+.toast{position:fixed;left:18px;right:18px;bottom:88px;background:linear-gradient(135deg,#0f172a,#111827);border:1px solid #ffffff22;border-radius:18px;padding:14px 16px;box-shadow:0 18px 50px #000;display:none;z-index:120;font-weight:850}.toast.success{border-color:#22c55e99}.toast.warn{border-color:#facc1599}.toast.danger{border-color:#ef444499}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:100;padding:20px;backdrop-filter:blur(8px)}.modalCard{width:100%;max-width:430px;background:linear-gradient(135deg,#0f172a,#111827);border:1px solid #ffffff24;border-radius:28px;padding:22px;box-shadow:0 30px 80px #000;animation:zoom .18s ease}@keyframes zoom{from{transform:scale(.94);opacity:.5}to{transform:scale(1);opacity:1}}.modalCard h2{margin-bottom:10px}.modalCard p{color:#cbd5e1;line-height:1.5}.modalBtns{display:flex;gap:10px;margin-top:18px}.modalBtns button{flex:1;border:0;border-radius:15px;padding:13px;font-weight:950;cursor:pointer}.cancel{background:#334155;color:white}.confirm{background:#ef4444;color:white}.primary{background:#38bdf8;color:#082f49}.input{width:100%;margin-top:12px;padding:14px;border-radius:16px;border:1px solid #ffffff24;background:#020617;color:white;outline:none}
+.sheet{position:fixed;left:0;right:0;bottom:-420px;background:linear-gradient(135deg,#0f172a,#111827);border-top:1px solid #ffffff24;border-radius:28px 28px 0 0;padding:18px;z-index:95;box-shadow:0 -20px 60px #000;transition:.25s}.sheet.show{bottom:0}.sheet h3{margin-bottom:12px}.sheetGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.sheet button{border:0;border-radius:15px;padding:13px;font-weight:900;cursor:pointer}.darkBtn{background:#334155;color:white}.goldBtn{background:#facc15;color:#111827}.redBtn{background:#ef4444;color:white}.blueBtn{background:#38bdf8;color:#082f49}
+.alarmBox{position:fixed;inset:0;background:#000e;display:none;z-index:99;padding:20px;align-items:center;justify-content:center;backdrop-filter:blur(10px)}.alarmCard{width:100%;max-width:470px;min-height:440px;border-radius:34px;padding:30px;text-align:center;display:flex;flex-direction:column;justify-content:center;box-shadow:0 35px 90px #000;border:1px solid #ffffff33}.alarmCard h1{font-size:36px;margin-bottom:16px}.alarmCard p{font-size:23px;line-height:1.5;white-space:pre-wrap}.alarmBtns{display:flex;gap:10px;margin-top:28px}.alarmBtns button{flex:1;border:0;border-radius:17px;padding:15px;font-weight:950;cursor:pointer}.done{background:#22c55e;color:#052e16}.snooze{background:#facc15;color:#111827}
+
+.reader{position:fixed;inset:0;background:#020617f2;display:none;z-index:130;padding:18px;backdrop-filter:blur(10px)}
+.readerCard{max-width:820px;margin:auto;height:calc(100vh - 36px);background:linear-gradient(135deg,#0f172a,#111827);border:1px solid #ffffff24;border-radius:30px;box-shadow:0 30px 90px #000;display:flex;flex-direction:column;overflow:hidden}
+.readerTop{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:18px;border-bottom:1px solid #ffffff18}.readerTop h1{font-size:22px;line-height:1.25}.readerTop button{border:0;border-radius:14px;padding:11px 14px;font-weight:950;cursor:pointer}.readerBody{padding:32px;overflow:auto;font-size:18px;line-height:2;color:#f8fafc;max-width:700px;margin:auto;width:100%}.readerBody p{margin:0 0 18px}.readerBody h2{font-size:23px;margin:20px 0 10px;color:#facc15}.readerBody ul,.readerBody ol{padding-left:26px;margin:0 0 18px}.readerBody li{margin:8px 0}.readerMeta{padding:12px 22px;border-top:1px solid #ffffff18;color:#cbd5e1;font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.readerBtns{display:flex;gap:8px}.readerBtns .blue{background:#38bdf8;color:#082f49}.readerBtns .dark{background:#334155;color:white}
+@media(max-width:520px){.actions{grid-template-columns:1fr 1fr}.more{grid-column:auto}.reader{padding:0}.readerCard{height:100vh;border-radius:0}.readerBody{font-size:19px;padding:20px}.readerTop h1{font-size:20px}}
+
+@media(min-width:720px){body{max-width:760px;margin:auto}.grid{grid-template-columns:1fr 1fr}.nav{max-width:730px;margin:auto}.stats{grid-template-columns:repeat(4,1fr)}}
+
+/* ULTIMATE VIEW MODES */
+.vm-ultra .card{padding:5px 8px!important;border-radius:8px!important;box-shadow:none!important}
+.vm-ultra .card p,.vm-ultra .actions,.vm-ultra .badge,.vm-ultra .meta span:first-child{display:none!important}
+.vm-ultra .card h3{font-size:13px!important;margin:0!important}
+
+.vm-dense .card{padding:6px 8px!important;border-radius:8px!important;box-shadow:none!important}
+.vm-dense .actions,.vm-dense .badge{display:none!important}
+.vm-dense .card p{-webkit-line-clamp:1;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;font-size:11px!important}
+
+.vm-compact .card{padding:8px 10px!important;border-radius:10px!important;box-shadow:none!important}
+.vm-compact .actions{display:none!important}
+
+.vm-mini2 #list{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px}
+.vm-mini3 #list{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:6px}
+.vm-mini4 #list{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:5px}
+.vm-mini5 #list{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:4px}
+
+.vm-mini2 .card,.vm-mini3 .card,.vm-mini4 .card,.vm-mini5 .card{
+height:80px!important;padding:6px!important;overflow:hidden!important;box-shadow:none!important
+}
+.vm-mini2 .card p,.vm-mini3 .card p,.vm-mini4 .card p,.vm-mini5 .card p,
+.vm-mini2 .actions,.vm-mini3 .actions,.vm-mini4 .actions,.vm-mini5 .actions,
+.vm-mini2 .meta,.vm-mini3 .meta,.vm-mini4 .meta,.vm-mini5 .meta{
+display:none!important
+}
+.vm-mini2 .card h3,.vm-mini3 .card h3,.vm-mini4 .card h3,.vm-mini5 .card h3{font-size:12px!important}
+
+
+</style>
+
+<style id="builder-ready-css">
+:root{
+ --builder-card-radius:16px;
+ --builder-shadow:0 10px 30px rgba(0,0,0,.25);
+ --builder-font-size:16px;
+}
+[data-builder]{transition:.2s}
+</style>
+
+<style id="builder-v3">
+[data-builder]{position:relative}
+.builder-hover{outline:2px solid #38bdf8!important}
+.builder-selected{outline:3px solid #facc15!important}
+</style>
+<script>
+window.NozilTheme={
+ vars:['--header-bg','--card-bg','--card-radius','--card-shadow','--text-primary','--nav-bg']
+};
+window.NozilBuilder={
+ select(id){return document.querySelector('[data-component-id="'+id+'"]')},
+ getProps(id){const el=this.select(id);return el?{text:el.innerText}:null;}
+};
+</script>
+</head>
+<body>
+<div class="top" data-builder="header" data-name="Header" data-category="layout" data-editable="all" data-component-id="header-001"><div class="logo">Nozil <span>Note</span></div><a class="btn" href="catatan.html">+ Catatan</a></div>
+<div class="tools"><input class="search" id="search" placeholder="Cari judul, isi, tag, folder..."><select class="select" id="viewMode" onchange="setViewMode()">
+<option value="ultra">⚡ Ultra Compact</option>
+<option value="dense">📑 Dense List</option>
+<option value="compact">📋 Compact</option>
+<option value="list">📄 List</option>
+<option value="detail">📝 Detail</option>
+<option value="mini2">📚 Mini 2</option>
+<option value="mini3">📚 Mini 3</option>
+<option value="mini4">📚 Mini 4</option>
+<option value="mini5">📚 Mini 5</option>
+<option value="note2">📔 Notebook 2</option>
+<option value="note3">📔 Notebook 3</option>
+<option value="note4">📔 Notebook 4</option>
+<option value="masonry">🧱 Masonry</option>
+<option value="sticky">🟨 Sticky</option>
+<option value="timeline">📅 Timeline</option>
+<option value="folder">📁 Folder</option>
+</select><select class="select" id="sortBy" onchange="render()"><option value="updated">Terbaru</option><option value="title">Judul</option><option value="alarm">Alarm</option></select></div>
+<div class="folderBar" data-builder="folder-bar" data-component-id="folderbar-001" id="folderBar"></div>
+<div class="filters" data-builder="filter-bar" data-component-id="filterbar-001" id="filters"><button onclick="setFilter('all')">Semua</button><button onclick="setFilter('pin')">📌 Pin</button><button onclick="setFilter('alarm')">⏰ Alarm</button><button onclick="setFilter('favorite')">⭐ Favorit</button><button onclick="setFilter('archive')">Arsip</button></div>
+<div class="stats" id="stats"></div>
+<div id="list" class="grid"></div>
+<div class="nav"><a href="index.html">Catatan</a><a href="setting.html">Setting</a></div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="mainModal"><div class="modalCard"><h2 id="modalTitle"></h2><p id="modalText"></p><div id="modalExtra"></div><div class="modalBtns" id="modalBtns"></div></div></div>
+<div class="sheet" id="actionSheet"><h3>Kelola Catatan</h3><div class="sheetGrid"><button class="goldBtn" onclick="toggleFavorite()">⭐ Favorit</button><button class="blueBtn" onclick="toggleArchive()">🗂️ Arsip</button><button class="darkBtn" onclick="openMoveFolder()">📁 Pindah Folder</button><button class="darkBtn" onclick="copyNoteText()">📋 Salin</button><button class="redBtn" onclick="askDeleteFromSheet()">🗑️ Hapus</button><button class="darkBtn" onclick="closeSheet()">Tutup</button></div></div>
+<div class="alarmBox" id="alarmBox"><div class="alarmCard" id="alarmCard"><h1 id="alarmTitle">Alarm Catatan</h1><p id="alarmBody"></p><div class="alarmBtns"><button class="snooze" onclick="snoozeAlarm()">Tunda</button><button class="done" onclick="finishAlarm()">Selesai</button></div></div></div>
+
+<div class="reader" id="reader"><div class="readerCard"><div class="readerTop"><h1 id="readerTitle">Catatan</h1><div class="readerBtns"><button class="blue" id="readerEditBtn">Edit</button><button class="dark" onclick="closeReader()">Tutup</button></div></div><div class="readerBody" id="readerBody"></div><div class="readerMeta" id="readerMeta"></div></div></div>
+
+<script src="./notifications.js"></script>
+
+<script>
+const KEY="nozil_notes_v3", FOLDER_KEY="nozil_folders_v1";
+let filter="all", activeFolder="all", activeAlarm=null, selectedId=null, audioCtx=null, beepTimer=null;
+const list=document.getElementById("list"), search=document.getElementById("search"), sortBy=document.getElementById("sortBy");
+
+function getNotes(){return JSON.parse(localStorage.getItem(KEY)||"[]")}
+function saveNotes(data){localStorage.setItem(KEY,JSON.stringify(data))}
+function getFolders(){let f=JSON.parse(localStorage.getItem(FOLDER_KEY)||"[]"); if(!f.length){f=["Umum","Penting","Kerja","Pribadi"];localStorage.setItem(FOLDER_KEY,JSON.stringify(f))} return f}
+function saveFolders(f){localStorage.setItem(FOLDER_KEY,JSON.stringify([...new Set(f.filter(Boolean))]))}
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function isHeadingLine(line){const s=line.trim();return s.length>2&&s.length<70&&(/[:：]$/.test(s)||(/^[A-Z0-9\s.,'"!?-]+$/.test(s)&&s.length>6))}
+function readableHtml(raw){
+  let lines=String(raw||"").replace(/\r/g,"").split("\n");
+  let html="", list=null;
+  const close=()=>{if(list){html+=`</${list}>`;list=null}}
+  for(let line of lines){
+    let s=line.trim();
+    if(!s){close();continue}
+    let bullet=s.match(/^([•*\-–])\s+(.+)/);
+    let num=s.match(/^(\d+)[.)]\s+(.+)/);
+    if(bullet){if(list!=="ul"){close();html+="<ul>";list="ul"}html+=`<li>${esc(bullet[2])}</li>`;continue}
+    if(num){if(list!=="ol"){close();html+="<ol>";list="ol"}html+=`<li>${esc(num[2])}</li>`;continue}
+    close();
+    if(isHeadingLine(s)) html+=`<h2>${esc(s.replace(/[:：]$/, ""))}</h2>`;
+    else html+=`<p>${esc(s)}</p>`;
+  }
+  close();
+  return html || "<p>Catatan kosong.</p>";
+}
+function openReader(id){
+  const n=getNotes().find(x=>x.id===id); if(!n)return;
+  selectedId=id;
+  document.getElementById("readerTitle").textContent=n.title||"Tanpa Judul";
+  document.getElementById("readerBody").innerHTML=readableHtml(n.body||"");
+  document.getElementById("readerMeta").innerHTML=`<span>📁 ${esc(n.folder||'Umum')}</span><span>${n.tag?'#'+esc(n.tag):'Catatan'}</span><span>${new Date(n.updated||Date.now()).toLocaleString('id-ID')}</span>`;
+  document.getElementById("readerEditBtn").onclick=()=>location.href='catatan.html?id='+encodeURIComponent(id);
+  document.getElementById("reader").style.display="block";
+}
+function closeReader(){document.getElementById("reader").style.display="none"}
+
+function toast(msg,type="success"){const t=document.getElementById("toast");t.className="toast "+type;t.textContent=msg;t.style.display="block";clearTimeout(t._timer);t._timer=setTimeout(()=>t.style.display="none",2400)}
+function modal(title,text,buttons,extra=""){document.getElementById("modalTitle").textContent=title;document.getElementById("modalText").textContent=text;document.getElementById("modalExtra").innerHTML=extra;document.getElementById("modalBtns").innerHTML=buttons.map(b=>`<button class="${b.cls||'cancel'}" onclick="${b.onclick}">${b.text}</button>`).join("");document.getElementById("mainModal").style.display="flex"}
+function closeModal(){document.getElementById("mainModal").style.display="none"}
+function setFilter(v){filter=v;document.querySelectorAll('#filters button').forEach(b=>b.classList.remove('active'));const btn=[...document.querySelectorAll('#filters button')].find(b=>b.getAttribute('onclick')===`setFilter('${v}')`);if(btn)btn.classList.add('active');render()}
+function setFolder(v){activeFolder=v;renderFolderBar();render()}
+function renderFolderBar(){const folders=getFolders();let html=`<button class="folderChip ${activeFolder==='all'?'active':''}" onclick="setFolder('all')">Semua Folder</button>`;html+=folders.map(f=>`<button class="folderChip ${activeFolder===f?'active':''}" onclick="setFolder('${esc(f)}')">📁 ${esc(f)}</button>`).join("");html+=`<button class="folderChip add" onclick="addFolder()">+ Folder</button>`;document.getElementById("folderBar").innerHTML=html}
+function addFolder(){modal("Folder Baru","Buat folder agar catatan lebih rapi dan profesional.",[{text:"Batal",cls:"cancel",onclick:"closeModal()"},{text:"Simpan",cls:"primary",onclick:"saveNewFolder()"}],`<input class="input" id="folderName" placeholder="Contoh: Hafalan, Kerja, Belanja">`);setTimeout(()=>document.getElementById('folderName')?.focus(),80)}
+function saveNewFolder(){const name=(document.getElementById("folderName").value||"").trim();if(!name)return toast("Nama folder belum diisi","warn");let f=getFolders();f.push(name);saveFolders(f);closeModal();activeFolder=name;toast("Folder berhasil dibuat");renderFolderBar();render()}
+function bgStyle(n){if(n.customImage)return `background:linear-gradient(#0009,#0009),url(${n.customImage}) center/cover;color:white;`;return n.bgStyle||"background:linear-gradient(135deg,#0f172a,#1e3a8a);color:white;"}
+function getFiltered(){const q=search.value.toLowerCase();return getNotes().filter(n=>{const text=((n.title||"")+" "+(n.body||"")+" "+(n.tag||"")+" "+(n.folder||"Umum")).toLowerCase();if(q&&!text.includes(q))return false;if(activeFolder!=="all"&&(n.folder||"Umum")!==activeFolder)return false;if(filter==="pin"&&!n.pin)return false;if(filter==="alarm"&&!n.alarmActive)return false;if(filter==="favorite"&&!n.favorite)return false;if(filter==="archive"&&!n.archive)return false;if(filter!=="archive"&&n.archive)return false;return true})}
+function sortNotes(notes){const s=sortBy.value;if(s==="title")notes.sort((a,b)=>(a.title||"").localeCompare(b.title||""));else if(s==="alarm")notes.sort((a,b)=>new Date(a.alarmTime||8640000000000000)-new Date(b.alarmTime||8640000000000000));else notes.sort((a,b)=>(b.pin===true)-(a.pin===true)||(b.favorite===true)-(a.favorite===true)||(b.updated||0)-(a.updated||0));return notes}
+function renderStats(){const n=getNotes();document.getElementById("stats").innerHTML=`<div class="stat"><b>${n.filter(x=>!x.archive).length}</b><span>Aktif</span></div><div class="stat"><b>${n.filter(x=>x.pin).length}</b><span>Pin</span></div><div class="stat"><b>${n.filter(x=>x.alarmActive).length}</b><span>Alarm</span></div><div class="stat"><b>${getFolders().length}</b><span>Folder</span></div>`}
+function render(){renderFolderBar();renderStats();let notes=sortNotes(getFiltered());if(!notes.length){list.innerHTML='<div class="empty">Belum ada catatan.<br>Tekan + Catatan untuk mulai.</div>';return}list.innerHTML=notes.map(n=>`<div class="card" onclick="openReader(\'${n.id}\')" style="${bgStyle(n)};cursor:pointer"><button class="pinBtn" onclick="quickPin('${n.id}')">${n.pin?'📌':'＋'}</button><h3>${n.pin?'📌 ':''}${n.favorite?'⭐ ':''}${esc(n.title||'Tanpa Judul')}</h3><p style="font-size:${n.fontSize||18}px;color:${n.textColor||'inherit'}">${esc((n.body||'').trim().slice(0,220))}${(n.body||'').length>220?'...':''}</p><div class="badge">📁 ${esc(n.folder||'Umum')}</div><div class="meta"><span>${n.tag?'#'+esc(n.tag):'Catatan'}</span><span>${n.alarmActive?'⏰ '+esc(n.alarmTime||'Alarm aktif'):''}</span><span>${new Date(n.updated||Date.now()).toLocaleDateString('id-ID')}</span></div><div class="actions"><button class="view" onclick="openReader('${n.id}')">Lihat</button><a class="edit" href="catatan.html?id=${n.id}">Edit</a><button class="del" onclick="askDelete('${n.id}')">Hapus</button><button class="more" onclick="openSheet('${n.id}')">⋯</button></div></div>`).join("")}
+function askDelete(id){selectedId=id;modal("Hapus Catatan?","Catatan ini akan dihapus dari perangkat ini. Pastikan sudah backup kalau penting.",[{text:"Batal",cls:"cancel",onclick:"closeModal()"},{text:"Ya, Hapus",cls:"confirm",onclick:"confirmDelete()"}])}
+function confirmDelete(){if(selectedId){saveNotes(getNotes().filter(n=>n.id!==selectedId));toast("Catatan berhasil dihapus");render()}selectedId=null;closeModal();closeSheet()}
+function openSheet(id){selectedId=id;document.getElementById("actionSheet").classList.add("show")}
+function closeSheet(){document.getElementById("actionSheet").classList.remove("show")}
+function getSelected(){return getNotes().find(n=>n.id===selectedId)}
+function updateSelected(fn){let notes=getNotes().map(n=>{if(n.id===selectedId){fn(n);n.updated=Date.now()}return n});saveNotes(notes);render()}
+function quickPin(id){selectedId=id;updateSelected(n=>n.pin=!n.pin);toast("Status pin diperbarui")}
+function toggleFavorite(){updateSelected(n=>n.favorite=!n.favorite);toast("Favorit diperbarui");closeSheet()}
+function toggleArchive(){updateSelected(n=>n.archive=!n.archive);toast("Status arsip diperbarui");closeSheet()}
+function copyNoteText(){const n=getSelected();if(!n)return;navigator.clipboard?.writeText((n.title||"")+"\n\n"+(n.body||""));toast("Isi catatan disalin");closeSheet()}
+function askDeleteFromSheet(){askDelete(selectedId)}
+function openMoveFolder(){const opts=getFolders().map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join("");modal("Pindah Folder","Pilih folder tujuan untuk catatan ini.",[{text:"Batal",cls:"cancel",onclick:"closeModal()"},{text:"Pindah",cls:"primary",onclick:"moveFolderNow()"}],`<select class="input" id="moveFolder">${opts}</select>`)}
+function moveFolderNow(){const f=document.getElementById("moveFolder").value;updateSelected(n=>n.folder=f);toast("Catatan dipindahkan ke folder "+f);closeModal();closeSheet()}
+
+async function requestNotif(){
+  if(!('Notification' in window))return false;
+  if(Notification.permission==='default')await Notification.requestPermission();
+  return Notification.permission==='granted';
+}
+
+async function showSystemNotif(note){
+  const ok=await requestNotif();
+  if(!ok)return;
+  try{
+    if(navigator.serviceWorker?.ready){
+      const reg=await navigator.serviceWorker.ready;
+      reg.showNotification(note.title||'Alarm Catatan',{
+        body:(note.body||'Catatan penting').slice(0,180),
+        tag:'nozil-note-'+note.id,
+        renotify:true,
+        vibrate:[300,120,300],
+        requireInteraction:true,
+        icon:'./icon-192.png',
+        badge:'./icon-192.png',
+        data:{id:note.id}
+      });
+    }else{
+      new Notification(note.title||'Alarm Catatan',{body:(note.body||'Catatan penting').slice(0,180),icon:'./icon-192.png'});
+    }
+  }catch(e){console.log(e)}
+}
+
+function startBeep(type="beep-premium",volume=0.35){stopBeep();audioCtx=new (window.AudioContext||window.webkitAudioContext)();let step=0;beepTimer=setInterval(()=>{step++;const pattern={"beep-normal":[850,420,900],"beep-fast":[1000,180,300],"beep-slow":[620,700,1300],"beep-premium":[880,180,260,1170,180,520],"beep-deep":[320,600,1000],"beep-soft":[520,300,900],"beep-triple":[900,130,190,900,120,190,900,130,650],"beep-rising":[520+step*35,260,650],"digital":[1200,120,180,900,120,500],"classic":[700,500,750],"emergency":[1300,160,220],"minimal-tick":[420,80,700]}[type]||[850,420,900];playPattern(pattern,volume)},900)}
+function playPattern(arr,volume){let delay=0;for(let i=0;i<arr.length;i+=3){setTimeout(()=>playTone(arr[i],arr[i+1],volume),delay);delay+=arr[i+2]||300}}
+function playTone(freq,dur,volume){if(!audioCtx)return;const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type="sine";osc.frequency.value=freq;gain.gain.value=volume;osc.connect(gain);gain.connect(audioCtx.destination);osc.start();setTimeout(()=>osc.stop(),dur);if(navigator.vibrate)navigator.vibrate(120)}
+function stopBeep(){if(beepTimer)clearInterval(beepTimer);beepTimer=null}
+function showAlarm(note){activeAlarm=note;document.getElementById("alarmTitle").textContent=note.title||"Alarm Catatan";document.getElementById("alarmBody").textContent=note.body||"Catatan penting";document.getElementById("alarmCard").style.cssText=bgStyle(note);document.getElementById("alarmBox").style.display="flex";showSystemNotif(note);startBeep(note.alarmSound||"beep-premium",(note.alarmVolume||55)/100)}
+function finishAlarm(){stopBeep();document.getElementById("alarmBox").style.display="none";if(!activeAlarm)return;let notes=getNotes().map(n=>{if(n.id===activeAlarm.id){if(n.repeatAlarm==="daily"){const d=new Date(n.alarmTime);d.setDate(d.getDate()+1);n.alarmTime=d.toISOString().slice(0,16)}else n.alarmActive=false;n.updated=Date.now()}return n});saveNotes(notes);activeAlarm=null;toast("Alarm selesai");render()}
+function snoozeAlarm(){stopBeep();document.getElementById("alarmBox").style.display="none";if(!activeAlarm)return;let minutes=Number(activeAlarm.snoozeMinutes||5);let notes=getNotes().map(n=>{if(n.id===activeAlarm.id){n.alarmTime=new Date(Date.now()+minutes*60000).toISOString().slice(0,16);n.updated=Date.now()}return n});saveNotes(notes);activeAlarm=null;toast("Alarm ditunda "+minutes+" menit");render()}
+function checkAlarm(){if(activeAlarm)return;const now=Date.now();const due=getNotes().find(n=>n.alarmActive&&n.alarmTime&&Math.abs(new Date(n.alarmTime).getTime()-now)<30000);if(due)showAlarm(due)}
+
+
+function setViewMode(){
+ const m=document.getElementById('viewMode').value;
+ localStorage.setItem('nozil_super_view',m);
+ document.body.className=document.body.className.replace(/vm-[^ ]+/g,'');
+ document.body.classList.add('vm-'+m);
+}
+window.addEventListener('load',()=>{
+ const m=localStorage.getItem('nozil_super_view')||'ultra';
+ const v=document.getElementById('viewMode');
+ if(v){v.value=m;}
+ document.body.classList.add('vm-'+m);
+});
+
+search.oninput=render;
+setFilter('all');
+render();
+setInterval(checkAlarm,8000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAlarm()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeReader()});
+requestNotif();
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+}
+</script>
+
+<script id="builder-ready-js">
+window.NozilBuilderRegistry={
+ header:{editable:['color','background','shadow','radius']},
+ card:{editable:['color','background','shadow','radius','padding']},
+ button:{editable:['color','background','radius']},
+ popup:{editable:['color','background','radius','animation']}
+};
+document.querySelectorAll('header,.header').forEach(e=>e.setAttribute('data-builder','header'));
+document.querySelectorAll('.card').forEach(e=>e.setAttribute('data-builder','card'));
+document.querySelectorAll('button').forEach(e=>e.setAttribute('data-builder','button'));
+</script>
+
+<style id="builder-v4">
+[data-builder]{position:relative}
+.builder-hover{outline:2px solid #38bdf8!important}
+.builder-selected{outline:3px solid #facc15!important}
+</style>
+<script>
+window.NozilTheme={
+ version:'4.0',
+ variables:[
+ 'header-bg','card-bg','card-radius','card-shadow',
+ 'button-bg','button-radius','popup-bg','popup-radius',
+ 'text-primary','text-secondary','nav-bg','search-bg'
+ ]
+};
+
+window.NozilBuilderRegistry={
+ header:{editable:['appearance','layout','shadow']},
+ search:{editable:['appearance','typography']},
+ noteCard:{editable:['appearance','border','shadow','animation']},
+ modal:{editable:['appearance','animation']},
+ navbar:{editable:['appearance','layout']}
+};
+
+window.NozilBuilder={
+ selected:null,
+ select(el){
+   document.querySelectorAll('.builder-selected').forEach(x=>x.classList.remove('builder-selected'));
+   this.selected=el;
+   el.classList.add('builder-selected');
+ },
+ getSelected(){return this.selected;}
+};
+
+document.addEventListener('mouseover',e=>{
+ const el=e.target.closest('[data-builder]');
+ if(el) el.classList.add('builder-hover');
+});
+document.addEventListener('mouseout',e=>{
+ const el=e.target.closest('[data-builder]');
+ if(el) el.classList.remove('builder-hover');
+});
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-builder]');
+ if(el) window.NozilBuilder.select(el);
+},true);
+</script>
+
+<style id="builder-v5">
+.builder-toolbar{position:fixed;top:10px;right:10px;z-index:99999;background:#111827;color:#fff;padding:10px;border-radius:14px}
+</style>
+<script>
+window.NozilBuilderHistory=[];
+window.NozilBuilderFuture=[];
+window.NozilBuilderRegistry=window.NozilBuilderRegistry||{};
+window.NozilBuilderRegistry.layerTree={
+ app:['header','search','folder','filters','stats','notes','reader','popup','nav']
+};
+window.NozilBuilderTheme={
+ vars:['--header-bg','--card-bg','--card-radius','--card-shadow','--button-bg','--popup-bg','--nav-bg','--search-bg']
+};
+function builderUndo(){}
+function builderRedo(){}
+</script>
+
+
+<style id="builder-v6">
+[data-builder][data-name]{position:relative}
+.builder-label{position:fixed;z-index:999999;background:#0f172a;color:#fff;padding:4px 8px;border-radius:8px;font-size:12px;pointer-events:none}
+</style>
+<script>
+window.NozilTheme={version:'6.0',vars:{}};
+window.NozilBuilder={
+ history:[],
+ selected:null,
+ select(el){this.selected=el;localStorage.setItem('nozil_builder_selected',el.dataset.componentId||'');},
+ save(){localStorage.setItem('nozil_builder_state',JSON.stringify(this.export()));},
+ export(){return {theme:window.NozilTheme};},
+ layers(){return ['Header','Search','Folder','Filters','Stats','Notes','Reader','Modal','Navigation'];}
+};
+document.querySelectorAll('[data-builder]').forEach((el,i)=>{
+ if(!el.dataset.name) el.dataset.name=el.dataset.builder;
+ if(!el.dataset.category) el.dataset.category='component';
+ if(!el.dataset.editable) el.dataset.editable='all';
+ if(!el.dataset.componentId) el.dataset.componentId=el.dataset.builder+'-'+(i+1);
+});
+</script>
+
+<style>
+.builder-badge{position:fixed;top:10px;left:10px;z-index:99999;background:#0f172a;color:#fff;padding:8px 12px;border-radius:12px;border:1px solid #334155}
+</style>
+
+<script>
+window.NozilBridge={
+ send(type,data){
+   window.parent.postMessage({source:'nozil',type,data},'*');
+ },
+ saveTheme(theme){
+   localStorage.setItem('nozil_theme',JSON.stringify(theme));
+ },
+ loadTheme(){
+   return JSON.parse(localStorage.getItem('nozil_theme')||'{}');
+ }
+};
+
+window.addEventListener('message',e=>{
+ const msg=e.data||{};
+ if(msg.type==='select'){
+   const el=document.querySelector('[data-component-id="'+msg.id+'"]');
+   if(el && window.NozilBuilder) window.NozilBuilder.select(el);
+ }
+ if(msg.type==='theme'){
+   localStorage.setItem('nozil_theme',JSON.stringify(msg.data));
+ }
+});
+</script>
+</body>
+</html>
