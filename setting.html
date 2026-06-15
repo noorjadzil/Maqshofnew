@@ -1,91 +1,55 @@
-<!DOCTYPE html><html><head><meta charset='utf-8'>
-<title>Nozil Builder Studio V8 Ultimate</title>
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<title>Nozil Visual Editor Pro</title>
 <style>
-body{margin:0;font-family:Inter,Segoe UI;background:#0b1020;color:#fff;display:grid;grid-template-columns:260px 420px 1fr;height:100vh}
-.panel{overflow:auto;padding:12px}.left{background:#111827}.mid{background:#1f2937}
-.card{background:#374151;padding:10px;border-radius:12px;margin:8px 0}
-iframe{width:100%;height:100%;border:0}
-input,select,textarea{width:100%}
-.tree{padding:6px;background:#4b5563;border-radius:8px;margin:4px 0;cursor:pointer}
-</style></head><body>
-<div class='panel left'>
-<h2>Project Explorer</h2>
-<div id='tree'></div>
-<div class='card'><button onclick='scan()'>Scan Project</button></div>
-<div class='card'><button onclick='saveProject()'>Save Project</button></div>
-<div class='card'><button onclick='exportTheme()'>Export Theme</button></div>
-</div>
+body{margin:0;background:#111827;font-family:Segoe UI;color:#fff}
+#top{padding:12px;background:#1f2937}
+#frame{width:100%;height:calc(100vh - 220px);border:0}
+#sheet{position:fixed;left:0;right:0;bottom:0;height:220px;background:#0f172a;border-top:2px solid #334155;padding:12px;overflow:auto}
+.row{display:flex;gap:10px;margin:8px 0}
+input{flex:1}
+button{padding:8px 14px}
+</style></head>
+<body>
+<div id="top">Nozil Visual Editor Pro</div>
+<iframe id="frame" src="index.html"></iframe>
 
-<div class='panel mid'>
-<h2>Ultimate Inspector</h2>
-<div class='card'>Text<input id='textEdit'></div>
-<div class='card'>Background<input id='bg' type='color'></div>
-<div class='card'>Color<input id='txt' type='color'></div>
-<div class='card'>Font<input id='font' type='range' min='8' max='80'></div>
-<div class='card'>Radius<input id='radius' type='range' min='0' max='100'></div>
-<div class='card'>Width<input id='width' type='range' min='50' max='1200'></div>
-<div class='card'>Height<input id='height' type='range' min='20' max='1000'></div>
-<div class='card'>Shadow<input id='shadow' type='range' min='0' max='100'></div>
-<div class='card'>Animation
-<select id='anim'><option>none</option><option>pulse</option><option>bounce</option><option>fade</option></select>
+<div id="sheet">
+<b>Element Editor</b>
+<div id="selected">Belum ada elemen dipilih</div>
+<div class="row"><input id="txt" placeholder="Teks"></div>
+<div class="row">
+<input id="textColor" type="color">
+<input id="bgColor" type="color">
 </div>
-<div class='card'>Custom CSS<textarea id='css' rows='6'></textarea></div>
+<div class="row">
+<button onclick="save()">Simpan</button>
+<button onclick="resetEl()">Reset</button>
 </div>
-
-<iframe id='preview' src='index.html'></iframe>
+</div>
 
 <script>
-let selected=null;
+let el=null,old='';
 
-preview.onload=()=>{
- const d=preview.contentWindow.document;
+frame.onload=()=>{
+ const d=frame.contentWindow.document;
  d.addEventListener('click',e=>{
-  e.preventDefault();e.stopPropagation();
-  selected=e.target;
-  textEdit.value=selected.innerText||'';
+   e.preventDefault();
+   e.stopPropagation();
+   if(el) el.style.outline='';
+   el=e.target;
+   old=el.getAttribute('style')||'';
+   el.style.outline='2px solid #3b82f6';
+   selected.innerText='Dipilih: '+el.tagName;
+   txt.value=el.innerText||'';
  },true);
- scan();
 };
 
-function scan(){
- try{
- const d=preview.contentWindow.document;
- tree.innerHTML='';
- [...d.querySelectorAll('body *')].slice(0,300).forEach(el=>{
-   let n=document.createElement('div');
-   n.className='tree';
-   n.textContent=el.tagName.toLowerCase();
-   n.onclick=()=>selected=el;
-   tree.appendChild(n);
- });
- }catch(e){}
-}
+txt.oninput=()=>{ if(el) el.innerText=txt.value; };
+textColor.oninput=()=>{ if(el) el.style.color=textColor.value; };
+bgColor.oninput=()=>{ if(el) el.style.background=bgColor.value; };
 
-function apply(){
- if(!selected)return;
- selected.innerText=textEdit.value;
- selected.style.background=bg.value;
- selected.style.color=txt.value;
- selected.style.fontSize=font.value+'px';
- selected.style.borderRadius=radius.value+'px';
- selected.style.width=width.value+'px';
- selected.style.height=height.value+'px';
- selected.style.boxShadow='0 0 '+shadow.value+'px rgba(0,0,0,.6)';
- selected.style.cssText += ';'+css.value;
-}
-
-[textEdit,bg,txt,font,radius,width,height,shadow,css].forEach(x=>x.oninput=apply);
-
-anim.onchange=()=>{
- if(!selected)return;
- if(anim.value==='pulse') selected.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:800,iterations:Infinity});
- if(anim.value==='bounce') selected.animate([{transform:'translateY(0)'},{transform:'translateY(-15px)'},{transform:'translateY(0)'}],{duration:700,iterations:Infinity});
- if(anim.value==='fade') selected.animate([{opacity:1},{opacity:.2},{opacity:1}],{duration:1200,iterations:Infinity});
-}
-
-function saveProject(){localStorage.setItem('nozil_v8','saved');alert('Project Saved');}
-function exportTheme(){
- const blob=new Blob([JSON.stringify({version:'V8 Ultimate'})],{type:'application/json'});
- const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='v8-theme.json';a.click();
-}
-</script></body></html>
+function save(){ alert('Perubahan disimpan'); }
+function resetEl(){ if(el) el.setAttribute('style',old); }
+</script>
+</body></html>
