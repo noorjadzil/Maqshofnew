@@ -68,6 +68,13 @@ display:none!important
 .builder-box{max-width:500px;margin:40px auto;background:#111827;color:#fff;padding:20px;border-radius:20px}
 .builder-box input,.builder-box select{width:100%;margin:6px 0 12px;padding:10px}
 </style>
+
+<style>
+.edit-mode *{outline:1px dashed transparent}
+.edit-mode .editable-selected{outline:2px solid #3b82f6!important}
+#ultraEditor{position:fixed;left:20px;top:20px;width:320px;background:#111827;color:white;padding:15px;border-radius:18px;z-index:10001;display:none}
+#ultraEditor input,#ultraEditor select{width:100%;margin:5px 0 10px;padding:8px}
+</style>
 </head>
 <body>
 <div class="top"><div class="logo">Nozil <span>Note</span></div><a class="btn" href="catatan.html">+ Catatan</a></div>
@@ -262,6 +269,176 @@ if(tx) document.documentElement.style.setProperty('--text',tx);
 if(rd) document.querySelectorAll('.card').forEach(c=>c.style.borderRadius=rd+'px');
 }
 window.addEventListener('load',applyTheme);
+</script>
+
+<div id="ultraEditor">
+<h3>Ultra Component Builder</h3>
+<p>Klik elemen yang ingin diedit</p>
+<label>Ukuran Font</label><input type="range" min="10" max="60" id="fontSizeEditor">
+<label>Warna Teks</label><input type="color" id="fontColorEditor">
+<label>Border Radius</label><input type="range" min="0" max="50" id="radiusEditor">
+<button onclick="closeUltraEditor()">Tutup Editor</button>
+</div>
+
+<button class="btn" style="position:fixed;right:20px;bottom:150px;z-index:9999" onclick="toggleEditMode()">⚙️ Edit Komponen</button>
+
+<script>
+let editMode=false;
+let selectedElement=null;
+
+function toggleEditMode(){
+ editMode=!editMode;
+ document.body.classList.toggle('edit-mode');
+ document.getElementById('ultraEditor').style.display=editMode?'block':'none';
+}
+
+function closeUltraEditor(){
+ document.getElementById('ultraEditor').style.display='none';
+ editMode=false;
+}
+
+document.addEventListener('click',function(e){
+ if(!editMode) return;
+ if(e.target.closest('#ultraEditor')) return;
+ e.preventDefault();
+ e.stopPropagation();
+
+ if(selectedElement) selectedElement.classList.remove('editable-selected');
+ selectedElement=e.target;
+ selectedElement.classList.add('editable-selected');
+},{capture:true});
+
+fontSizeEditor?.addEventListener('input',()=>{
+ if(selectedElement) selectedElement.style.fontSize=fontSizeEditor.value+'px';
+});
+
+fontColorEditor?.addEventListener('input',()=>{
+ if(selectedElement) selectedElement.style.color=fontColorEditor.value;
+});
+
+radiusEditor?.addEventListener('input',()=>{
+ if(selectedElement) selectedElement.style.borderRadius=radiusEditor.value+'px';
+});
+</script>
+
+<style>
+#proBuilder{
+position:fixed;right:20px;top:20px;width:340px;max-height:90vh;overflow:auto;
+background:#0f172a;color:white;padding:16px;border-radius:20px;z-index:10002;display:none;
+box-shadow:0 10px 40px rgba(0,0,0,.4)
+}
+#proBuilder input,#proBuilder select{width:100%;padding:8px;margin:4px 0 10px}
+</style>
+
+<div id="proBuilder">
+<h2>🚀 Ultra Pro Builder</h2>
+<label>Background</label><input type="color" id="pbBg">
+<label>Text</label><input type="color" id="pbText">
+<label>Border</label><input type="color" id="pbBorder">
+<label>Shadow</label><input type="range" min="0" max="50" value="10" id="pbShadow">
+<label>Padding</label><input type="range" min="0" max="50" value="10" id="pbPadding">
+<label>Font Size</label><input type="range" min="10" max="60" value="16" id="pbFont">
+<button onclick="saveProTheme()">💾 Simpan Tema</button>
+<button onclick="exportTheme()">📤 Export Tema</button>
+</div>
+
+<button class="btn" style="position:fixed;right:20px;bottom:210px;z-index:10002"
+onclick="document.getElementById('proBuilder').style.display='block'">🚀 Pro Builder</button>
+
+<script>
+function applySelected(){
+ if(!window.selectedElement) return;
+ selectedElement.style.background=pbBg.value;
+ selectedElement.style.color=pbText.value;
+ selectedElement.style.border='1px solid '+pbBorder.value;
+ selectedElement.style.boxShadow='0 0 '+pbShadow.value+'px rgba(0,0,0,.35)';
+ selectedElement.style.padding=pbPadding.value+'px';
+ selectedElement.style.fontSize=pbFont.value+'px';
+}
+[pbBg,pbText,pbBorder,pbShadow,pbPadding,pbFont].forEach(x=>x.addEventListener('input',applySelected));
+
+function saveProTheme(){
+ localStorage.setItem('ultra_pro_theme',JSON.stringify({
+ bg:pbBg.value,text:pbText.value,border:pbBorder.value,
+ shadow:pbShadow.value,padding:pbPadding.value,font:pbFont.value
+ }));
+ alert('Tema tersimpan');
+}
+
+function exportTheme(){
+ const data=localStorage.getItem('ultra_pro_theme')||'{}';
+ const blob=new Blob([data],{type:'application/json'});
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);
+ a.download='nozil-theme.json';
+ a.click();
+}
+</script>
+
+<style>
+#designerStudio{
+position:fixed;left:10px;top:10px;width:380px;max-height:92vh;overflow:auto;
+background:#0b1220;color:#fff;padding:16px;border-radius:22px;z-index:10050;display:none
+}
+#designerStudio input,#designerStudio select,#designerStudio textarea{
+width:100%;padding:8px;margin:4px 0 10px;
+}
+</style>
+
+<div id="designerStudio">
+<h2>🎨 Nozil Designer Studio</h2>
+
+<label>Gradient 1</label><input type="color" id="dsG1">
+<label>Gradient 2</label><input type="color" id="dsG2">
+
+<label>Opacity</label><input type="range" min="0.1" max="1" step="0.1" value="1" id="dsOpacity">
+
+<label>Rotate</label><input type="range" min="-180" max="180" value="0" id="dsRotate">
+
+<label>Scale</label><input type="range" min="0.5" max="2" step="0.1" value="1" id="dsScale">
+
+<label>Animasi</label>
+<select id="dsAnim">
+<option value="">Tidak Ada</option>
+<option value="fadeIn 0.5s">Fade</option>
+<option value="zoomIn 0.5s">Zoom</option>
+</select>
+
+<button onclick="duplicateSelected()">📑 Duplikat</button>
+<button onclick="saveDesigner()">💾 Simpan Studio</button>
+</div>
+
+<button class="btn" style="position:fixed;right:20px;bottom:270px;z-index:10051"
+onclick="document.getElementById('designerStudio').style.display='block'">
+🎨 Designer Studio
+</button>
+
+<script>
+const st=document.createElement('style');
+st.innerHTML='@keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes zoomIn{from{transform:scale(.7)}to{transform:scale(1)}}';
+document.head.appendChild(st);
+
+function applyDesigner(){
+ if(!window.selectedElement) return;
+
+ selectedElement.style.background='linear-gradient(135deg,'+dsG1.value+','+dsG2.value+')';
+ selectedElement.style.opacity=dsOpacity.value;
+ selectedElement.style.transform='rotate('+dsRotate.value+'deg) scale('+dsScale.value+')';
+ if(dsAnim.value) selectedElement.style.animation=dsAnim.value;
+}
+
+[dsG1,dsG2,dsOpacity,dsRotate,dsScale,dsAnim].forEach(x=>x.addEventListener('input',applyDesigner));
+
+function duplicateSelected(){
+ if(!window.selectedElement) return;
+ let clone=selectedElement.cloneNode(true);
+ selectedElement.parentNode.insertBefore(clone,selectedElement.nextSibling);
+}
+
+function saveDesigner(){
+ localStorage.setItem('nozil_designer_backup',document.body.innerHTML);
+ alert('Designer Studio disimpan');
+}
 </script>
 </body>
 </html>
