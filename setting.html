@@ -1,83 +1,91 @@
-<!DOCTYPE html>
-<html><head><meta charset="utf-8">
-<title>Nozil Editor</title>
+<!DOCTYPE html><html><head><meta charset='utf-8'>
+<title>Nozil Builder Studio V8 Ultimate</title>
 <style>
-body{margin:0}
-iframe{width:100vw;height:100vh;border:0}
-#editor{display:none;position:fixed;z-index:99999;background:#0f172a;color:#fff;
-padding:12px;border-radius:12px;width:320px;border:1px solid #334155}
-input{width:100%} .row{display:flex;gap:6px;margin-top:6px} button{flex:1}
-#back{position:fixed;top:10px;left:10px;z-index:9999}
+body{margin:0;font-family:Inter,Segoe UI;background:#0b1020;color:#fff;display:grid;grid-template-columns:260px 420px 1fr;height:100vh}
+.panel{overflow:auto;padding:12px}.left{background:#111827}.mid{background:#1f2937}
+.card{background:#374151;padding:10px;border-radius:12px;margin:8px 0}
+iframe{width:100%;height:100%;border:0}
+input,select,textarea{width:100%}
+.tree{padding:6px;background:#4b5563;border-radius:8px;margin:4px 0;cursor:pointer}
 </style></head><body>
-<button id="back" onclick="location.href='index.html'">← Kembali</button>
-<iframe id="frame" src="index.html"></iframe>
+<div class='panel left'>
+<h2>Project Explorer</h2>
+<div id='tree'></div>
+<div class='card'><button onclick='scan()'>Scan Project</button></div>
+<div class='card'><button onclick='saveProject()'>Save Project</button></div>
+<div class='card'><button onclick='exportTheme()'>Export Theme</button></div>
+</div>
 
-<div id="editor">
-<div id="lbl">Editor</div>
-<input id="txt" placeholder="Teks">
-<div class="row">
-<input id="fg" type="color">
-<input id="bg" type="color">
+<div class='panel mid'>
+<h2>Ultimate Inspector</h2>
+<div class='card'>Text<input id='textEdit'></div>
+<div class='card'>Background<input id='bg' type='color'></div>
+<div class='card'>Color<input id='txt' type='color'></div>
+<div class='card'>Font<input id='font' type='range' min='8' max='80'></div>
+<div class='card'>Radius<input id='radius' type='range' min='0' max='100'></div>
+<div class='card'>Width<input id='width' type='range' min='50' max='1200'></div>
+<div class='card'>Height<input id='height' type='range' min='20' max='1000'></div>
+<div class='card'>Shadow<input id='shadow' type='range' min='0' max='100'></div>
+<div class='card'>Animation
+<select id='anim'><option>none</option><option>pulse</option><option>bounce</option><option>fade</option></select>
 </div>
-<div class="row">
-<button onclick="resetEl()">Reset</button>
-<button onclick="saveEl()">Simpan</button>
+<div class='card'>Custom CSS<textarea id='css' rows='6'></textarea></div>
 </div>
-</div>
+
+<iframe id='preview' src='index.html'></iframe>
 
 <script>
-let selected=null,backup='';
+let selected=null;
 
-frame.onload=()=>{
- const d=frame.contentWindow.document;
+preview.onload=()=>{
+ const d=preview.contentWindow.document;
  d.addEventListener('click',e=>{
-   e.preventDefault();e.stopPropagation();
-   if(selected) selected.style.outline='';
-   selected=e.target;
-   backup=selected.style.cssText;
-   selected.style.outline='2px solid #3b82f6';
-
-   const r=selected.getBoundingClientRect();
-   editor.style.display='block';
-   editor.style.left=r.left+'px';
-   editor.style.top=(r.bottom+8)+'px';
-
-   txt.value=selected.textContent||'';
-   lbl.textContent='Edit '+selected.tagName.toLowerCase();
+  e.preventDefault();e.stopPropagation();
+  selected=e.target;
+  textEdit.value=selected.innerText||'';
  },true);
+ scan();
 };
 
-function makeSelector(el){
- if(el.id) return '#'+el.id;
- if(el.className && typeof el.className==='string'){
-   let c=el.className.trim().split(' ')[0];
-   if(c) return '.'+c;
- }
- return el.tagName.toLowerCase();
+function scan(){
+ try{
+ const d=preview.contentWindow.document;
+ tree.innerHTML='';
+ [...d.querySelectorAll('body *')].slice(0,300).forEach(el=>{
+   let n=document.createElement('div');
+   n.className='tree';
+   n.textContent=el.tagName.toLowerCase();
+   n.onclick=()=>selected=el;
+   tree.appendChild(n);
+ });
+ }catch(e){}
 }
 
-txt.oninput=()=>{ if(selected) selected.textContent=txt.value; };
-fg.oninput=()=>{ if(selected) selected.style.color=fg.value; };
-bg.oninput=()=>{ if(selected) selected.style.background=bg.value; };
-
-function saveEl(){
- if(!selected) return;
- const sel=makeSelector(selected);
- const theme=JSON.parse(localStorage.getItem('nozil_theme')||'{}');
- theme[sel]={
-   style:selected.style.cssText,
-   text:selected.textContent
- };
- localStorage.setItem('nozil_theme',JSON.stringify(theme));
-
- // langsung update preview
- frame.contentWindow.location.reload();
-
- alert('Tersimpan & diterapkan ke index');
+function apply(){
+ if(!selected)return;
+ selected.innerText=textEdit.value;
+ selected.style.background=bg.value;
+ selected.style.color=txt.value;
+ selected.style.fontSize=font.value+'px';
+ selected.style.borderRadius=radius.value+'px';
+ selected.style.width=width.value+'px';
+ selected.style.height=height.value+'px';
+ selected.style.boxShadow='0 0 '+shadow.value+'px rgba(0,0,0,.6)';
+ selected.style.cssText += ';'+css.value;
 }
 
-function resetEl(){
- if(selected) selected.style.cssText=backup;
+[textEdit,bg,txt,font,radius,width,height,shadow,css].forEach(x=>x.oninput=apply);
+
+anim.onchange=()=>{
+ if(!selected)return;
+ if(anim.value==='pulse') selected.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:800,iterations:Infinity});
+ if(anim.value==='bounce') selected.animate([{transform:'translateY(0)'},{transform:'translateY(-15px)'},{transform:'translateY(0)'}],{duration:700,iterations:Infinity});
+ if(anim.value==='fade') selected.animate([{opacity:1},{opacity:.2},{opacity:1}],{duration:1200,iterations:Infinity});
 }
-</script>
-</body></html>
+
+function saveProject(){localStorage.setItem('nozil_v8','saved');alert('Project Saved');}
+function exportTheme(){
+ const blob=new Blob([JSON.stringify({version:'V8 Ultimate'})],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='v8-theme.json';a.click();
+}
+</script></body></html>

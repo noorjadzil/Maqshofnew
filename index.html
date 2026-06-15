@@ -13,11 +13,11 @@ body{font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px}.logo{font-size:26px;font-weight:950;letter-spacing:-.5px}.logo span{color:var(--gold)}
 .btn{border:0;border-radius:16px;padding:12px 16px;background:linear-gradient(135deg,#facc15,#f97316);color:#111827;font-weight:950;text-decoration:none;box-shadow:0 12px 30px #0008;cursor:pointer}.btn2{background:#0f172ae6;color:white;border:1px solid #ffffff22;box-shadow:none}
 .tools{display:grid;grid-template-columns:1fr auto;gap:9px;margin-bottom:12px}.search{width:100%;padding:15px;border-radius:20px;border:1px solid var(--line);background:#020617cc;color:white;outline:none}.select{padding:0 12px;border-radius:20px;border:1px solid var(--line);background:#020617cc;color:white;font-weight:800;max-width:150px}
-.folderBar{display:flex;gap:8px;overflow:auto;margin-bottom:12px;padding-bottom:2px}.folderChip{white-space:nowrap;border:1px solid #ffffff22;background:#0f172acc;color:white;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:850;cursor:pointer}.folderChip.active{background:linear-gradient(135deg,#38bdf8,#1d4ed8);border-color:#7dd3fc}.folderChip.add{background:#111827;border-style:dashed;color:#facc15}
-.filters{display:flex;gap:8px;overflow:auto;margin-bottom:14px;padding-bottom:2px}.filters button{white-space:nowrap;border:1px solid var(--line);background:#0f172acc;color:white;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800;cursor:pointer}.filters button.active{background:#facc15;color:#111827;border-color:#facc15}
+.folderBar{display:flex;gap:8px;overflow:auto;margin-bottom:12px;padding-bottom:2px}.folderChip{white-space:nowrap;border:1px solid #ffffff22;background:#0f172acc;color:white;border-radius:999px;padding:9px 13px;font-weight:850;cursor:pointer}.folderChip.active{background:linear-gradient(135deg,#38bdf8,#1d4ed8);border-color:#7dd3fc}.folderChip.add{background:#111827;border-style:dashed;color:#facc15}
+.filters{display:flex;gap:8px;overflow:auto;margin-bottom:14px;padding-bottom:2px}.filters button{white-space:nowrap;border:1px solid var(--line);background:#0f172acc;color:white;border-radius:999px;padding:9px 13px;font-weight:800;cursor:pointer}.filters button.active{background:#facc15;color:#111827;border-color:#facc15}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}.stat{background:#0f172acc;border:1px solid #ffffff18;border-radius:18px;padding:12px;text-align:center}.stat b{display:block;font-size:18px}.stat span{font-size:11px;color:#cbd5e1}
-.grid{display:flex;flex-direction:column;gap:6px}.card{padding:10px 12px;border-radius:14px;box-shadow:0 16px 42px #0009;border:1px solid #ffffff22;overflow:hidden;animation:pop .25s ease;position:relative}@keyframes pop{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
-.card h3{font-size:15px;margin-bottom:8px;padding-right:35px}.card p{color:#e2e8f0;white-space:pre-wrap;line-height:1.45}.meta{margin-top:12px;font-size:12px;color:#cbd5e1;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.actions{display:grid;grid-template-columns:1fr 1fr 1fr 42px;gap:8px;margin-top:12px}.actions a,.actions button{border:0;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:900;cursor:pointer}.view{background:#facc15;color:#111827}.edit{background:#38bdf8;color:#082f49}.del{background:#ef4444;color:white}.more{background:#334155;color:white}.empty{text-align:center;margin-top:72px;color:#94a3b8;line-height:1.7}
+.grid{display:grid;gap:14px}.card{padding:16px;border-radius:26px;box-shadow:0 16px 42px #0009;border:1px solid #ffffff22;overflow:hidden;animation:pop .25s ease;position:relative}@keyframes pop{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+.card h3{font-size:19px;margin-bottom:8px;padding-right:35px}.card p{color:#e2e8f0;white-space:pre-wrap;line-height:1.45}.meta{margin-top:12px;font-size:12px;color:#cbd5e1;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.actions{display:grid;grid-template-columns:1fr 1fr 1fr 42px;gap:8px;margin-top:12px}.actions a,.actions button{border:0;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:900;cursor:pointer}.view{background:#facc15;color:#111827}.edit{background:#38bdf8;color:#082f49}.del{background:#ef4444;color:white}.more{background:#334155;color:white}.empty{text-align:center;margin-top:72px;color:#94a3b8;line-height:1.7}
 .badge{display:inline-flex;align-items:center;gap:5px;background:#0007;border:1px solid #ffffff24;border-radius:99px;padding:5px 8px;margin-top:9px;font-size:11px;color:#e5e7eb}.pinBtn{position:absolute;right:14px;top:14px;background:#0006;border:1px solid #ffffff24;color:white;border-radius:13px;width:34px;height:34px;font-weight:900;cursor:pointer}
 .nav{position:fixed;left:16px;right:16px;bottom:16px;display:flex;gap:10px;z-index:20}.nav a{flex:1;text-align:center;background:#0f172ae6;color:white;border:1px solid #ffffff22;border-radius:20px;padding:13px;text-decoration:none;font-weight:900;backdrop-filter:blur(12px)}
 .toast{position:fixed;left:18px;right:18px;bottom:88px;background:linear-gradient(135deg,#0f172a,#111827);border:1px solid #ffffff22;border-radius:18px;padding:14px 16px;box-shadow:0 18px 50px #000;display:none;z-index:120;font-weight:850}.toast.success{border-color:#22c55e99}.toast.warn{border-color:#facc1599}.toast.danger{border-color:#ef444499}
@@ -31,13 +31,83 @@ body{font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 
 @media(max-width:520px){.actions{grid-template-columns:1fr 1fr}.more{grid-column:auto}.reader{padding:0}.readerCard{height:100vh;border-radius:0}.readerBody{font-size:19px;padding:20px}.readerTop h1{font-size:20px}}
 
 @media(min-width:720px){body{max-width:760px;margin:auto}.grid{grid-template-columns:1fr 1fr}.nav{max-width:730px;margin:auto}.stats{grid-template-columns:repeat(4,1fr)}}
+
+/* ULTIMATE VIEW MODES */
+.vm-ultra .card{padding:5px 8px!important;border-radius:8px!important;box-shadow:none!important}
+.vm-ultra .card p,.vm-ultra .actions,.vm-ultra .badge,.vm-ultra .meta span:first-child{display:none!important}
+.vm-ultra .card h3{font-size:13px!important;margin:0!important}
+
+.vm-dense .card{padding:6px 8px!important;border-radius:8px!important;box-shadow:none!important}
+.vm-dense .actions,.vm-dense .badge{display:none!important}
+.vm-dense .card p{-webkit-line-clamp:1;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;font-size:11px!important}
+
+.vm-compact .card{padding:8px 10px!important;border-radius:10px!important;box-shadow:none!important}
+.vm-compact .actions{display:none!important}
+
+.vm-mini2 #list{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px}
+.vm-mini3 #list{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:6px}
+.vm-mini4 #list{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:5px}
+.vm-mini5 #list{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:4px}
+
+.vm-mini2 .card,.vm-mini3 .card,.vm-mini4 .card,.vm-mini5 .card{
+height:80px!important;padding:6px!important;overflow:hidden!important;box-shadow:none!important
+}
+.vm-mini2 .card p,.vm-mini3 .card p,.vm-mini4 .card p,.vm-mini5 .card p,
+.vm-mini2 .actions,.vm-mini3 .actions,.vm-mini4 .actions,.vm-mini5 .actions,
+.vm-mini2 .meta,.vm-mini3 .meta,.vm-mini4 .meta,.vm-mini5 .meta{
+display:none!important
+}
+.vm-mini2 .card h3,.vm-mini3 .card h3,.vm-mini4 .card h3,.vm-mini5 .card h3{font-size:12px!important}
+
+
 </style>
+
+<style id="builder-ready-css">
+:root{
+ --builder-card-radius:16px;
+ --builder-shadow:0 10px 30px rgba(0,0,0,.25);
+ --builder-font-size:16px;
+}
+[data-builder]{transition:.2s}
+</style>
+
+<style id="builder-v3">
+[data-builder]{position:relative}
+.builder-hover{outline:2px solid #38bdf8!important}
+.builder-selected{outline:3px solid #facc15!important}
+</style>
+<script>
+window.NozilTheme={
+ vars:['--header-bg','--card-bg','--card-radius','--card-shadow','--text-primary','--nav-bg']
+};
+window.NozilBuilder={
+ select(id){return document.querySelector('[data-component-id="'+id+'"]')},
+ getProps(id){const el=this.select(id);return el?{text:el.innerText}:null;}
+};
+</script>
 </head>
 <body>
-<div class="top"><div class="logo">Nozil <span>Note</span></div><a class="btn" href="catatan.html">+ Catatan</a></div>
-<div class="tools"><input class="search" id="search" placeholder="Cari judul, isi, tag, folder..."><select class="select" id="sortBy" onchange="render()"><option value="updated">Terbaru</option><option value="title">Judul</option><option value="alarm">Alarm</option></select></div>
-<div class="folderBar" id="folderBar"></div>
-<div class="filters" id="filters"><button onclick="setFilter('all')">Semua</button><button onclick="setFilter('pin')">📌 Pin</button><button onclick="setFilter('alarm')">⏰ Alarm</button><button onclick="setFilter('favorite')">⭐ Favorit</button><button onclick="setFilter('archive')">Arsip</button></div>
+<div class="top" data-builder="header" data-name="Header" data-category="layout" data-editable="all" data-component-id="header-001"><div class="logo">Nozil <span>Note</span></div><a class="btn" href="catatan.html">+ Catatan</a></div>
+<div class="tools"><input class="search" id="search" placeholder="Cari judul, isi, tag, folder..."><select class="select" id="viewMode" onchange="setViewMode()">
+<option value="ultra">⚡ Ultra Compact</option>
+<option value="dense">📑 Dense List</option>
+<option value="compact">📋 Compact</option>
+<option value="list">📄 List</option>
+<option value="detail">📝 Detail</option>
+<option value="mini2">📚 Mini 2</option>
+<option value="mini3">📚 Mini 3</option>
+<option value="mini4">📚 Mini 4</option>
+<option value="mini5">📚 Mini 5</option>
+<option value="note2">📔 Notebook 2</option>
+<option value="note3">📔 Notebook 3</option>
+<option value="note4">📔 Notebook 4</option>
+<option value="masonry">🧱 Masonry</option>
+<option value="sticky">🟨 Sticky</option>
+<option value="timeline">📅 Timeline</option>
+<option value="folder">📁 Folder</option>
+</select><select class="select" id="sortBy" onchange="render()"><option value="updated">Terbaru</option><option value="title">Judul</option><option value="alarm">Alarm</option></select></div>
+<div class="folderBar" data-builder="folder-bar" data-component-id="folderbar-001" id="folderBar"></div>
+<div class="filters" data-builder="filter-bar" data-component-id="filterbar-001" id="filters"><button onclick="setFilter('all')">Semua</button><button onclick="setFilter('pin')">📌 Pin</button><button onclick="setFilter('alarm')">⏰ Alarm</button><button onclick="setFilter('favorite')">⭐ Favorit</button><button onclick="setFilter('archive')">Arsip</button></div>
 <div class="stats" id="stats"></div>
 <div id="list" class="grid"></div>
 <div class="nav"><a href="index.html">Catatan</a><a href="setting.html">Setting</a></div>
@@ -102,7 +172,7 @@ function bgStyle(n){if(n.customImage)return `background:linear-gradient(#0009,#0
 function getFiltered(){const q=search.value.toLowerCase();return getNotes().filter(n=>{const text=((n.title||"")+" "+(n.body||"")+" "+(n.tag||"")+" "+(n.folder||"Umum")).toLowerCase();if(q&&!text.includes(q))return false;if(activeFolder!=="all"&&(n.folder||"Umum")!==activeFolder)return false;if(filter==="pin"&&!n.pin)return false;if(filter==="alarm"&&!n.alarmActive)return false;if(filter==="favorite"&&!n.favorite)return false;if(filter==="archive"&&!n.archive)return false;if(filter!=="archive"&&n.archive)return false;return true})}
 function sortNotes(notes){const s=sortBy.value;if(s==="title")notes.sort((a,b)=>(a.title||"").localeCompare(b.title||""));else if(s==="alarm")notes.sort((a,b)=>new Date(a.alarmTime||8640000000000000)-new Date(b.alarmTime||8640000000000000));else notes.sort((a,b)=>(b.pin===true)-(a.pin===true)||(b.favorite===true)-(a.favorite===true)||(b.updated||0)-(a.updated||0));return notes}
 function renderStats(){const n=getNotes();document.getElementById("stats").innerHTML=`<div class="stat"><b>${n.filter(x=>!x.archive).length}</b><span>Aktif</span></div><div class="stat"><b>${n.filter(x=>x.pin).length}</b><span>Pin</span></div><div class="stat"><b>${n.filter(x=>x.alarmActive).length}</b><span>Alarm</span></div><div class="stat"><b>${getFolders().length}</b><span>Folder</span></div>`}
-function render(){renderFolderBar();renderStats();let notes=sortNotes(getFiltered());if(!notes.length){list.innerHTML='<div class="empty">Belum ada catatan.<br>Tekan + Catatan untuk mulai.</div>';return}list.innerHTML=notes.map(n=>`<div class="card" style="${bgStyle(n)}"><button class="pinBtn" onclick="quickPin('${n.id}')">${n.pin?'📌':'＋'}</button><h3>${n.pin?'📌 ':''}${n.favorite?'⭐ ':''}${esc(n.title||'Tanpa Judul')}</h3><p style="font-size:${n.fontSize||18}px;color:${n.textColor||'inherit'}">${esc((n.body||'').trim().slice(0,80))}${(n.body||'').length>220?'...':''}</p><div class="badge">📁 ${esc(n.folder||'Umum')}</div><div class="meta"><span>${n.tag?'#'+esc(n.tag):'Catatan'}</span><span>${n.alarmActive?'⏰ '+esc(n.alarmTime||'Alarm aktif'):''}</span><span>${new Date(n.updated||Date.now()).toLocaleDateString('id-ID')}</span></div><div class="actions"><button class="view" onclick="openReader('${n.id}')">Lihat</button><a class="edit" href="catatan.html?id=${n.id}">Edit</a><button class="del" onclick="askDelete('${n.id}')">Hapus</button><button class="more" onclick="openSheet('${n.id}')">⋯</button></div></div>`).join("")}
+function render(){renderFolderBar();renderStats();let notes=sortNotes(getFiltered());if(!notes.length){list.innerHTML='<div class="empty">Belum ada catatan.<br>Tekan + Catatan untuk mulai.</div>';return}list.innerHTML=notes.map(n=>`<div class="card" style="${bgStyle(n)}"><button class="pinBtn" onclick="quickPin('${n.id}')">${n.pin?'📌':'＋'}</button><h3>${n.pin?'📌 ':''}${n.favorite?'⭐ ':''}${esc(n.title||'Tanpa Judul')}</h3><p style="font-size:${n.fontSize||18}px;color:${n.textColor||'inherit'}">${esc((n.body||'').trim().slice(0,220))}${(n.body||'').length>220?'...':''}</p><div class="badge">📁 ${esc(n.folder||'Umum')}</div><div class="meta"><span>${n.tag?'#'+esc(n.tag):'Catatan'}</span><span>${n.alarmActive?'⏰ '+esc(n.alarmTime||'Alarm aktif'):''}</span><span>${new Date(n.updated||Date.now()).toLocaleDateString('id-ID')}</span></div><div class="actions"><button class="view" onclick="openReader('${n.id}')">Lihat</button><a class="edit" href="catatan.html?id=${n.id}">Edit</a><button class="del" onclick="askDelete('${n.id}')">Hapus</button><button class="more" onclick="openSheet('${n.id}')">⋯</button></div></div>`).join("")}
 function askDelete(id){selectedId=id;modal("Hapus Catatan?","Catatan ini akan dihapus dari perangkat ini. Pastikan sudah backup kalau penting.",[{text:"Batal",cls:"cancel",onclick:"closeModal()"},{text:"Ya, Hapus",cls:"confirm",onclick:"confirmDelete()"}])}
 function confirmDelete(){if(selectedId){saveNotes(getNotes().filter(n=>n.id!==selectedId));toast("Catatan berhasil dihapus");render()}selectedId=null;closeModal();closeSheet()}
 function openSheet(id){selectedId=id;document.getElementById("actionSheet").classList.add("show")}
@@ -154,6 +224,20 @@ function finishAlarm(){stopBeep();document.getElementById("alarmBox").style.disp
 function snoozeAlarm(){stopBeep();document.getElementById("alarmBox").style.display="none";if(!activeAlarm)return;let minutes=Number(activeAlarm.snoozeMinutes||5);let notes=getNotes().map(n=>{if(n.id===activeAlarm.id){n.alarmTime=new Date(Date.now()+minutes*60000).toISOString().slice(0,16);n.updated=Date.now()}return n});saveNotes(notes);activeAlarm=null;toast("Alarm ditunda "+minutes+" menit");render()}
 function checkAlarm(){if(activeAlarm)return;const now=Date.now();const due=getNotes().find(n=>n.alarmActive&&n.alarmTime&&Math.abs(new Date(n.alarmTime).getTime()-now)<30000);if(due)showAlarm(due)}
 
+
+function setViewMode(){
+ const m=document.getElementById('viewMode').value;
+ localStorage.setItem('nozil_super_view',m);
+ document.body.className=document.body.className.replace(/vm-[^ ]+/g,'');
+ document.body.classList.add('vm-'+m);
+}
+window.addEventListener('load',()=>{
+ const m=localStorage.getItem('nozil_super_view')||'ultra';
+ const v=document.getElementById('viewMode');
+ if(v){v.value=m;}
+ document.body.classList.add('vm-'+m);
+});
+
 search.oninput=render;
 setFilter('all');
 render();
@@ -165,6 +249,134 @@ requestNotif();
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
 }
+</script>
+
+<script id="builder-ready-js">
+window.NozilBuilderRegistry={
+ header:{editable:['color','background','shadow','radius']},
+ card:{editable:['color','background','shadow','radius','padding']},
+ button:{editable:['color','background','radius']},
+ popup:{editable:['color','background','radius','animation']}
+};
+document.querySelectorAll('header,.header').forEach(e=>e.setAttribute('data-builder','header'));
+document.querySelectorAll('.card').forEach(e=>e.setAttribute('data-builder','card'));
+document.querySelectorAll('button').forEach(e=>e.setAttribute('data-builder','button'));
+</script>
+
+<style id="builder-v4">
+[data-builder]{position:relative}
+.builder-hover{outline:2px solid #38bdf8!important}
+.builder-selected{outline:3px solid #facc15!important}
+</style>
+<script>
+window.NozilTheme={
+ version:'4.0',
+ variables:[
+ 'header-bg','card-bg','card-radius','card-shadow',
+ 'button-bg','button-radius','popup-bg','popup-radius',
+ 'text-primary','text-secondary','nav-bg','search-bg'
+ ]
+};
+
+window.NozilBuilderRegistry={
+ header:{editable:['appearance','layout','shadow']},
+ search:{editable:['appearance','typography']},
+ noteCard:{editable:['appearance','border','shadow','animation']},
+ modal:{editable:['appearance','animation']},
+ navbar:{editable:['appearance','layout']}
+};
+
+window.NozilBuilder={
+ selected:null,
+ select(el){
+   document.querySelectorAll('.builder-selected').forEach(x=>x.classList.remove('builder-selected'));
+   this.selected=el;
+   el.classList.add('builder-selected');
+ },
+ getSelected(){return this.selected;}
+};
+
+document.addEventListener('mouseover',e=>{
+ const el=e.target.closest('[data-builder]');
+ if(el) el.classList.add('builder-hover');
+});
+document.addEventListener('mouseout',e=>{
+ const el=e.target.closest('[data-builder]');
+ if(el) el.classList.remove('builder-hover');
+});
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-builder]');
+ if(el) window.NozilBuilder.select(el);
+},true);
+</script>
+
+<style id="builder-v5">
+.builder-toolbar{position:fixed;top:10px;right:10px;z-index:99999;background:#111827;color:#fff;padding:10px;border-radius:14px}
+</style>
+<script>
+window.NozilBuilderHistory=[];
+window.NozilBuilderFuture=[];
+window.NozilBuilderRegistry=window.NozilBuilderRegistry||{};
+window.NozilBuilderRegistry.layerTree={
+ app:['header','search','folder','filters','stats','notes','reader','popup','nav']
+};
+window.NozilBuilderTheme={
+ vars:['--header-bg','--card-bg','--card-radius','--card-shadow','--button-bg','--popup-bg','--nav-bg','--search-bg']
+};
+function builderUndo(){}
+function builderRedo(){}
+</script>
+<div class="builder-toolbar">Builder V5 Ready</div>
+
+<style id="builder-v6">
+[data-builder][data-name]{position:relative}
+.builder-label{position:fixed;z-index:999999;background:#0f172a;color:#fff;padding:4px 8px;border-radius:8px;font-size:12px;pointer-events:none}
+</style>
+<script>
+window.NozilTheme={version:'6.0',vars:{}};
+window.NozilBuilder={
+ history:[],
+ selected:null,
+ select(el){this.selected=el;localStorage.setItem('nozil_builder_selected',el.dataset.componentId||'');},
+ save(){localStorage.setItem('nozil_builder_state',JSON.stringify(this.export()));},
+ export(){return {theme:window.NozilTheme};},
+ layers(){return ['Header','Search','Folder','Filters','Stats','Notes','Reader','Modal','Navigation'];}
+};
+document.querySelectorAll('[data-builder]').forEach((el,i)=>{
+ if(!el.dataset.name) el.dataset.name=el.dataset.builder;
+ if(!el.dataset.category) el.dataset.category='component';
+ if(!el.dataset.editable) el.dataset.editable='all';
+ if(!el.dataset.componentId) el.dataset.componentId=el.dataset.builder+'-'+(i+1);
+});
+</script>
+
+<style>
+.builder-badge{position:fixed;top:10px;left:10px;z-index:99999;background:#0f172a;color:#fff;padding:8px 12px;border-radius:12px;border:1px solid #334155}
+</style>
+<div class="builder-badge">Builder V7 Ready</div>
+<script>
+window.NozilBridge={
+ send(type,data){
+   window.parent.postMessage({source:'nozil',type,data},'*');
+ },
+ saveTheme(theme){
+   localStorage.setItem('nozil_theme',JSON.stringify(theme));
+ },
+ loadTheme(){
+   return JSON.parse(localStorage.getItem('nozil_theme')||'{}');
+ }
+};
+
+window.addEventListener('message',e=>{
+ const msg=e.data||{};
+ if(msg.type==='select'){
+   const el=document.querySelector('[data-component-id="'+msg.id+'"]');
+   if(el && window.NozilBuilder) window.NozilBuilder.select(el);
+ }
+ if(msg.type==='theme'){
+   localStorage.setItem('nozil_theme',JSON.stringify(msg.data));
+ }
+});
 </script>
 </body>
 </html>
