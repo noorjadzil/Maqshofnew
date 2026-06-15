@@ -32,77 +32,56 @@ body{font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 
 
 @media(min-width:720px){body{max-width:760px;margin:auto}.grid{grid-template-columns:1fr 1fr}.nav{max-width:730px;margin:auto}.stats{grid-template-columns:repeat(4,1fr)}}
 
-/* ===== MULTI VIEW PRO ===== */
+/* ULTIMATE VIEW MODES */
+.vm-ultra .card{padding:5px 8px!important;border-radius:8px!important;box-shadow:none!important}
+.vm-ultra .card p,.vm-ultra .actions,.vm-ultra .badge,.vm-ultra .meta span:first-child{display:none!important}
+.vm-ultra .card h3{font-size:13px!important;margin:0!important}
+
+.vm-dense .card{padding:6px 8px!important;border-radius:8px!important;box-shadow:none!important}
+.vm-dense .actions,.vm-dense .badge{display:none!important}
+.vm-dense .card p{-webkit-line-clamp:1;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;font-size:11px!important}
+
 .vm-compact .card{padding:8px 10px!important;border-radius:10px!important;box-shadow:none!important}
-.vm-compact .card h3{font-size:14px!important}
-.vm-compact .card p{font-size:12px!important;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .vm-compact .actions{display:none!important}
 
-.vm-list .card{padding:12px!important;border-radius:14px!important}
+.vm-mini2 #list{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px}
+.vm-mini3 #list{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:6px}
+.vm-mini4 #list{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:5px}
+.vm-mini5 #list{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:4px}
 
-.vm-note2 #list{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}
-.vm-note3 #list{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:8px!important}
-.vm-note4 #list{display:grid!important;grid-template-columns:1fr 1fr 1fr 1fr!important;gap:8px!important}
+.vm-mini2 .card,.vm-mini3 .card,.vm-mini4 .card,.vm-mini5 .card{
+height:80px!important;padding:6px!important;overflow:hidden!important;box-shadow:none!important
+}
+.vm-mini2 .card p,.vm-mini3 .card p,.vm-mini4 .card p,.vm-mini5 .card p,
+.vm-mini2 .actions,.vm-mini3 .actions,.vm-mini4 .actions,.vm-mini5 .actions,
+.vm-mini2 .meta,.vm-mini3 .meta,.vm-mini4 .meta,.vm-mini5 .meta{
+display:none!important
+}
+.vm-mini2 .card h3,.vm-mini3 .card h3,.vm-mini4 .card h3,.vm-mini5 .card h3{font-size:12px!important}
 
-.vm-note2 .card,.vm-note3 .card,.vm-note4 .card{
-height:120px!important;
-padding:10px!important;
-overflow:hidden!important;
-border-radius:12px!important;
-box-shadow:none!important;
-}
-.vm-note2 .card p,.vm-note3 .card p,.vm-note4 .card p{
-display:-webkit-box;
--webkit-line-clamp:2;
--webkit-box-orient:vertical;
-overflow:hidden;
-font-size:12px;
-}
-
-.vm-masonry #list{
-column-count:2;
-column-gap:10px;
-display:block!important;
-}
-.vm-masonry .card{
-break-inside:avoid;
-margin-bottom:10px;
-}
-
-.vm-sticky #list{
-display:grid!important;
-grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-gap:10px;
-}
-.vm-sticky .card:nth-child(4n+1){background:#fef08a!important;color:#111}
-.vm-sticky .card:nth-child(4n+2){background:#bfdbfe!important;color:#111}
-.vm-sticky .card:nth-child(4n+3){background:#bbf7d0!important;color:#111}
-.vm-sticky .card:nth-child(4n+4){background:#fecdd3!important;color:#111}
-
-.vm-timeline .card{
-border-left:4px solid #38bdf8!important;
-}
-
-.vm-folder .card p,
-.vm-folder .actions{display:none!important}
 
 </style>
 </head>
 <body>
 <div class="top"><div class="logo">Nozil <span>Note</span></div><a class="btn" href="catatan.html">+ Catatan</a></div>
-<div class="tools"><input class="search" id="search" placeholder="Cari judul, isi, tag, folder...">
-<select class="select" id="viewMode" onchange="setViewMode()">
+<div class="tools"><input class="search" id="search" placeholder="Cari judul, isi, tag, folder..."><select class="select" id="viewMode" onchange="setViewMode()">
+<option value="ultra">⚡ Ultra Compact</option>
+<option value="dense">📑 Dense List</option>
 <option value="compact">📋 Compact</option>
 <option value="list">📄 List</option>
-<option value="note2">📚 Note 2</option>
-<option value="note3">📚 Note 3</option>
-<option value="note4">📚 Note 4</option>
+<option value="detail">📝 Detail</option>
+<option value="mini2">📚 Mini 2</option>
+<option value="mini3">📚 Mini 3</option>
+<option value="mini4">📚 Mini 4</option>
+<option value="mini5">📚 Mini 5</option>
+<option value="note2">📔 Notebook 2</option>
+<option value="note3">📔 Notebook 3</option>
+<option value="note4">📔 Notebook 4</option>
 <option value="masonry">🧱 Masonry</option>
 <option value="sticky">🟨 Sticky</option>
 <option value="timeline">📅 Timeline</option>
 <option value="folder">📁 Folder</option>
-</select>
-<select class="select" id="sortBy" onchange="render()"><option value="updated">Terbaru</option><option value="title">Judul</option><option value="alarm">Alarm</option></select></div>
+</select><select class="select" id="sortBy" onchange="render()"><option value="updated">Terbaru</option><option value="title">Judul</option><option value="alarm">Alarm</option></select></div>
 <div class="folderBar" id="folderBar"></div>
 <div class="filters" id="filters"><button onclick="setFilter('all')">Semua</button><button onclick="setFilter('pin')">📌 Pin</button><button onclick="setFilter('alarm')">⏰ Alarm</button><button onclick="setFilter('favorite')">⭐ Favorit</button><button onclick="setFilter('archive')">Arsip</button></div>
 <div class="stats" id="stats"></div>
@@ -224,14 +203,14 @@ function checkAlarm(){if(activeAlarm)return;const now=Date.now();const due=getNo
 
 function setViewMode(){
  const m=document.getElementById('viewMode').value;
- localStorage.setItem('nozil_view_mode',m);
+ localStorage.setItem('nozil_super_view',m);
  document.body.className=document.body.className.replace(/vm-[^ ]+/g,'');
  document.body.classList.add('vm-'+m);
 }
 window.addEventListener('load',()=>{
- const m=localStorage.getItem('nozil_view_mode')||'compact';
- const el=document.getElementById('viewMode');
- if(el){el.value=m;}
+ const m=localStorage.getItem('nozil_super_view')||'ultra';
+ const v=document.getElementById('viewMode');
+ if(v){v.value=m;}
  document.body.classList.add('vm-'+m);
 });
 
