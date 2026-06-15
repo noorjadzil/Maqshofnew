@@ -61,9 +61,33 @@ display:none!important
 
 
 </style>
+
+<style id="builder-ready-css">
+:root{
+ --builder-card-radius:16px;
+ --builder-shadow:0 10px 30px rgba(0,0,0,.25);
+ --builder-font-size:16px;
+}
+[data-builder]{transition:.2s}
+</style>
+
+<style id="builder-v3">
+[data-builder]{position:relative}
+.builder-hover{outline:2px solid #38bdf8!important}
+.builder-selected{outline:3px solid #facc15!important}
+</style>
+<script>
+window.NozilTheme={
+ vars:['--header-bg','--card-bg','--card-radius','--card-shadow','--text-primary','--nav-bg']
+};
+window.NozilBuilder={
+ select(id){return document.querySelector('[data-component-id="'+id+'"]')},
+ getProps(id){const el=this.select(id);return el?{text:el.innerText}:null;}
+};
+</script>
 </head>
 <body>
-<div class="top"><div class="logo">Nozil <span>Note</span></div><a class="btn" href="catatan.html">+ Catatan</a></div>
+<div class="top" data-builder="header" data-name="Header" data-category="layout" data-editable="all" data-component-id="header-001"><div class="logo">Nozil <span>Note</span></div><a class="btn" href="catatan.html">+ Catatan</a></div>
 <div class="tools"><input class="search" id="search" placeholder="Cari judul, isi, tag, folder..."><select class="select" id="viewMode" onchange="setViewMode()">
 <option value="ultra">⚡ Ultra Compact</option>
 <option value="dense">📑 Dense List</option>
@@ -82,8 +106,8 @@ display:none!important
 <option value="timeline">📅 Timeline</option>
 <option value="folder">📁 Folder</option>
 </select><select class="select" id="sortBy" onchange="render()"><option value="updated">Terbaru</option><option value="title">Judul</option><option value="alarm">Alarm</option></select></div>
-<div class="folderBar" id="folderBar"></div>
-<div class="filters" id="filters"><button onclick="setFilter('all')">Semua</button><button onclick="setFilter('pin')">📌 Pin</button><button onclick="setFilter('alarm')">⏰ Alarm</button><button onclick="setFilter('favorite')">⭐ Favorit</button><button onclick="setFilter('archive')">Arsip</button></div>
+<div class="folderBar" data-builder="folder-bar" data-component-id="folderbar-001" id="folderBar"></div>
+<div class="filters" data-builder="filter-bar" data-component-id="filterbar-001" id="filters"><button onclick="setFilter('all')">Semua</button><button onclick="setFilter('pin')">📌 Pin</button><button onclick="setFilter('alarm')">⏰ Alarm</button><button onclick="setFilter('favorite')">⭐ Favorit</button><button onclick="setFilter('archive')">Arsip</button></div>
 <div class="stats" id="stats"></div>
 <div id="list" class="grid"></div>
 <div class="nav"><a href="index.html">Catatan</a><a href="setting.html">Setting</a></div>
@@ -227,14 +251,132 @@ if('serviceWorker' in navigator){
 }
 </script>
 
+<script id="builder-ready-js">
+window.NozilBuilderRegistry={
+ header:{editable:['color','background','shadow','radius']},
+ card:{editable:['color','background','shadow','radius','padding']},
+ button:{editable:['color','background','radius']},
+ popup:{editable:['color','background','radius','animation']}
+};
+document.querySelectorAll('header,.header').forEach(e=>e.setAttribute('data-builder','header'));
+document.querySelectorAll('.card').forEach(e=>e.setAttribute('data-builder','card'));
+document.querySelectorAll('button').forEach(e=>e.setAttribute('data-builder','button'));
+</script>
+
+<style id="builder-v4">
+[data-builder]{position:relative}
+.builder-hover{outline:2px solid #38bdf8!important}
+.builder-selected{outline:3px solid #facc15!important}
+</style>
 <script>
-function applyTheme(){
- const t=JSON.parse(localStorage.getItem('nozil_theme')||'{}');
- document.documentElement.style.setProperty('--bg',t.bg||'#07111f');
- document.documentElement.style.setProperty('--card',t.card||'#0f172a');
- document.documentElement.style.setProperty('--text',t.text||'#ffffff');
-}
-window.addEventListener('load',applyTheme);
+window.NozilTheme={
+ version:'4.0',
+ variables:[
+ 'header-bg','card-bg','card-radius','card-shadow',
+ 'button-bg','button-radius','popup-bg','popup-radius',
+ 'text-primary','text-secondary','nav-bg','search-bg'
+ ]
+};
+
+window.NozilBuilderRegistry={
+ header:{editable:['appearance','layout','shadow']},
+ search:{editable:['appearance','typography']},
+ noteCard:{editable:['appearance','border','shadow','animation']},
+ modal:{editable:['appearance','animation']},
+ navbar:{editable:['appearance','layout']}
+};
+
+window.NozilBuilder={
+ selected:null,
+ select(el){
+   document.querySelectorAll('.builder-selected').forEach(x=>x.classList.remove('builder-selected'));
+   this.selected=el;
+   el.classList.add('builder-selected');
+ },
+ getSelected(){return this.selected;}
+};
+
+document.addEventListener('mouseover',e=>{
+ const el=e.target.closest('[data-builder]');
+ if(el) el.classList.add('builder-hover');
+});
+document.addEventListener('mouseout',e=>{
+ const el=e.target.closest('[data-builder]');
+ if(el) el.classList.remove('builder-hover');
+});
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-builder]');
+ if(el) window.NozilBuilder.select(el);
+},true);
+</script>
+
+<style id="builder-v5">
+.builder-toolbar{position:fixed;top:10px;right:10px;z-index:99999;background:#111827;color:#fff;padding:10px;border-radius:14px}
+</style>
+<script>
+window.NozilBuilderHistory=[];
+window.NozilBuilderFuture=[];
+window.NozilBuilderRegistry=window.NozilBuilderRegistry||{};
+window.NozilBuilderRegistry.layerTree={
+ app:['header','search','folder','filters','stats','notes','reader','popup','nav']
+};
+window.NozilBuilderTheme={
+ vars:['--header-bg','--card-bg','--card-radius','--card-shadow','--button-bg','--popup-bg','--nav-bg','--search-bg']
+};
+function builderUndo(){}
+function builderRedo(){}
+</script>
+<div class="builder-toolbar">Builder V5 Ready</div>
+
+<style id="builder-v6">
+[data-builder][data-name]{position:relative}
+.builder-label{position:fixed;z-index:999999;background:#0f172a;color:#fff;padding:4px 8px;border-radius:8px;font-size:12px;pointer-events:none}
+</style>
+<script>
+window.NozilTheme={version:'6.0',vars:{}};
+window.NozilBuilder={
+ history:[],
+ selected:null,
+ select(el){this.selected=el;localStorage.setItem('nozil_builder_selected',el.dataset.componentId||'');},
+ save(){localStorage.setItem('nozil_builder_state',JSON.stringify(this.export()));},
+ export(){return {theme:window.NozilTheme};},
+ layers(){return ['Header','Search','Folder','Filters','Stats','Notes','Reader','Modal','Navigation'];}
+};
+document.querySelectorAll('[data-builder]').forEach((el,i)=>{
+ if(!el.dataset.name) el.dataset.name=el.dataset.builder;
+ if(!el.dataset.category) el.dataset.category='component';
+ if(!el.dataset.editable) el.dataset.editable='all';
+ if(!el.dataset.componentId) el.dataset.componentId=el.dataset.builder+'-'+(i+1);
+});
+</script>
+
+<style>
+.builder-badge{position:fixed;top:10px;left:10px;z-index:99999;background:#0f172a;color:#fff;padding:8px 12px;border-radius:12px;border:1px solid #334155}
+</style>
+<div class="builder-badge">Builder V7 Ready</div>
+<script>
+window.NozilBridge={
+ send(type,data){
+   window.parent.postMessage({source:'nozil',type,data},'*');
+ },
+ saveTheme(theme){
+   localStorage.setItem('nozil_theme',JSON.stringify(theme));
+ },
+ loadTheme(){
+   return JSON.parse(localStorage.getItem('nozil_theme')||'{}');
+ }
+};
+
+window.addEventListener('message',e=>{
+ const msg=e.data||{};
+ if(msg.type==='select'){
+   const el=document.querySelector('[data-component-id="'+msg.id+'"]');
+   if(el && window.NozilBuilder) window.NozilBuilder.select(el);
+ }
+ if(msg.type==='theme'){
+   localStorage.setItem('nozil_theme',JSON.stringify(msg.data));
+ }
+});
 </script>
 </body>
 </html>
