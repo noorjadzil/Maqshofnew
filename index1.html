@@ -31,64 +31,20 @@ body{font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 
 @media(max-width:520px){.actions{grid-template-columns:1fr 1fr}.more{grid-column:auto}.reader{padding:0}.readerCard{height:100vh;border-radius:0}.readerBody{font-size:19px;padding:20px}.readerTop h1{font-size:20px}}
 
 @media(min-width:720px){body{max-width:760px;margin:auto}.grid{grid-template-columns:1fr 1fr}.nav{max-width:730px;margin:auto}.stats{grid-template-columns:repeat(4,1fr)}}
-
-/* ULTIMATE VIEW MODES */
-.vm-ultra .card{padding:5px 8px!important;border-radius:8px!important;box-shadow:none!important}
-.vm-ultra .card p,.vm-ultra .actions,.vm-ultra .badge,.vm-ultra .meta span:first-child{display:none!important}
-.vm-ultra .card h3{font-size:13px!important;margin:0!important}
-
-.vm-dense .card{padding:6px 8px!important;border-radius:8px!important;box-shadow:none!important}
-.vm-dense .actions,.vm-dense .badge{display:none!important}
-.vm-dense .card p{-webkit-line-clamp:1;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;font-size:11px!important}
-
-.vm-compact .card{padding:8px 10px!important;border-radius:10px!important;box-shadow:none!important}
-.vm-compact .actions{display:none!important}
-
-.vm-mini2 #list{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px}
-.vm-mini3 #list{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:6px}
-.vm-mini4 #list{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:5px}
-.vm-mini5 #list{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:4px}
-
-.vm-mini2 .card,.vm-mini3 .card,.vm-mini4 .card,.vm-mini5 .card{
-height:80px!important;padding:6px!important;overflow:hidden!important;box-shadow:none!important
-}
-.vm-mini2 .card p,.vm-mini3 .card p,.vm-mini4 .card p,.vm-mini5 .card p,
-.vm-mini2 .actions,.vm-mini3 .actions,.vm-mini4 .actions,.vm-mini5 .actions,
-.vm-mini2 .meta,.vm-mini3 .meta,.vm-mini4 .meta,.vm-mini5 .meta{
-display:none!important
-}
-.vm-mini2 .card h3,.vm-mini3 .card h3,.vm-mini4 .card h3,.vm-mini5 .card h3{font-size:12px!important}
-
-
 </style>
 
 <style>
-#nzBuilder{position:fixed;right:12px;top:12px;width:360px;max-height:90vh;overflow:auto;background:#0f172a;color:#fff;z-index:999999;border-radius:18px;padding:12px;border:1px solid #334155;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-#nzBuilder input,#nzBuilder select{width:100%;margin:4px 0 8px;padding:8px}
-.nz-selected{outline:3px solid #38bdf8!important;outline-offset:2px}
-.builder-mode *{cursor:pointer!important}
+.customizerBtn{position:fixed;right:20px;bottom:90px;z-index:999;padding:12px 16px;border-radius:12px}
+.customizer{position:fixed;top:0;right:-340px;width:320px;height:100%;background:#111827;color:white;z-index:1000;transition:.3s;padding:15px;overflow:auto}
+.customizer.show{right:0}
+.settingGroup{margin-bottom:16px}
+.settingGroup label{display:block;margin-bottom:6px}
+.previewBox{padding:10px;border:1px solid #444;border-radius:10px;margin-top:10px}
 </style>
 </head>
 <body>
 <div class="top"><div class="logo">Nozil <span>Note</span></div><a class="btn" href="catatan.html">+ Catatan</a></div>
-<div class="tools"><input class="search" id="search" placeholder="Cari judul, isi, tag, folder..."><select class="select" id="viewMode" onchange="setViewMode()">
-<option value="ultra">⚡ Ultra Compact</option>
-<option value="dense">📑 Dense List</option>
-<option value="compact">📋 Compact</option>
-<option value="list">📄 List</option>
-<option value="detail">📝 Detail</option>
-<option value="mini2">📚 Mini 2</option>
-<option value="mini3">📚 Mini 3</option>
-<option value="mini4">📚 Mini 4</option>
-<option value="mini5">📚 Mini 5</option>
-<option value="note2">📔 Notebook 2</option>
-<option value="note3">📔 Notebook 3</option>
-<option value="note4">📔 Notebook 4</option>
-<option value="masonry">🧱 Masonry</option>
-<option value="sticky">🟨 Sticky</option>
-<option value="timeline">📅 Timeline</option>
-<option value="folder">📁 Folder</option>
-</select><select class="select" id="sortBy" onchange="render()"><option value="updated">Terbaru</option><option value="title">Judul</option><option value="alarm">Alarm</option></select></div>
+<div class="tools"><input class="search" id="search" placeholder="Cari judul, isi, tag, folder..."><select class="select" id="sortBy" onchange="render()"><option value="updated">Terbaru</option><option value="title">Judul</option><option value="alarm">Alarm</option></select></div>
 <div class="folderBar" id="folderBar"></div>
 <div class="filters" id="filters"><button onclick="setFilter('all')">Semua</button><button onclick="setFilter('pin')">📌 Pin</button><button onclick="setFilter('alarm')">⏰ Alarm</button><button onclick="setFilter('favorite')">⭐ Favorit</button><button onclick="setFilter('archive')">Arsip</button></div>
 <div class="stats" id="stats"></div>
@@ -207,20 +163,6 @@ function finishAlarm(){stopBeep();document.getElementById("alarmBox").style.disp
 function snoozeAlarm(){stopBeep();document.getElementById("alarmBox").style.display="none";if(!activeAlarm)return;let minutes=Number(activeAlarm.snoozeMinutes||5);let notes=getNotes().map(n=>{if(n.id===activeAlarm.id){n.alarmTime=new Date(Date.now()+minutes*60000).toISOString().slice(0,16);n.updated=Date.now()}return n});saveNotes(notes);activeAlarm=null;toast("Alarm ditunda "+minutes+" menit");render()}
 function checkAlarm(){if(activeAlarm)return;const now=Date.now();const due=getNotes().find(n=>n.alarmActive&&n.alarmTime&&Math.abs(new Date(n.alarmTime).getTime()-now)<30000);if(due)showAlarm(due)}
 
-
-function setViewMode(){
- const m=document.getElementById('viewMode').value;
- localStorage.setItem('nozil_super_view',m);
- document.body.className=document.body.className.replace(/vm-[^ ]+/g,'');
- document.body.classList.add('vm-'+m);
-}
-window.addEventListener('load',()=>{
- const m=localStorage.getItem('nozil_super_view')||'ultra';
- const v=document.getElementById('viewMode');
- if(v){v.value=m;}
- document.body.classList.add('vm-'+m);
-});
-
 search.oninput=render;
 setFilter('all');
 render();
@@ -234,42 +176,57 @@ if('serviceWorker' in navigator){
 }
 </script>
 
-<div id="nzBuilder">
-<h3>Ultra Live Builder</h3>
-<button onclick="document.body.classList.toggle('builder-mode')">Aktifkan Edit</button>
-<input id="t" placeholder="Text">
-<input id="fs" type="number" placeholder="Font Size">
-<input id="tc" type="color" value="#ffffff">
-<input id="bg" type="color" value="#000000">
-<input id="br" type="number" placeholder="Radius">
-<button onclick="applyNZ()">Apply</button>
-<button onclick="saveNZ()">Save</button>
-</div>
-<script>
-let nz=null;
-document.addEventListener('click',function(e){
- if(!document.body.classList.contains('builder-mode')) return;
- if(e.target.closest('#nzBuilder')) return;
- e.preventDefault();e.stopPropagation();
- document.querySelectorAll('.nz-selected').forEach(x=>x.classList.remove('nz-selected'));
- nz=e.target;nz.classList.add('nz-selected');
- t.value=nz.innerText||'';
- fs.value=parseInt(getComputedStyle(nz).fontSize);
-},true);
+<button class="customizerBtn" onclick="toggleCustomizer()">🎨 Tampilan</button>
 
-function applyNZ(){
- if(!nz) return;
- nz.innerText=t.value;
- if(fs.value) nz.style.fontSize=fs.value+'px';
- nz.style.color=tc.value;
- nz.style.backgroundColor=bg.value;
- if(br.value) nz.style.borderRadius=br.value+'px';
+<div class="customizer" id="customizer">
+<h2>Kustomisasi Tampilan</h2>
+
+<div class="settingGroup">
+<label>Ukuran Judul</label>
+<input type="range" min="10" max="24" value="15" oninput="liveTitle(this.value)">
+</div>
+
+<div class="settingGroup">
+<label>Radius Catatan</label>
+<input type="range" min="0" max="30" value="12" oninput="liveRadius(this.value)">
+</div>
+
+<div class="settingGroup">
+<label>Preview Baris</label>
+<select onchange="liveLines(this.value)">
+<option value="1">1 Baris</option>
+<option value="2" selected>2 Baris</option>
+<option value="3">3 Baris</option>
+<option value="5">5 Baris</option>
+</select>
+</div>
+
+<div class="previewBox">
+<b>Live Preview</b>
+<div id="demoTitle">Belanja Mingguan</div>
+<div id="demoText">Beli telur, minyak, gula dan kebutuhan lainnya...</div>
+</div>
+
+<button onclick="saveCustom()">Simpan</button>
+</div>
+
+<script>
+function toggleCustomizer(){document.getElementById('customizer').classList.toggle('show')}
+function liveTitle(v){
+ document.querySelectorAll('.card h3').forEach(x=>x.style.fontSize=v+'px');
+ document.getElementById('demoTitle').style.fontSize=v+'px';
 }
-function saveNZ(){localStorage.setItem('nozil_builder_html',document.body.innerHTML);alert('Tersimpan');}
-window.addEventListener('load',()=>{
- const d=localStorage.getItem('nozil_builder_html');
- if(d) document.body.innerHTML=d;
-});
-</script>
-</body>
+function liveRadius(v){
+ document.querySelectorAll('.card').forEach(x=>x.style.borderRadius=v+'px');
+}
+function liveLines(v){
+ document.querySelectorAll('.card p').forEach(x=>{
+   x.style.webkitLineClamp=v;
+ });
+}
+function saveCustom(){
+ localStorage.setItem('titleSize',document.querySelector('.card h3')?.style.fontSize||'15px');
+ alert('Pengaturan disimpan');
+}
+</script></body>
 </html>
