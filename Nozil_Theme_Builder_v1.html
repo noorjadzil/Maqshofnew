@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nozil Theme Builder</title>
+<style>
+body{font-family:Arial,sans-serif;background:#0f172a;color:#fff;margin:0}
+.header{padding:16px;background:#111827;position:sticky;top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;padding:16px}
+.card{background:#1e293b;padding:16px;border-radius:16px;cursor:pointer}
+.preview{margin:16px;padding:16px;background:#1e293b;border-radius:20px}
+.section{display:none;padding:16px}
+.section.show{display:block}
+input,select{width:100%;margin-top:8px}
+</style>
+<script>
+function openSection(id){
+ document.querySelectorAll('.section').forEach(x=>x.classList.remove('show'));
+ document.getElementById(id).classList.add('show');
+}
+</script>
+</head>
+<body>
+<div class="header"><h2>Nozil Theme Builder</h2></div>
+
+<div class="grid">
+<div class="card" onclick="openSection('headerSec')">Header</div>
+<div class="card" onclick="openSection('searchSec')">Search</div>
+<div class="card" onclick="openSection('folderSec')">Folder</div>
+<div class="card" onclick="openSection('noteSec')">Catatan</div>
+<div class="card" onclick="openSection('popupSec')">Popup</div>
+<div class="card" onclick="openSection('toastSec')">Toast</div>
+<div class="card" onclick="openSection('navSec')">Navbar</div>
+<div class="card" onclick="openSection('themeSec')">Tema</div>
+</div>
+
+<div class="preview">
+<h3>Live Preview</h3>
+<p>Belanja Mingguan</p>
+<p>Beli telur, minyak dan gula...</p>
+</div>
+
+<div id="headerSec" class="section show">
+<h3>Header</h3>
+<label>Ukuran Judul</label><input type="range" min="10" max="40">
+<label>Warna</label><input type="color">
+</div>
+
+<div id="searchSec" class="section">
+<h3>Search</h3>
+<input type="range">
+</div>
+
+<div id="folderSec" class="section">
+<h3>Folder</h3>
+<select><option>Folder</option><option>Buku</option><option>Rak Buku</option></select>
+</div>
+
+<div id="noteSec" class="section">
+<h3>Catatan</h3>
+<select>
+<option>Ultra Compact</option>
+<option>Dense</option>
+<option>Compact</option>
+<option>List</option>
+<option>Notebook</option>
+<option>Masonry</option>
+</select>
+</div>
+
+<div id="popupSec" class="section"><h3>Popup</h3><input type="range"></div>
+<div id="toastSec" class="section"><h3>Toast</h3><input type="range"></div>
+<div id="navSec" class="section"><h3>Navbar</h3><input type="range"></div>
+<div id="themeSec" class="section"><h3>Tema</h3><input type="color"></div>
+
+</body></html>
