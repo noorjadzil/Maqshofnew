@@ -1,23 +1,17 @@
-<!DOCTYPE html><html><head><meta charset='utf-8'><title>Nozil Settings</title>
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>Nozil Builder Studio</title>
 <style>
-body{margin:0;font-family:Arial;height:100vh;display:flex}
-#left{width:340px;padding:15px;background:#111827;color:#fff}
-#right{flex:1}
-input{width:100%;margin:6px 0;height:40px}
+body{margin:0;height:100vh;display:grid;grid-template-columns:260px 340px 1fr;font-family:Segoe UI;background:#0b1220;color:#fff}
+.sidebar,.props{background:#111827;padding:16px;overflow:auto}.props{border-left:1px solid #334155}
+.layer{padding:10px;border-radius:10px;background:#0f172a;margin:6px 0;cursor:pointer}
 iframe{width:100%;height:100%;border:none}
+input{width:100%}
+.top{font-weight:bold;margin-bottom:10px}
 </style></head><body>
-<div id='left'>
-<h2>Nozil Theme Builder</h2>
-<label>Background</label><input type='color' id='bg' value='#07111f'>
-<label>Card</label><input type='color' id='card' value='#0f172a'>
-<label>Text</label><input type='color' id='text' value='#ffffff'>
-<button onclick='saveTheme()'>Simpan</button>
+<div class='sidebar'><div class='top'>Layers</div>
+<div class='layer'>Header</div><div class='layer'>Search</div><div class='layer'>Folder</div><div class='layer'>Card</div></div>
+<div class='props'><div class='top'>Inspector</div>
+<label>Radius</label><input type='range' min='0' max='50' id='radius'>
+<label>Shadow</label><input type='range' min='0' max='50' id='shadow'>
+<button onclick='localStorage.removeItem("nozil_theme")'>Reset</button>
 </div>
-<div id='right'><iframe id='preview' src='index.html'></iframe></div>
-<script>
-function saveTheme(){
- const t={bg:bg.value,card:card.value,text:text.value};
- localStorage.setItem('nozil_theme',JSON.stringify(t));
- document.getElementById('preview').contentWindow.location.reload();
-}
-</script></body></html>
+<div><iframe src='index.html'></iframe></div></body></html>
