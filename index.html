@@ -227,17 +227,14 @@ if('serviceWorker' in navigator){
 }
 </script>
 
-<link rel="stylesheet" href="builder.css">
-<div id="builderPanel">
-<h3>Builder Edition V1</h3>
-<button onclick="document.body.classList.toggle('builder-mode')">Mode Edit</button>
-<input id="txt" placeholder="Text">
-<input id="tcolor" type="color" value="#ffffff">
-<input id="bgcolor" type="color" value="#000000">
-<input id="fsize" type="number" value="16">
-<input id="radius" type="number" value="0">
-<button onclick="applyBuilder()">Apply</button>
-</div>
-<script src="builder.js"></script>
+<script>
+function applyTheme(){
+ const t=JSON.parse(localStorage.getItem('nozil_theme')||'{}');
+ document.documentElement.style.setProperty('--bg',t.bg||'#07111f');
+ document.documentElement.style.setProperty('--card',t.card||'#0f172a');
+ document.documentElement.style.setProperty('--text',t.text||'#ffffff');
+}
+window.addEventListener('load',applyTheme);
+</script>
 </body>
 </html>
