@@ -80,7 +80,7 @@ display:none!important
 window.NozilTheme={
  vars:['--header-bg','--card-bg','--card-radius','--card-shadow','--text-primary','--nav-bg']
 };
-window.NozilBuilder={
+window.Nozil={
  select(id){return document.querySelector('[data-component-id="'+id+'"]')},
  getProps(id){const el=this.select(id);return el?{text:el.innerText}:null;}
 };
@@ -252,7 +252,7 @@ if('serviceWorker' in navigator){
 </script>
 
 <script id="builder-ready-js">
-window.NozilBuilderRegistry={
+window.NozilRegistry={
  header:{editable:['color','background','shadow','radius']},
  card:{editable:['color','background','shadow','radius','padding']},
  button:{editable:['color','background','radius']},
@@ -278,7 +278,7 @@ window.NozilTheme={
  ]
 };
 
-window.NozilBuilderRegistry={
+window.NozilRegistry={
  header:{editable:['appearance','layout','shadow']},
  search:{editable:['appearance','typography']},
  noteCard:{editable:['appearance','border','shadow','animation']},
@@ -286,7 +286,7 @@ window.NozilBuilderRegistry={
  navbar:{editable:['appearance','layout']}
 };
 
-window.NozilBuilder={
+window.Nozil={
  selected:null,
  select(el){
    document.querySelectorAll('.builder-selected').forEach(x=>x.classList.remove('builder-selected'));
@@ -306,7 +306,7 @@ document.addEventListener('mouseout',e=>{
 });
 document.addEventListener('click',e=>{
  const el=e.target.closest('[data-builder]');
- if(el) window.NozilBuilder.select(el);
+ if(el) window.Nozil.select(el);
 },true);
 </script>
 
@@ -314,19 +314,19 @@ document.addEventListener('click',e=>{
 .builder-toolbar{position:fixed;top:10px;right:10px;z-index:99999;background:#111827;color:#fff;padding:10px;border-radius:14px}
 </style>
 <script>
-window.NozilBuilderHistory=[];
-window.NozilBuilderFuture=[];
-window.NozilBuilderRegistry=window.NozilBuilderRegistry||{};
-window.NozilBuilderRegistry.layerTree={
+window.NozilHistory=[];
+window.NozilFuture=[];
+window.NozilRegistry=window.NozilRegistry||{};
+window.NozilRegistry.layerTree={
  app:['header','search','folder','filters','stats','notes','reader','popup','nav']
 };
-window.NozilBuilderTheme={
+window.NozilTheme={
  vars:['--header-bg','--card-bg','--card-radius','--card-shadow','--button-bg','--popup-bg','--nav-bg','--search-bg']
 };
 function builderUndo(){}
 function builderRedo(){}
 </script>
-<div class="builder-toolbar"> Ready</div>
+<div class="builder-toolbar"> </div>
 
 <style id="builder-v6">
 [data-builder][data-name]{position:relative}
@@ -334,7 +334,7 @@ function builderRedo(){}
 </style>
 <script>
 window.NozilTheme={version:'6.0',vars:{}};
-window.NozilBuilder={
+window.Nozil={
  history:[],
  selected:null,
  select(el){this.selected=el;localStorage.setItem('nozil_builder_selected',el.dataset.componentId||'');},
@@ -353,7 +353,7 @@ document.querySelectorAll('[data-builder]').forEach((el,i)=>{
 <style>
 .builder-badge{position:fixed;top:10px;left:10px;z-index:99999;background:#0f172a;color:#fff;padding:8px 12px;border-radius:12px;border:1px solid #334155}
 </style>
-<div class="builder-badge"> Ready</div>
+<div class="builder-badge"> </div>
 <script>
 window.NozilBridge={
  send(type,data){
@@ -371,7 +371,7 @@ window.addEventListener('message',e=>{
  const msg=e.data||{};
  if(msg.type==='select'){
    const el=document.querySelector('[data-component-id="'+msg.id+'"]');
-   if(el && window.NozilBuilder) window.NozilBuilder.select(el);
+   if(el && window.Nozil) window.Nozil.select(el);
  }
  if(msg.type==='theme'){
    localStorage.setItem('nozil_theme',JSON.stringify(msg.data));

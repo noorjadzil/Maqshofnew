@@ -1,55 +1,77 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8">
-<title>Nozil Visual Editor Pro</title>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Nozil Visual Editor</title>
 <style>
-body{margin:0;background:#111827;font-family:Segoe UI;color:#fff}
-#top{padding:12px;background:#1f2937}
-#frame{width:100%;height:calc(100vh - 220px);border:0}
-#sheet{position:fixed;left:0;right:0;bottom:0;height:220px;background:#0f172a;border-top:2px solid #334155;padding:12px;overflow:auto}
-.row{display:flex;gap:10px;margin:8px 0}
-input{flex:1}
-button{padding:8px 14px}
-</style></head>
+body{margin:0;background:#111827}
+#frame{width:100vw;height:100vh;border:0}
+#editor{
+position:fixed;display:none;z-index:9999;
+background:#0f172a;color:white;
+border:1px solid #334155;border-radius:14px;
+padding:10px;width:280px;
+box-shadow:0 10px 30px rgba(0,0,0,.4);
+font-family:Segoe UI;
+}
+#editor input{width:100%;margin:4px 0}
+.row{display:flex;gap:6px}
+button{flex:1}
+</style>
+</head>
 <body>
-<div id="top">Nozil Visual Editor Pro</div>
 <iframe id="frame" src="index.html"></iframe>
 
-<div id="sheet">
-<b>Element Editor</b>
-<div id="selected">Belum ada elemen dipilih</div>
-<div class="row"><input id="txt" placeholder="Teks"></div>
+<div id="editor">
+<div id="title">Editor</div>
+<input id="txt" placeholder="Teks">
 <div class="row">
-<input id="textColor" type="color">
-<input id="bgColor" type="color">
+<input id="color" type="color">
+<input id="bg" type="color">
 </div>
 <div class="row">
-<button onclick="save()">Simpan</button>
 <button onclick="resetEl()">Reset</button>
+<button onclick="saveEl()">Simpan</button>
 </div>
 </div>
 
 <script>
-let el=null,old='';
+let selected=null,oldStyle='';
 
 frame.onload=()=>{
  const d=frame.contentWindow.document;
+
  d.addEventListener('click',e=>{
    e.preventDefault();
    e.stopPropagation();
-   if(el) el.style.outline='';
-   el=e.target;
-   old=el.getAttribute('style')||'';
-   el.style.outline='2px solid #3b82f6';
-   selected.innerText='Dipilih: '+el.tagName;
-   txt.value=el.innerText||'';
+
+   if(selected) selected.style.outline='';
+
+   selected=e.target;
+   oldStyle=selected.getAttribute('style')||'';
+
+   selected.style.outline='2px solid #3b82f6';
+
+   const r=selected.getBoundingClientRect();
+   editor.style.display='block';
+   editor.style.left=(r.left)+'px';
+   editor.style.top=(r.bottom+10)+'px';
+
+   title.innerText='Edit : '+selected.tagName.toLowerCase();
+   txt.value=selected.innerText||'';
  },true);
 };
 
-txt.oninput=()=>{ if(el) el.innerText=txt.value; };
-textColor.oninput=()=>{ if(el) el.style.color=textColor.value; };
-bgColor.oninput=()=>{ if(el) el.style.background=bgColor.value; };
+txt.oninput=()=>{ if(selected) selected.innerText=txt.value; }
+color.oninput=()=>{ if(selected) selected.style.color=color.value; }
+bg.oninput=()=>{ if(selected) selected.style.background=bg.value; }
 
-function save(){ alert('Perubahan disimpan'); }
-function resetEl(){ if(el) el.setAttribute('style',old); }
+function resetEl(){
+ if(selected) selected.setAttribute('style',oldStyle);
+}
+function saveEl(){
+ alert('Perubahan tersimpan');
+}
 </script>
-</body></html>
+</body>
+</html>
