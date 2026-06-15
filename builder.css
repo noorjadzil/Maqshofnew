@@ -1,0 +1,4 @@
+
+.builder-selected{outline:3px solid #38bdf8!important}
+#builderPanel{position:fixed;right:10px;top:10px;width:340px;z-index:999999;background:#111827;color:white;padding:12px;border-radius:16px;max-height:90vh;overflow:auto}
+#builderPanel input,#builderPanel select{width:100%;margin:4px 0;padding:8px}
