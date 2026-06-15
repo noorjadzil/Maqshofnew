@@ -1,77 +1,69 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Nozil Visual Editor</title>
+<!DOCTYPE html><html><head><meta charset='utf-8'>
+<title>Nozil Editor</title>
 <style>
 body{margin:0;background:#111827}
 #frame{width:100vw;height:100vh;border:0}
-#editor{
-position:fixed;display:none;z-index:9999;
-background:#0f172a;color:white;
-border:1px solid #334155;border-radius:14px;
-padding:10px;width:280px;
-box-shadow:0 10px 30px rgba(0,0,0,.4);
-font-family:Segoe UI;
-}
-#editor input{width:100%;margin:4px 0}
-.row{display:flex;gap:6px}
-button{flex:1}
-</style>
-</head>
-<body>
-<iframe id="frame" src="index.html"></iframe>
-
-<div id="editor">
-<div id="title">Editor</div>
-<input id="txt" placeholder="Teks">
-<div class="row">
-<input id="color" type="color">
-<input id="bg" type="color">
+#editor{position:fixed;display:none;z-index:9999;background:#0f172a;color:#fff;
+padding:10px;border-radius:12px;width:280px;border:1px solid #334155}
+input{width:100%;margin:4px 0}
+.row{display:flex;gap:6px} button{flex:1}
+</style></head><body>
+<iframe id='frame' src='index.html'></iframe>
+<div id='editor'>
+<div id='label'>Editor</div>
+<input id='txt'>
+<div class='row'><input id='color' type='color'><input id='bg' type='color'></div>
+<div class='row'><button onclick='resetEl()'>Reset</button><button onclick='saveEl()'>Simpan</button></div>
 </div>
-<div class="row">
-<button onclick="resetEl()">Reset</button>
-<button onclick="saveEl()">Simpan</button>
-</div>
-</div>
-
 <script>
-let selected=null,oldStyle='';
+let selected=null,backup='';
 
 frame.onload=()=>{
  const d=frame.contentWindow.document;
 
+ // restore tersimpan
+ const saved=JSON.parse(localStorage.getItem('nozil_editor_save')||'{}');
+ Object.keys(saved).forEach(k=>{
+   const el=d.querySelector(k);
+   if(el) el.setAttribute('style',saved[k]);
+ });
+
  d.addEventListener('click',e=>{
-   e.preventDefault();
-   e.stopPropagation();
-
+   e.preventDefault();e.stopPropagation();
    if(selected) selected.style.outline='';
-
    selected=e.target;
-   oldStyle=selected.getAttribute('style')||'';
-
+   backup=selected.getAttribute('style')||'';
    selected.style.outline='2px solid #3b82f6';
 
    const r=selected.getBoundingClientRect();
    editor.style.display='block';
-   editor.style.left=(r.left)+'px';
-   editor.style.top=(r.bottom+10)+'px';
+   editor.style.left=r.left+'px';
+   editor.style.top=(r.bottom+8)+'px';
 
-   title.innerText='Edit : '+selected.tagName.toLowerCase();
+   label.textContent='Edit '+selected.tagName.toLowerCase();
    txt.value=selected.innerText||'';
  },true);
 };
 
-txt.oninput=()=>{ if(selected) selected.innerText=txt.value; }
-color.oninput=()=>{ if(selected) selected.style.color=color.value; }
-bg.oninput=()=>{ if(selected) selected.style.background=bg.value; }
+txt.oninput=()=>{if(selected)selected.innerText=txt.value}
+color.oninput=()=>{if(selected)selected.style.color=color.value}
+bg.oninput=()=>{if(selected)selected.style.background=bg.value}
+
+function selector(el){
+ if(el.id) return '#'+el.id;
+ return el.tagName.toLowerCase()+':nth-of-type(1)';
+}
+
+function saveEl(){
+ if(!selected) return;
+ const all=JSON.parse(localStorage.getItem('nozil_editor_save')||'{}');
+ all[selector(selected)] = selected.getAttribute('style')||'';
+ localStorage.setItem('nozil_editor_save',JSON.stringify(all));
+ alert('Tersimpan');
+}
 
 function resetEl(){
- if(selected) selected.setAttribute('style',oldStyle);
+ if(!selected) return;
+ selected.setAttribute('style',backup);
 }
-function saveEl(){
- alert('Perubahan tersimpan');
-}
-</script>
-</body>
-</html>
+</script></body></html>

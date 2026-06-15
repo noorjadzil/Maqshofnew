@@ -32,7 +32,7 @@ body{font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 
 
 @media(min-width:720px){body{max-width:760px;margin:auto}.grid{grid-template-columns:1fr 1fr}.nav{max-width:730px;margin:auto}.stats{grid-template-columns:repeat(4,1fr)}}
 
-/* ULTIMATE VIEW MODES */
+/*  VIEW MODES */
 .vm-ultra .card{padding:5px 8px!important;border-radius:8px!important;box-shadow:none!important}
 .vm-ultra .card p,.vm-ultra .actions,.vm-ultra .badge,.vm-ultra .meta span:first-child{display:none!important}
 .vm-ultra .card h3{font-size:13px!important;margin:0!important}
@@ -62,19 +62,19 @@ display:none!important
 
 </style>
 
-<style id="builder-ready-css">
+<style id="-ready-css">
 :root{
- --builder-card-radius:16px;
- --builder-shadow:0 10px 30px rgba(0,0,0,.25);
- --builder-font-size:16px;
+ ---card-radius:16px;
+ ---shadow:0 10px 30px rgba(0,0,0,.25);
+ ---font-size:16px;
 }
-[data-builder]{transition:.2s}
+[data-]{transition:.2s}
 </style>
 
-<style id="builder-v3">
-[data-builder]{position:relative}
-.builder-hover{outline:2px solid #38bdf8!important}
-.builder-selected{outline:3px solid #facc15!important}
+<style id="-v3">
+[data-]{position:relative}
+.-hover{outline:2px solid #38bdf8!important}
+.-selected{outline:3px solid #facc15!important}
 </style>
 <script>
 window.NozilTheme={
@@ -87,7 +87,7 @@ window.Nozil={
 </script>
 </head>
 <body>
-<div class="top" data-builder="header" data-name="Header" data-category="layout" data-editable="all" data-component-id="header-001"><div class="logo">Nozil <span>Note</span></div><a class="btn" href="catatan.html">+ Catatan</a></div>
+<div class="top" data-="header" data-name="Header" data-category="layout" data-editable="all" data-component-id="header-001"><div class="logo">Nozil <span>Note</span></div><a class="btn" href="catatan.html">+ Catatan</a></div>
 <div class="tools"><input class="search" id="search" placeholder="Cari judul, isi, tag, folder..."><select class="select" id="viewMode" onchange="setViewMode()">
 <option value="ultra">⚡ Ultra Compact</option>
 <option value="dense">📑 Dense List</option>
@@ -106,8 +106,8 @@ window.Nozil={
 <option value="timeline">📅 Timeline</option>
 <option value="folder">📁 Folder</option>
 </select><select class="select" id="sortBy" onchange="render()"><option value="updated">Terbaru</option><option value="title">Judul</option><option value="alarm">Alarm</option></select></div>
-<div class="folderBar" data-builder="folder-bar" data-component-id="folderbar-001" id="folderBar"></div>
-<div class="filters" data-builder="filter-bar" data-component-id="filterbar-001" id="filters"><button onclick="setFilter('all')">Semua</button><button onclick="setFilter('pin')">📌 Pin</button><button onclick="setFilter('alarm')">⏰ Alarm</button><button onclick="setFilter('favorite')">⭐ Favorit</button><button onclick="setFilter('archive')">Arsip</button></div>
+<div class="folderBar" data-="folder-bar" data-component-id="folderbar-001" id="folderBar"></div>
+<div class="filters" data-="filter-bar" data-component-id="filterbar-001" id="filters"><button onclick="setFilter('all')">Semua</button><button onclick="setFilter('pin')">📌 Pin</button><button onclick="setFilter('alarm')">⏰ Alarm</button><button onclick="setFilter('favorite')">⭐ Favorit</button><button onclick="setFilter('archive')">Arsip</button></div>
 <div class="stats" id="stats"></div>
 <div id="list" class="grid"></div>
 <div class="nav"><a href="index.html">Catatan</a><a href="setting.html">Setting</a></div>
@@ -251,22 +251,22 @@ if('serviceWorker' in navigator){
 }
 </script>
 
-<script id="builder-ready-js">
+<script id="-ready-js">
 window.NozilRegistry={
  header:{editable:['color','background','shadow','radius']},
  card:{editable:['color','background','shadow','radius','padding']},
  button:{editable:['color','background','radius']},
  popup:{editable:['color','background','radius','animation']}
 };
-document.querySelectorAll('header,.header').forEach(e=>e.setAttribute('data-builder','header'));
-document.querySelectorAll('.card').forEach(e=>e.setAttribute('data-builder','card'));
-document.querySelectorAll('button').forEach(e=>e.setAttribute('data-builder','button'));
+document.querySelectorAll('header,.header').forEach(e=>e.setAttribute('data-','header'));
+document.querySelectorAll('.card').forEach(e=>e.setAttribute('data-','card'));
+document.querySelectorAll('button').forEach(e=>e.setAttribute('data-','button'));
 </script>
 
-<style id="builder-v4">
-[data-builder]{position:relative}
-.builder-hover{outline:2px solid #38bdf8!important}
-.builder-selected{outline:3px solid #facc15!important}
+<style id="-v4">
+[data-]{position:relative}
+.-hover{outline:2px solid #38bdf8!important}
+.-selected{outline:3px solid #facc15!important}
 </style>
 <script>
 window.NozilTheme={
@@ -289,29 +289,29 @@ window.NozilRegistry={
 window.Nozil={
  selected:null,
  select(el){
-   document.querySelectorAll('.builder-selected').forEach(x=>x.classList.remove('builder-selected'));
+   document.querySelectorAll('.-selected').forEach(x=>x.classList.remove('-selected'));
    this.selected=el;
-   el.classList.add('builder-selected');
+   el.classList.add('-selected');
  },
  getSelected(){return this.selected;}
 };
 
 document.addEventListener('mouseover',e=>{
- const el=e.target.closest('[data-builder]');
- if(el) el.classList.add('builder-hover');
+ const el=e.target.closest('[data-]');
+ if(el) el.classList.add('-hover');
 });
 document.addEventListener('mouseout',e=>{
- const el=e.target.closest('[data-builder]');
- if(el) el.classList.remove('builder-hover');
+ const el=e.target.closest('[data-]');
+ if(el) el.classList.remove('-hover');
 });
 document.addEventListener('click',e=>{
- const el=e.target.closest('[data-builder]');
+ const el=e.target.closest('[data-]');
  if(el) window.Nozil.select(el);
 },true);
 </script>
 
-<style id="builder-v5">
-.builder-toolbar{position:fixed;top:10px;right:10px;z-index:99999;background:#111827;color:#fff;padding:10px;border-radius:14px}
+<style id="-v5">
+.-toolbar{position:fixed;top:10px;right:10px;z-index:99999;background:#111827;color:#fff;padding:10px;border-radius:14px}
 </style>
 <script>
 window.NozilHistory=[];
@@ -323,37 +323,37 @@ window.NozilRegistry.layerTree={
 window.NozilTheme={
  vars:['--header-bg','--card-bg','--card-radius','--card-shadow','--button-bg','--popup-bg','--nav-bg','--search-bg']
 };
-function builderUndo(){}
-function builderRedo(){}
+function Undo(){}
+function Redo(){}
 </script>
-<div class="builder-toolbar"> </div>
+<div class="-toolbar"> </div>
 
-<style id="builder-v6">
-[data-builder][data-name]{position:relative}
-.builder-label{position:fixed;z-index:999999;background:#0f172a;color:#fff;padding:4px 8px;border-radius:8px;font-size:12px;pointer-events:none}
+<style id="-v6">
+[data-][data-name]{position:relative}
+.-label{position:fixed;z-index:999999;background:#0f172a;color:#fff;padding:4px 8px;border-radius:8px;font-size:12px;pointer-events:none}
 </style>
 <script>
 window.NozilTheme={version:'6.0',vars:{}};
 window.Nozil={
  history:[],
  selected:null,
- select(el){this.selected=el;localStorage.setItem('nozil_builder_selected',el.dataset.componentId||'');},
- save(){localStorage.setItem('nozil_builder_state',JSON.stringify(this.export()));},
+ select(el){this.selected=el;localStorage.setItem('nozil__selected',el.dataset.componentId||'');},
+ save(){localStorage.setItem('nozil__state',JSON.stringify(this.export()));},
  export(){return {theme:window.NozilTheme};},
  layers(){return ['Header','Search','Folder','Filters','Stats','Notes','Reader','Modal','Navigation'];}
 };
-document.querySelectorAll('[data-builder]').forEach((el,i)=>{
- if(!el.dataset.name) el.dataset.name=el.dataset.builder;
+document.querySelectorAll('[data-]').forEach((el,i)=>{
+ if(!el.dataset.name) el.dataset.name=el.dataset.;
  if(!el.dataset.category) el.dataset.category='component';
  if(!el.dataset.editable) el.dataset.editable='all';
- if(!el.dataset.componentId) el.dataset.componentId=el.dataset.builder+'-'+(i+1);
+ if(!el.dataset.componentId) el.dataset.componentId=el.dataset.+'-'+(i+1);
 });
 </script>
 
 <style>
-.builder-badge{position:fixed;top:10px;left:10px;z-index:99999;background:#0f172a;color:#fff;padding:8px 12px;border-radius:12px;border:1px solid #334155}
+.-badge{position:fixed;top:10px;left:10px;z-index:99999;background:#0f172a;color:#fff;padding:8px 12px;border-radius:12px;border:1px solid #334155}
 </style>
-<div class="builder-badge"> </div>
+<div class="-badge"> </div>
 <script>
 window.NozilBridge={
  send(type,data){
